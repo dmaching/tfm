@@ -1,0 +1,17 @@
+\chapter{Introducción}
+
+\section{Motivación}
+La gestión de carteras de inversión ha estado dominada durante décadas por la Teoría de Cartera Moderna (MPT), introducida por \cite{markowitz1952}. Este marco teórico se fundamenta en la optimización media-varianza, bajo el supuesto de que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica en el análisis de datos masivos financieros demuestra que los mercados reales presentan características que este modelo no logra capturar: la curtosis excesiva (colas pesadas), la asimetría y la volatilidad estocástica.
+
+En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa un riesgo sistémico. Los eventos de "extremo" ocurren con una frecuencia mayor en la realidad, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{salimans2016} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos sin supuestos previos.
+
+\section{Planteamiento del trabajo}
+El presente Trabajo de Fin de Máster propone una metodología híbrida que integra el modelado generativo y la teoría de la información. El núcleo de la investigación se divide en tres fases:
+\begin{enumerate}
+    \item Uso de \textbf{Autoencoders Variacionales (VAEs)} para la reducción de dimensionalidad no lineal.
+    \item Desarrollo de una \textbf{Red Generativa Adversaria (GAN)} para sintetizar escenarios de mercado realistas.
+    \item Optimización de la cartera mediante la \textbf{Divergencia de Kullback-Leibler} como métrica de riesgo informativo.
+\end{enumerate}
+
+\section{Estructura del trabajo}
+La memoria se organiza de la siguiente manera: el Capítulo 2 revisa el estado del arte; el Capítulo 3 detalla la metodología y objetivos; el Capítulo 4 expone el marco normativo y los capítulos posteriores desarrollan la contribución técnica y resultados.
