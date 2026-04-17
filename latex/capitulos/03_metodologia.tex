@@ -1,22 +1,8 @@
 \chapter{Metodología}
 
-\section{Arquitectura del Modelo Generativo Híbrido}
-La propuesta central de este trabajo se basa en una arquitectura secuencial que combina la capacidad de compresión de los Autoencoders Variacionales (VAE) con la potencia de síntesis de las Redes Generativas Adversarias (GAN).
+\section{Definición del Problema y Métricas de Evaluación}
+\cite{markowitz1952} cierra su introducción a la teoría de la cartera moderna afirmando que en el uso de la regla de esperanza-varianza, el inversor debe, en su opinión combinar procedimientos estadísticos y el jucio del hombre práctico.
 
-\subsection{Implementación del VAE para la Extracción de Características Latentes}
-Siguiendo la formulación original de \cite{kingma2013auto}, el primer bloque del modelo consiste en un codificador probabilístico $q_\phi(z|x)$ y un decodificador $p_\theta(x|z)$. En el contexto de retornos financieros masivos, el VAE cumple la función de filtrar el ruido inherente del mercado. 
+En el presente trabajo, se propone no solo ampliar el objetivo del inversor, considerando la entropía como medida del riesgo capaz de revelar relaciones no lineales entre activos, sino que también se ampliar las herramientas de evaluación del mercado. 
 
-El objetivo es maximizar la cota inferior de la evidencia (ELBO), definida como:
-\begin{equation}
-\mathcal{L}(\theta, \phi; x) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{KL}(q_\phi(z|x) \parallel p(z))
-\end{equation}
-
-Este segundo término, la \textbf{Divergencia de Kullback-Leibler}, es donde conectamos con la teoría de la información de \cite{cover2006elements}. Actúa como un regularizador que obliga al espacio latente a seguir una distribución normal unitaria, facilitando el muestreo posterior.
-
-\subsection{Síntesis de Escenarios mediante GANs}
-Una vez obtenido el espacio latente simplificado, se entrena una GAN siguiendo las técnicas de mejora propuestas por \cite{salimans2016}. El uso de GANs en series temporales financieras permite capturar los "estilizados" del mercado, como el \textit{volatility clustering} y las colas pesadas, aspectos que el modelo de \cite{markowitz1952} no considera.
-
-Para evitar la inestabilidad en el entrenamiento (como el \textit{mode collapse}), evaluaremos el uso de la \textbf{Wasserstein GAN (WGAN)} propuesta por \cite{arjovsky2017wasserstein}. La ventaja fundamental es que la WGAN utiliza la distancia de \textit{Earth Mover} en lugar de la divergencia JS tradicional, lo que proporciona gradientes más suaves y una métrica de convergencia real que se correlaciona con la calidad de las muestras generadas.
-
-\subsection{Optimización de Cartera y Medida de Riesgo}
-El paso final integra los escenarios generados en un proceso de optimización. Utilizaremos la divergencia de Kullback-Leibler para medir cuánto se desvía nuestra cartera propuesta de la distribución de "escenarios de estrés" sintetizados por la GAN. Este enfoque permite una gestión del riesgo basada en la entropía, ofreciendo una visión más holística que la simple varianza.
+El objetivo de este informe es generar escenarios sintéticos mediante técnicas de aprendizaje profundo, de modo que se minimice la $D_{KL}$ entre la distribución de los retornos históricos (reales) y la distribución de los retornos generados (sintéticos). Esto garantiza que el modelo no solo optimiza el rendimiento, sino que replica fielmente la estructura estadística del mercado.

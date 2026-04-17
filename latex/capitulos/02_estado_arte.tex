@@ -13,4 +13,44 @@ Markowitz fue pionero, sin embargo su modelo presenta limitaciones aparentes, qu
 
 El modelo asume que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica muestra que no siempre se puede asumir la normalidad en los retornos de los activos. Por otro lado, las correlaciones entre activos financieros no son estáticas, sino que varían a lo largo del tiempo.
 
+En periodos de alta volatilidad, el modelo de Markowitz no es capaz de capturar los cambios en la correlación entre activos, lo que puede llevar a errores en la gestión de la cartera. 
+
+Esta limitación es especialmente relevante, teniendo en cuenta que dichos momentos son los que presentan una mayor oportunidad para el inversor. 
+
+En este trabajo, se propone una metodología híbrida, que combine las bases teóricas tradicionales con el modelado generativo y la potencia de cálculo moderna.
+
 \section{Fundamentos de la Teoría de la Información}
+La identificación del riesgo con la varianza, limita la capacidad de los modelos tradicionales para capturar relaciones no lineales entre acitvos.
+
+Como alternativa, se propone el uso de la teoría de la información, que propone un tratamiento heurístico del riesgo. Se propone el uso de la entropía como medida de la relación o explicabilidad de los rendimientos de un activo financiero mediante los de otros.
+
+La entropía se define entonces como la medida de incertidumbre pura del mercado.
+
+Siguiendo a \cite{cover2006elements} y entendiendo el retorno de un activo como una variable aleatoria, la entropía se define como:
+
+\begin{equation}
+H(X) = -\sum_{i=1}^n p(x_i) \log p(x_i)
+\end{equation}
+
+Donde $p(x_i)$ es la probabilidad de que el activo $i$ tenga un retorno $x_i$.
+
+Para medir la discrepancia entre dos distribuciones, se propone el uso de la divergencia de Kullback-Leibler (KLD), definida como:
+
+\begin{equation}
+D_{KL}(P \parallel Q) = \sum_{i=1}^n p(x_i) \log \frac{p(x_i)}{q(x_i)}
+\end{equation}
+
+Donde $p(x_i)$ es la probabilidad de que el activo $i$ tenga un retorno $x_i$ en la distribución $P$, y $q(x_i)$ es la probabilidad de que el activo $i$ tenga un retorno $x_i$ en la distribución $Q$.
+
+Como evolución de la correlación de \cite{markowitz1952}, se propone el uso de la Información Mutua (MI), definida como:
+
+\begin{equation}
+I(X;Y) = H(X) + H(Y) - H(X,Y)
+\end{equation}
+
+Donde $H(X)$ es la entropía de la variable $X$, $H(Y)$ es la entropía de la variable $Y$, y $H(X,Y)$ es la entropía conjunta de las variables $X$ y $Y$.
+
+La MI se puede entender como la medida de la relación o explicabilidad de los rendimientos de un activo financiero mediante los de otros.
+
+Mientras que la correlación es una medida de la relación lineal entre dos variables, la MI es una medida de la relación no lineal, permitiendo detectar relaciones caóticas o complejas.
+
