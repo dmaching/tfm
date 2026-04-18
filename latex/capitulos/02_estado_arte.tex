@@ -6,14 +6,14 @@ En 1952, Harry Markowitz introdujo el modelo de media-varianza para la optimizac
 
 Es por ello que el artículo se centra en la optimización de carteras buscando aquellas combinaciones de activos que, para igual retorno esperado, minimicen la varianza, es decir, el riesgo. Por lo tanto, el problema de optimizar una cartera se reduce a encontrar máximos o mínimos dentro de una función de dos variables, fijando una de ellas. Teniendo en cuenta solo aquellas combinaciones de activos que se puedan realizar, las combinaciones deseadas forman lo que el autor denomina la frontera eficiente. 
 
-Matemáticamente, el problema de optimización se puede formular como:
+Matemáticamente, el problema de optimización se puede formula como la maximización de la utilidad esperada, ponderando el retorno esperado frente al riesgo:
 
 \begin{equation} 
 \max_{w} \; w^\top \mu - \frac{\lambda}{2} \, w^\top \Sigma w 
 \quad \text{s.a.} \quad \mathbf{1}^\top w = 1
 \end{equation}
 
-Donde $\mu$ es el vector de retornos esperados de los activos, y $w$ es el vector de pesos de los activos en la cartera.
+Donde $\mu \in \mathbb{R}^n$ es el vector de retornos esperados, $w \in \mathbb{R}^n$ representa los pesos de los activos en la cartera, $\Sigma \in \mathbb{R}^{n \times n}$ es la matriz de varianzas-covarianzas y $\lambda > 0$ es el coeficiente de aversión al riesgo del inversor.
 
 
 \section{Limitaciones de la Teoría Clásica}
@@ -66,20 +66,20 @@ Mientras que la correlación es una medida de la relación lineal entre dos vari
 
 Para superar las limitaciones de la Teoría Clásica a la hora de gestionar la complejidad subyacente a los mercados financieros, se propone el uso de modelos generativos.
 
-Los modelos generativos permiten aprender directamente de la distribución subyacente de los datos, sin necesidad de supuestos previos. Este enfoque resulta especialmente útil para modelar colas pesadas, asimetrías y dependencias no lineales presentes en los precios de activos.
+Los modelos generativos permiten aprender directamente de la distribución subyacente de los datos, minimizando la dependencia de supuestos paraméricos rígidos. Este enfoque resulta especialmente útil para modelar colas pesadas, asimetrías y dependencias no lineales presentes en los precios de activos.
 
 \subsection{Autoencoders Variacionales (VAEs)}
 
 Los Autoencoders Variacionales (VAEs), introducidos por \cite{kingma2013auto}, son un tipo de modelos generativos que reconstruyen la distribución de los datos empleando métodos probabilísticos para aprender un espacio latente comprimido y estructurado. 
 
-El concepto fundamental de los VAEs, es que la distribución de los datos se puede explicar mediante un espacio de menor dimensión formado por factores ocultos que capturan relaciones subyacentes en los datos originales. 
+El concepto fundamental de los VAEs es que la distribución de los datos se puede explicar mediante un espacio de menor dimensión formado por factores ocultos que capturan relaciones subyacentes en los datos originales. 
 
 Desde el punto de vista económico, los VAEs permiten imbuir al modelo de selección de activos con componentes no lineales, permitiendo capturar relaciones complejas entre activos.
 
 \subsection{Redes Generativas Adversarias (GANs)}
 
-Las Redes Generativas Adversarias (GANs), introducidas en \cite{NIPS2016_8a3363ab}, son un tipo de modelos generativos que aprenden a generar datos realistas mediante un proceso de aprendizaje adversario.
+Las Redes Generativas Adversarias (GANs), introducidas en \cite{NIPS2016_8a3363ab}, son un paradigma de modelos generativos que aprenden a generar datos realistas mediante un proceso de aprendizaje adversario.
 
 El concepto fundamental de las GANs, es que el generador ($G$) aprende a generar datos realistas mediante un proceso de aprendizaje adversario con el discriminador ($D$).
 
-El entrenamiento de las GANs consiste en encontrar un equilibrio de Nash para un juego de dos jugadores, el generador y el discriminador, en un escenario no cooperativo. 
+El entrenamiento de las GANs se define como un juego minimax de suma cero donde el objetivo es alcanzar un equilibrio de Nash. En este escenario, el Generador ($G$) busca maximizar la probabilidad de error del Discriminador ($D$), mientras que este último se optimiza para distinguir con precisión entre la distribución de datos reales $p_{data}$ y la distribución sintética $p_g$.

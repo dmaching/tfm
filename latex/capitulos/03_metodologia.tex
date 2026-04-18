@@ -9,10 +9,11 @@ El objetivo de este informe es generar escenarios sintéticos mediante técnicas
 
 \section{Implementación}
 
-La arquitectura propuesta para el modelo es la siguiente:
+La arquitectura propuesta para el modelo se articula en tres módulos independientes:
 \begin{itemize}
-    \item Autoencoders Variacionales (VAEs) para la reducción de dimensionalidad no lineal.
-    \item Redes Generativas Adversarias (GANs) para sintetizar escenarios de mercado realistas.
-    \item Optimización de la cartera mediante la Divergencia de Kullback-Leibler como métrica de riesgo informativo.
+    \item Extracción de caracterías con Autoencoders Variacionales (VAEs) para la reducción de dimensionalidad no lineal. Un VAE proyecta los datos históricos hacia un espacio latente de menor dimensión. Este proceso permite eliminar ruido, reteniendo únicamente las características persistentes.
+    \item Generación de escenarios: Redes Generativas Adversarias (GANs) para sintetizar escenarios de mercado realistas. La GAN entrena sobre el espacio latente sintetizando vectores de retornos que preservan las dependencias no lineales y los momentos estadísticos de orden superior.
+    \item Optimización de la cartera mediante la Divergencia de Kullback-Leibler como métrica de riesgo informativo. Se sustituye el uso de la varianza como medida de riesgo por la Divergencia KL como métrica del mismo. Se optimiza la cartera para que sea más robusta frente a la entropía del mercado.
 \end{itemize}
-De manera intuitiva, el modelo filtra el ruido empleando el VAE, añadiendo ganancia de información a través de la reducción de la información e infiriendo relaciones no lineales entre los activos, así como la mejora de la reactividad a condiciones de alta volatilidad. Los GANs sintetizan escenarios realistas de mercado para comprobar la robustez de la cartera. 
+De manera intuitiva, el modelo filtra el ruido empleando el VAE, añadiendo ganancia de información a través de la reducción de la información e infiriendo relaciones no lineales entre los activos, así como la mejora de la reactividad a condiciones de alta volatilidad. Los GANs sintetizan escenarios realistas de mercado para comprobar la robustez de la cartera.
+
