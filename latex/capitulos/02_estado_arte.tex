@@ -6,6 +6,14 @@ En 1952, Harry Markowitz introdujo el modelo de media-varianza para la optimizac
 
 Es por ello que el artículo se centra en la optimización de carteras buscando aquellas combinaciones de activos que, para igual retorno esperado, minimicen la varianza, es decir, el riesgo. Por lo tanto, el problema de optimizar una cartera se reduce a encontrar máximos o mínimos dentro de una función de dos variables, fijando una de ellas. Teniendo en cuenta solo aquellas combinaciones de activos que se puedan realizar, las combinaciones deseadas forman lo que el autor denomina la frontera eficiente. 
 
+Matemáticamente, el problema de optimización se puede formular como:
+
+\begin{equation} 
+\max_{w} \; w^\top \mu - \frac{\lambda}{2} \, w^\top \Sigma w 
+\quad \text{s.a.} \quad \mathbf{1}^\top w = 1
+\end{equation}
+
+Donde $\mu$ es el vector de retornos esperados de los activos, y $w$ es el vector de pesos de los activos en la cartera.
 
 
 \section{Limitaciones de la Teoría Clásica}
@@ -53,4 +61,15 @@ Donde $H(X)$ es la entropía de la variable $X$, $H(Y)$ es la entropía de la va
 La MI se puede entender como la medida de la relación o explicabilidad de los rendimientos de un activo financiero mediante los de otros.
 
 Mientras que la correlación es una medida de la relación lineal entre dos variables, la MI es una medida de la relación no lineal, permitiendo detectar relaciones caóticas o complejas.
+
+\section{Modelado Generativo}
+
+
+
+\subsection{Autoencoders Variacionales (VAEs)}
+
+
+
+\subsection{Redes Generativas Adversarias (GANs)}
+
 
