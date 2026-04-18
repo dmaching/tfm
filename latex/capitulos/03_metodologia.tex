@@ -1,4 +1,4 @@
-\chapter{Metodología}
+\chapter{Objetivos Concretos y Metodología de Trabajo}
 
 \section{Definición del Problema y Métricas de Evaluación}
 \cite{markowitz1952} cierra su introducción a la teoría de la cartera moderna afirmando que en el uso de la regla de esperanza-varianza, el inversor debe, en su opinión,combinar procedimientos estadísticos y el jucio del hombre práctico.
@@ -125,8 +125,6 @@ Una vez estructurado el Espacio Latente, se procede a la generación de escenari
 El Discriminador sustituye pues en el enfoque moderno a lo que \cite{markowitz1952} denominaba como el juicio del hombre práctico. El Generador entrena para buscar escenarios que sean indistinguibles de la realidad, utilizando la estructura latente previamente establecida así como ruido aleatorio introducido en la entrada. 
 
 Por lo tanto, tenemos un juego minimax de suma cero donde el objetivo es alcanzar un equilibrio de Nash. En este escenario, el Generador ($G$) busca maximizar la probabilidad de error del Discriminador ($D$), mientras que este último se optimiza para distinguir con precisión entre la distribución de datos reales $p_{data}$ y la distribución sintética $p_g$.
-
-\section{Elección de Datos para el Entrenamiento y Preprocesado de los Mismos}
 
 \section{Elección de Datos y Preprocesamiento}
 
