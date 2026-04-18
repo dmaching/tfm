@@ -64,4 +64,56 @@ De manera intuitiva, el modelo filtra el ruido empleando el VAE, añadiendo gana
 \caption{Arquitectura híbrida VAE-GAN para la generación y optimización de carteras.}
 \end{figure}
 
+El VAE toma datos históricos de retornos reales para encontrar las variables latentes asociadas a los mismos, modelando las relaciones subyacentes que realmente mueven conjuntamente los valores de activos diferentes. El Generador recibe este espacio latente, y trabajando con el Discriminador es capaz de crear variaciones gracias a la introducción de ruido, Con este modelo, podemos crear escenarios sintéticos tan similares a la realidad que no se puedan distinguir de verdaderos retornos históricos. Esto permite realizar la optimización final sobre datos probables, generando un conjunto de pesos para una cartera óptima. 
+
 \section{Función de Pérdida y Criterios de Optimización}
+
+Siguiendo el enfoque propuesto por \cite{kingma2013auto}, el objetivo del modelo VAE es maximizar la verosimilitud marginal de los datos observados. Dado un conjunto de datos ${x^{i}}_{i=1}^N$, la verosimilitud marginal se descompone como la suma sobre las observaciones individuales:
+\begin{equation}
+    \log p_{\theta}(x^{(1)}, \dots, x^{(N)}) = \sum_{i=1}^{N} \log p_{\theta}(x^{(i)})
+\end{equation}
+Sin embargo, el cálculo directo de $\log p_{\theta}(x^{(i)})$ resulta intratable debido a la integración sobre las variables latentes. Para abordar este problema, se introduce una distribución aproximada $q_{\phi}(z|x)$, lo que permite descomponer la log-verosimilitud como:
+\begin{equation}
+    \log p_{\theta}(x^{(i)}) 
+= D_{KL}\big(q_{\phi}(z|x^{(i)}) \,\|\, p_{\theta}(z|x^{(i)})\big)
++ \mathcal{L}(\theta, \phi; x^{(i)})
+\end{equation}
+Dado que la divergencia de Kullback-Leibler es siempre no negativa, el término $\mathcal{L}(\theta, \phi; x^{(i)})$ constituye una cota inferior variacional (Evidence Lower Bound, ELBO):
+\begin{equation}
+    \log p_{\theta}(x^{(i)}) \geq \mathcal{L}(\theta, \phi; x^{(i)})
+\end{equation}
+Esta cota puede expresarse como:
+\begin{equation}
+    \mathcal{L}(\theta, \phi; x^{(i)}) 
+= \mathbb{E}_{q_{\phi}(z|x^{(i)})}
+\big[
+\log p_{\theta}(x^{(i)}, z) - \log q_{\phi}(z|x^{(i)})
+\big]
+\end{equation}
+o, de forma equivalente, separando sus componentes principales:
+\begin{equation}
+    \mathcal{L}(\theta, \phi; x^{(i)}) 
+= -D_{KL}\big(q_{\phi}(z|x^{(i)}) \,\|\, p(z)\big)
++ \mathbb{E}_{q_{\phi}(z|x^{(i)})}\big[\log p_{\theta}(x^{(i)}|z)\big]
+\end{equation}
+
+Esta formulación revela dos términos fundamentales:
+\begin{itemize}
+     \item Un término de regularización, que fuerza la distribución latente aproximada $q_{\phi}(z|x)$ a mantenerse cercana a la prior $p(z)$.
+     \item Un término de reconstrucción, que mide la capacidad del modelo generativo para reproducir los datos observados a partir de las variables latentes.
+\end{itemize}
+El proceso de entrenamiento consiste en maximizar esta cota inferior respecto a los parámetros del modelo generativo $\theta$ y los parámetros variacionales $\phi$.
+
+No obstante, la optimización presenta dificultades prácticas. En particular, el cálculo del gradiente respecto a $\phi$ mediante estimadores Monte Carlo directos presenta alta varianza, lo que dificulta la convergencia y hace inviable su uso en la práctica. Para superar esta limitación, se introduce el truco de reparametrización, que permite expresar la variable latente como una transformación determinista de una variable aleatoria auxiliar:
+\begin{equation}
+    z = \mu_{\phi}(x) + \sigma_{\phi}(x) \cdot \epsilon,
+\quad \epsilon \sim \mathcal{N}(0, I)
+\end{equation}
+Esta reformulación permite trasladar la fuente de aleatoriedad fuera de la red neuronal, haciendo posible aplicar técnicas estándar de optimización basadas en gradiente (backpropagation) con estimadores de baja varianza.
+
+En conjunto, este marco convierte el problema de inferencia variacional en uno de optimización eficiente, permitiendo el entrenamiento conjunto del encoder y el decoder dentro de una arquitectura diferenciable end-to-end.
+
+
+\section{Elección de la Cartera mediante la divergencia de Kullback-Leibler}
+
+\section{Elección de Datos para el Entrenamiento y Preprocesado de los Mismos}
