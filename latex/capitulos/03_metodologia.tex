@@ -3,11 +3,11 @@
 \section{Definición del Problema y Métricas de Evaluación}
 \cite{markowitz1952} cierra su introducción a la teoría de la cartera moderna afirmando que en el uso de la regla de esperanza-varianza, el inversor debe, en su opinión,combinar procedimientos estadísticos y el jucio del hombre práctico.
 
-En el presente trabajo, se propone no solo ampliar el objetivo del inversor, considerando la entropía como medida del riesgo capaz de revelar relaciones no lineales entre activos, sino que también se ampliar las herramientas de evaluación del mercado. 
+En el presente trabajo, se propone no solo ampliar el objetivo del inversor, considerando la entropía como medida del riesgo capaz de revelar relaciones no lineales entre activos, sino que también se propone ampliar las herramientas de evaluación del mercado. 
 
 El objetivo de este informe es generar escenarios sintéticos mediante técnicas de aprendizaje profundo, de modo que se minimice la $D_{KL}$ entre la distribución de los retornos históricos (reales) y la distribución de los retornos generados (sintéticos). Esto garantiza que el modelo no solo optimiza el rendimiento, sino que replica fielmente la estructura estadística del mercado.
 
-\section{Implementación}
+\section{Arquitectura del Sistema Propuesto}
 
 La arquitectura propuesta para el modelo se articula en tres módulos independientes:
 \begin{itemize}
@@ -17,3 +17,51 @@ La arquitectura propuesta para el modelo se articula en tres módulos independie
 \end{itemize}
 De manera intuitiva, el modelo filtra el ruido empleando el VAE, añadiendo ganancia de información a través de la reducción de la información e infiriendo relaciones no lineales entre los activos, así como la mejora de la reactividad a condiciones de alta volatilidad. Los GANs sintetizan escenarios realistas de mercado para comprobar la robustez de la cartera.
 
+\begin{figure}[H]
+\centering
+\shorthandoff{>}
+\begin{tikzpicture}[
+    node distance=1.2cm and 1cm,
+    every node/.style={draw, rectangle, rounded corners, align=center, minimum width=2.2cm, minimum height=0.9cm, font=\footnotesize},
+    arrow/.style={->, >=Stealth, thick}
+]
+    
+    % --- NIVEL 1: PROCESO VAE (Superior) ---
+    \node (data) {Datos\\ históricos $x$};
+    \node (enc) [right=of data] {Encoder\\ $q_{\phi}(z|x)$};
+    \node (latent) [right=of enc] {Espacio\\ Latente $Z$};
+    \node (dec) [right=of latent] {Decoder\\ $p_{\theta}(x|z)$};
+    
+    % --- NIVEL 2: MOTOR GENERATIVO (Centro) ---
+    % Situamos el ruido a la izquierda del generador, y este debajo del espacio latente
+    \node (gen) [below=of latent, yshift=-0.5cm] {Generador\\ $G(z, \epsilon)$};
+    \node (noise) [left=of gen] {Ruido $\epsilon$};
+    \node (disc) [below=of gen, yshift=0.3cm] {Discriminador\\ $D(x)$};
+    
+    % --- NIVEL 3: RESULTADOS (Derecha) ---
+    \node (scenarios) [right=of gen, xshift=0.5cm] {Escenarios\\ Sintéticos};
+    \node (kld) [right=of scenarios] {Cálculo\\ KLD};
+    \node (opt) [below=of kld, yshift=0.3cm] {Optimización\\ Pesos $w$};
+    
+    % --- CONEXIONES ---
+    \draw[arrow] (data) -- (enc);
+    \draw[arrow] (enc) -- (latent);
+    \draw[arrow] (latent) -- (dec);
+    
+    % Conexiones Generación
+    \draw[arrow] (latent) -- (gen);
+    \draw[arrow] (noise) -- (gen);
+    \draw[arrow] (gen) -- (disc);
+    \draw[arrow] (disc.west) -- ++(-0.5,0) |- node[pos=0.25, left] {feedback} (gen.west);
+    
+    % Salida a Optimización
+    \draw[arrow] (gen) -- (scenarios);
+    \draw[arrow] (scenarios) -- (kld);
+    \draw[arrow] (kld) -- (opt);
+    
+\end{tikzpicture}
+\shorthandon{>}
+\caption{Arquitectura híbrida VAE-GAN para la generación y optimización de carteras.}
+\end{figure}
+
+\section{Función de Pérdida y Criterios de Optimización}
