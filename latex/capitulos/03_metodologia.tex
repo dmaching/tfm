@@ -1,8 +1,18 @@
 \chapter{Metodología}
 
 \section{Definición del Problema y Métricas de Evaluación}
-\cite{markowitz1952} cierra su introducción a la teoría de la cartera moderna afirmando que en el uso de la regla de esperanza-varianza, el inversor debe, en su opinión combinar procedimientos estadísticos y el jucio del hombre práctico.
+\cite{markowitz1952} cierra su introducción a la teoría de la cartera moderna afirmando que en el uso de la regla de esperanza-varianza, el inversor debe, en su opinión,combinar procedimientos estadísticos y el jucio del hombre práctico.
 
 En el presente trabajo, se propone no solo ampliar el objetivo del inversor, considerando la entropía como medida del riesgo capaz de revelar relaciones no lineales entre activos, sino que también se ampliar las herramientas de evaluación del mercado. 
 
 El objetivo de este informe es generar escenarios sintéticos mediante técnicas de aprendizaje profundo, de modo que se minimice la $D_{KL}$ entre la distribución de los retornos históricos (reales) y la distribución de los retornos generados (sintéticos). Esto garantiza que el modelo no solo optimiza el rendimiento, sino que replica fielmente la estructura estadística del mercado.
+
+\section{Implementación}
+
+La arquitectura propuesta para el modelo es la siguiente:
+\begin{itemize}
+    \item Autoencoders Variacionales (VAEs) para la reducción de dimensionalidad no lineal.
+    \item Redes Generativas Adversarias (GANs) para sintetizar escenarios de mercado realistas.
+    \item Optimización de la cartera mediante la Divergencia de Kullback-Leibler como métrica de riesgo informativo.
+\end{itemize}
+De manera intuitiva, el modelo filtra el ruido empleando el VAE, añadiendo ganancia de información a través de la reducción de la información e infiriendo relaciones no lineales entre los activos, así como la mejora de la reactividad a condiciones de alta volatilidad. Los GANs sintetizan escenarios realistas de mercado para comprobar la robustez de la cartera. 
