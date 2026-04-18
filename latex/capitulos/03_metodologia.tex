@@ -11,11 +11,15 @@ El objetivo de este informe es generar escenarios sintéticos mediante técnicas
 
 La arquitectura propuesta para el modelo se articula en tres módulos independientes:
 \begin{itemize}
-    \item Extracción de caracterías con Autoencoders Variacionales (VAEs) para la reducción de dimensionalidad no lineal. Un VAE proyecta los datos históricos hacia un espacio latente de menor dimensión. Este proceso permite eliminar ruido, reteniendo únicamente las características persistentes.
-    \item Generación de escenarios: Redes Generativas Adversarias (GANs) para sintetizar escenarios de mercado realistas. La GAN entrena sobre el espacio latente sintetizando vectores de retornos que preservan las dependencias no lineales y los momentos estadísticos de orden superior.
+    \item Extracción de características con Autoencoders Variacionales (VAEs) para la reducción de la dimensionalidad de forma no lineal. El VAE proyecta los datos históricos hacia un espacio latente de menor dimensión. Este proceso permite eliminar ruido, reteniendo únicamente las características persistentes.
+    \item Generación de escenarios: Redes Generativas Adversarias (GANs) para sintetizar escenarios de mercado realistas, la GAN entrena sobre el espacio latente sintetizando vectores de retornos que preservan las dependencias no lineales y los momentos estadísticos de orden superior.
     \item Optimización de la cartera mediante la Divergencia de Kullback-Leibler como métrica de riesgo informativo. Se sustituye el uso de la varianza como medida de riesgo por la Divergencia KL como métrica del mismo. Se optimiza la cartera para que sea más robusta frente a la entropía del mercado.
 \end{itemize}
-De manera intuitiva, el modelo filtra el ruido empleando el VAE, añadiendo ganancia de información a través de la reducción de la información e infiriendo relaciones no lineales entre los activos, así como la mejora de la reactividad a condiciones de alta volatilidad. Los GANs sintetizan escenarios realistas de mercado para comprobar la robustez de la cartera.
+De manera intuitiva, el modelo filtra el ruido empleando el VAE, añadiendo ganancia de información a través del espacio latente e infiriendo relaciones no lineales entre los activos, así como mejorando la reactividad a condiciones de alta volatilidad. Los GANs sintetizan escenarios realistas de mercado para comprobar la robustez de la cartera.
+
+El mercado financiero es un sistema caótico, en el cuál existe una gran cantidad de variables interconectadas de maneras que van mucho más allá de la linealidad. Además, es un sistema de nivel dos, por lo tanto, las propias predicciones que se realizan sobre el mismo influyen en los resultados que se obtienen. El VAE pretende encontrar el espacio donde realmente viven las variables que mueven el mercado. Este planteamiento es superior al de métodos lineales como el PCA, pues el mercado no es un sistema lineal. 
+
+El Espacio Latente $Z$ es el lugar donde las interconexiones entre variables se ponen de manifiesto.
 
 \begin{figure}[H]
 \centering
@@ -99,7 +103,7 @@ o, de forma equivalente, separando sus componentes principales:
 
 Esta formulación revela dos términos fundamentales:
 \begin{itemize}
-     \item Un término de regularización, que fuerza la distribución latente aproximada $q_{\phi}(z|x)$ a mantenerse cercana a la prior $p(z)$.
+     \item Un término de regularización, que fuerza la distribución latente aproximada $q_{\phi}(z|x)$ a mantenerse cercana a la probabilidad a priori $p(z)$.
      \item Un término de reconstrucción, que mide la capacidad del modelo generativo para reproducir los datos observados a partir de las variables latentes.
 \end{itemize}
 El proceso de entrenamiento consiste en maximizar esta cota inferior respecto a los parámetros del modelo generativo $\theta$ y los parámetros variacionales $\phi$.
@@ -114,6 +118,10 @@ Esta reformulación permite trasladar la fuente de aleatoriedad fuera de la red 
 En conjunto, este marco convierte el problema de inferencia variacional en uno de optimización eficiente, permitiendo el entrenamiento conjunto del encoder y el decoder dentro de una arquitectura diferenciable end-to-end.
 
 
-\section{Elección de la Cartera mediante la divergencia de Kullback-Leibler}
+\section{Generación y Selección de Pesos}
+
+
 
 \section{Elección de Datos para el Entrenamiento y Preprocesado de los Mismos}
+
+

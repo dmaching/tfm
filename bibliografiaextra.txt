@@ -1,0 +1,18 @@
+Sobre Generación de Escenarios con GANs (Lo más cercano a tu flujo):
+Kondratyev, A., & Schwarz, C. (2019). The Market Generator.
+
+Por qué te sirve: Es el paper seminal sobre usar RBMs y GANs para generar escenarios de mercado. Muy práctico.
+
+Wiese, M., et al. (2020). Quant GANs: Deep Generation of Financial Time Series.
+
+Por qué te sirve: Explican cómo capturar las "colas pesadas" y la volatilidad agrupada (volatility clustering) que Markowitz ignora.
+
+Sobre VAEs en Finanzas:
+Guo, J., et al. (2022). Portfolio Optimization with Variational Autoencoders.
+
+Por qué te sirve: Muestran cómo el espacio latente del VAE sirve para agrupar activos de forma más inteligente que la correlación simple.
+
+Sobre Entropía y KLD (Tu enfoque diferencial):
+Dionisio, A., et al. (2020). Entropy and Intensity of Risk in Financial Markets.
+
+Por qué te sirve: Te da la base teórica para justificar por qué la Entropía/KLD es mejor métrica que la Varianza.
