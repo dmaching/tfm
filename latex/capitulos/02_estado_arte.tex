@@ -64,12 +64,22 @@ Mientras que la correlación es una medida de la relación lineal entre dos vari
 
 \section{Modelado Generativo}
 
+Para superar las limitaciones de la Teoría Clásica a la hora de gestionar la complejidad subyacente a los mercados financieros, se propone el uso de modelos generativos.
 
+Los modelos generativos permiten aprender directamente de la distribución subyacente de los datos, sin necesidad de supuestos previos. Este enfoque resulta especialmente útil para modelar colas pesadas, asimetrías y dependencias no lineales presentes en los precios de activos.
 
 \subsection{Autoencoders Variacionales (VAEs)}
 
+Los Autoencoders Variacionales (VAEs), introducidos por \cite{kingma2013auto}, son un tipo de modelos generativos que reconstruyen la distribución de los datos empleando métodos probabilísticos para aprender un espacio latente comprimido y estructurado. 
 
+El concepto fundamental de los VAEs, es que la distribución de los datos se puede explicar mediante un espacio de menor dimensión formado por factores ocultos que capturan relaciones subyacentes en los datos originales. 
+
+Desde el punto de vista económico, los VAEs permiten imbuir al modelo de selección de activos con componentes no lineales, permitiendo capturar relaciones complejas entre activos.
 
 \subsection{Redes Generativas Adversarias (GANs)}
 
+Las Redes Generativas Adversarias (GANs), introducidas en \cite{NIPS2016_8a3363ab}, son un tipo de modelos generativos que aprenden a generar datos realistas mediante un proceso de aprendizaje adversario.
 
+El concepto fundamental de las GANs, es que el generador ($G$) aprende a generar datos realistas mediante un proceso de aprendizaje adversario con el discriminador ($D$).
+
+El entrenamiento de las GANs consiste en encontrar un equilibrio de Nash para un juego de dos jugadores, el generador y el discriminador, en un escenario no cooperativo. 
