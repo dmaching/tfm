@@ -1,9 +1,34 @@
 \chapter{Introducción}
 
+El Mercado Financiero, entendido como el espacio en el cual se compran y se venden activos financieros (acciones, bonos, divisas, materias primas y criptomonedas principalmente), es el sujeto de estudio perfecto para poner en práctica el uso de tecnologías Big Data.
+
+Las tecnologías Big Data se definen como las herramientas que permiten gestionar, almacenar y analizar conjuntos de datos masivos, que superan a la capacidad tradicional.
+
+Desde los comienzos de la teoría económica moderna, se considera al Mercado Financiero como un sistema caótico. A diferencia de un sistema puramente aleatorio, un sistema caótico presenta patrones y reglas subyacentes que permiten hacer predicciones sobre el mismo.
+
+El caos se caracteriza por la complejidad. En un sistema caótico, las variables presentan relaciones no lineales, a menudo difíciles de detecar a simple vista. Esto deriva en la impredicibilidad del sistema, puesto que pequeñas variaciones en las condiciones iniciales pueden llevar a resultados completamente diferentes.
+
+El Mercado Financiero además es un sistema de nivel dos, por lo tanto, las propias predicciones que se realizan sobre el mismo influyen en los resultados que se obtienen.
+
+En el presente trabajo, se propone abordar el problema de confeccionar una cartera de inversión, esto es, un subconjunto de los activos financieros disponibles, de la mejor manera posible. 
+
+\cite{markowitz1952} introduce el modelo de media-varianza como la mejor manera de gestionar la cartera de inversión. Este modelo se fundamenta en el principio del riesgo-rendimiento, buscando para un riesgo determinado, el cuál el inversor asume, maximizar el rendimiento esperado.m 
+
+Con el uso de las tecnologías Big Data, en particular, con el uso de modelos generativos \textbf{Autoencoders Variacionales (VAEs)} y \textbf{Redes Generativas Adversarias (GANs)}, se propone una aproximación a la confección de carteras desde una perspectiva no lineal. 
+
 \section{Motivación}
 La gestión de carteras de inversión ha estado dominada durante décadas por la Teoría de Cartera Moderna (MPT), introducida por \cite{markowitz1952}. Este marco teórico se fundamenta en la optimización media-varianza, bajo el supuesto de que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica en el análisis de datos masivos financieros demuestra que los mercados reales presentan características que este modelo no logra capturar: la curtosis excesiva (colas pesadas), la asimetría y la volatilidad estocástica.
 
-En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa un riesgo sistémico. Los eventos de "extremo" ocurren con una frecuencia mayor en la realidad, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{salimans2016} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos sin supuestos previos.
+En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa un riesgo sistémico. Los eventos de ``extremo'' ocurren con una frecuencia mayor en la realidad, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{NIPS2016_8a3363ab} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos sin supuestos previos.
+
+\section{Objetivos}
+Los objetivos de este trabajo son los siguientes:
+\begin{enumerate}
+    \item Diseñar e implementar una arquitectura VAE para la reducción de dimensionalidad y búsqueda de relaciones subyacentes no lineales en datos de series históricas del S\&P 500.
+    \item Entrenar una red GAN que sintetice escenarios de mercado preservando las cualidades encontradas en el espacio latente.
+    \item Validación de la calidad de los escenarios generados mediante la Divergencia de Kullback-Leibler como métrica de riesgo.
+    \item Comparar el rendimiento de la cartera resultante con el modelo de Markowitz mediante el ratio de Sharpe y métricas de error de reconstrucción.
+\end{enumerate}
 
 \section{Planteamiento del trabajo}
 El presente Trabajo de Fin de Máster propone una metodología híbrida que integra el modelado generativo y la teoría de la información. El núcleo de la investigación se divide en tres fases:
