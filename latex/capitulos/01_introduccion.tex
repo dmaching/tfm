@@ -19,20 +19,28 @@ Con el uso de las tecnologías Big Data, en particular, con el uso de modelos ge
 \section{Motivación}
 La gestión de carteras de inversión ha estado dominada durante décadas por la Teoría de Cartera Moderna (MPT), introducida por \cite{markowitz1952}. Este marco teórico se fundamenta en la optimización media-varianza, bajo el supuesto de que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica en el análisis de datos masivos financieros demuestra que los mercados reales presentan características que este modelo no logra capturar: la curtosis excesiva (colas pesadas), la asimetría y la volatilidad estocástica.
 
-En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa un riesgo sistémico. Los eventos de ``extremo'' ocurren con una frecuencia mayor en la realidad, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{NIPS2016_8a3363ab} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos sin supuestos previos.
+En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa un riesgo sistémico. Los eventos de ``extremo'' ocurren con una frecuencia mayor en la realidad, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{NIPS2016_8a3363ab} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos, pero esta vez libre de modelos.
+
+Frente a otras aproximaciones, como el uso de modelos de Machine Learning o Sistemas de Ecuaciones Diferenciales, los modelos generativos no son deterministas. Estos modelos se adaptan a los datos, siendo flexibles frente a cambios drásticos.
 
 \section{Objetivos}
-Los objetivos de este trabajo son los siguientes:
+El objetivo general del trabajo es proponer un nuevo sistema de selección de carteras de inversión. Para ello, se utilizarán modelos generativos para intentar superar a las carteras elegidas empleando métodos clásicos (Markowitz, carteras equiponderadas, etc.).
+
+Los objetivos específicos de este trabajo son los siguientes:
 \begin{enumerate}
     \item Diseñar e implementar una arquitectura VAE para la reducción de dimensionalidad y búsqueda de relaciones subyacentes no lineales en datos de series históricas del S\&P 500.
     \item Entrenar una red GAN que sintetice escenarios de mercado preservando las cualidades encontradas en el espacio latente.
     \item Validación de la calidad de los escenarios generados mediante la Divergencia de Kullback-Leibler como métrica de riesgo.
-    \item Comparar el rendimiento de la cartera resultante con el modelo de Markowitz mediante el ratio de Sharpe y métricas de error de reconstrucción.
+    \item Comparar el rendimiento de la cartera resultante frente a la cartera de Markowitz y a la cartera equiponderada mediante el ratio de Sharpe y métricas de error de reconstrucción.
 \end{enumerate}
 
-\section{Planteamiento del trabajo}
+\section{Planteamiento del trabajo} 
+
+La elección de esta arquitectura, como se exponía previamente, no busca predecir el precio futuro de los activos, sino generar diversos escenarios posibles para comprender el riesgo central subyacente de los mismos.
+
 El presente Trabajo de Fin de Máster propone una metodología híbrida que integra el modelado generativo y la teoría de la información. El núcleo de la investigación se divide en tres fases:
 \begin{enumerate}
+    \item Extracción de datos de series históricas del S\&P 500. Se propone la creación de un pipeline de datos que permita la implementación de la arquitectura propuesta.
     \item Uso de \textbf{Autoencoders Variacionales (VAEs)} para la reducción de dimensionalidad no lineal.
     \item Desarrollo de una \textbf{Red Generativa Adversaria (GAN)} para sintetizar escenarios de mercado realistas.
     \item Optimización de la cartera mediante la \textbf{Divergencia de Kullback-Leibler} como métrica de riesgo informativo.

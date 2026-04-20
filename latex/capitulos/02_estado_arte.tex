@@ -4,38 +4,45 @@ En este capítulo, se presenta una revisión de los principales enfoques existen
 
 
 \section{El Modelo de Media-Varianza de Markowitz}
+
 En 1952, Harry Markowitz introdujo el modelo de media-varianza para la optimización de carteras En el modelo de \cite{markowitz1952}, el autor toma la varianza como la media del riesgo. Definiendo cada activo como una variable aleatoria, teniendo en cosndieración el retorno esperado para un tiempo determinado, así como la variabilidad medida a través de la varianza de dicho retorno. De forma pionera, se desmiente la idea de que el inversor deba limitarse a buscar el máximo retorno esperado a la hora de confeccionar su cartera. Si uno se guía únicamente por esta premisa, Markowtiz nos muestra que no tiene en consideración el riesgo asociado a los activos seleccionados, así como la correlación entre los retornos de los mismos. 
 
+Es por ello que el artículo se centra en la optimización de carteras buscando aquellas combinaciones de activos que, para igual retorno esperado, minimicen la varianza, es decir, el riesgo. Por lo tanto, el problema de optimizar una cartera se reduce a encontrar máximos o mínimos dentro de una función de dos variables, fijando una de ellas. Teniendo en cuenta solo aquellas combinaciones de activos que se puedan realizar, las combinaciones deseadas forman lo que el autor denomina la frontera eficiente.
 
-Es por ello que el artículo se centra en la optimización de carteras buscando aquellas combinaciones de activos que, para igual retorno esperado, minimicen la varianza, es decir, el riesgo. Por lo tanto, el problema de optimizar una cartera se reduce a encontrar máximos o mínimos dentro de una función de dos variables, fijando una de ellas. Teniendo en cuenta solo aquellas combinaciones de activos que se puedan realizar, las combinaciones deseadas forman lo que el autor denomina la frontera eficiente. 
+Se establece la idea de que el inversor debe confeccionar su cartera buscando como objetivo no solo el máximo retorno esperado, sino considerando el riesgo asociado y valorando positivamente por lo tanto la diversificación entre diversos activos para mitigar el riesgo.
 
-Matemáticamente, el problema de optimización se puede formula como la maximización de la utilidad esperada, ponderando el retorno esperado frente al riesgo:
+Matemáticamente, el problema de optimización se puede formular como la maximización de la utilidad esperada, ponderando el retorno esperado frente al riesgo:
 
 \begin{equation} 
 \max_{w} \; w^\top \mu - \frac{\lambda}{2} \, w^\top \Sigma w 
 \quad \text{s.a.} \quad \mathbf{1}^\top w = 1
 \end{equation}
 
-Donde $\mu \in \mathbb{R}^n$ es el vector de retornos esperados, $w \in \mathbb{R}^n$ representa los pesos de los activos en la cartera, $\Sigma \in \mathbb{R}^{n \times n}$ es la matriz de varianzas-covarianzas y $\lambda > 0$ es el coeficiente de aversión al riesgo del inversor.
+En ella, el objetivo es determinar el vector de pesos ( w ) que maximiza la rentabilidad esperada de la cartera penalizada por su nivel de riesgo.
 
+En ella, el objetivo es determinar el vector de pesos $w$ que maximiza la rentabilidad esperada de la cartera penalizada por su nivel de riesgo.
+
+El primer término, $w^\top \mu$, representa la rentabilidad esperada de la cartera. Matemáticamente, se trata del producto escalar entre el vector de pesos $w \in \mathbb{R}^n$ y el vector de retornos esperados $\mu \in \mathbb{R}^n$, lo que equivale a una combinación lineal de los retornos esperados de los activos ponderados por su peso en la cartera.
+
+El segundo término, $\frac{\lambda}{2} w^\top \Sigma w$, introduce una penalización por riesgo. En este caso, $\Sigma \in \mathbb{R}^{n \times n}$ es la matriz de varianzas-covarianzas de los retornos, y la expresión cuadrática $w^\top \Sigma w$ representa la varianza de la cartera. El parámetro $\lambda > 0$ es el coeficiente de aversión al riesgo, que controla el equilibrio entre rentabilidad y riesgo: valores más altos de $\lambda$ implican una mayor penalización del riesgo y, por tanto, una preferencia por carteras más conservadoras.
+
+La restricción $\mathbf{1}^\top w = 1$ garantiza que la suma de los pesos sea igual a uno, lo que implica que se invierte la totalidad del capital disponible. Esta restricción define carteras totalmente invertidas y excluye la posibilidad de mantener capital sin asignar.
+
+En conjunto, este problema establece un compromiso entre maximizar la rentabilidad esperada y minimizar la varianza, constituyendo la base de la teoría moderna de carteras.
 
 \section{Limitaciones de la Teoría Clásica}
 Markowitz fue pionero, sin embargo su modelo presenta limitaciones aparentes, que con las herramientas actuales de análisis de datos, se pueden superar. 
 
 El modelo asume que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica muestra que no siempre se puede asumir la normalidad en los retornos de los activos. Por otro lado, las correlaciones entre activos financieros no son estáticas, sino que varían a lo largo del tiempo.
 
-En periodos de alta volatilidad, el modelo de Markowitz no es capaz de capturar los cambios en la correlación entre activos, lo que puede llevar a errores en la gestión de la cartera. 
-
-Esta limitación es especialmente relevante, teniendo en cuenta que dichos momentos son los que presentan una mayor oportunidad para el inversor. 
+En periodos de alta volatilidad, el modelo de Markowitz no es capaz de capturar los cambios en la correlación entre activos, lo que puede llevar a errores en la gestión de la cartera. Esta limitación es especialmente relevante, teniendo en cuenta que dichos momentos son los que presentan una mayor oportunidad para el inversor. 
 
 En este trabajo, se propone una metodología híbrida, que combine las bases teóricas tradicionales con el modelado generativo y la potencia de cálculo moderna.
 
 \section{Fundamentos de la Teoría de la Información}
-La identificación del riesgo con la varianza, limita la capacidad de los modelos tradicionales para capturar relaciones no lineales entre acitvos.
+La identificación del riesgo con la varianza, limita la capacidad de los modelos tradicionales para capturar relaciones no lineales entre acitvos. Como alternativa, se propone el uso de la teoría de la información, que propone un tratamiento heurístico del riesgo. Se propone el uso de la entropía como medida de la relación o explicabilidad de los rendimientos de un activo financiero mediante los de otros.
 
-Como alternativa, se propone el uso de la teoría de la información, que propone un tratamiento heurístico del riesgo. Se propone el uso de la entropía como medida de la relación o explicabilidad de los rendimientos de un activo financiero mediante los de otros.
-
-La entropía se define entonces como la medida de incertidumbre pura del mercado.
+De manera intuitiva, la entropía es la magnitud que trata de medir la incertidumbre de un sistema. Es, por lo tanto, la cantidad de ruido que contiene el mismo. La entropía se define entonces como la medida de incertidumbre pura del mercado.
 
 Siguiendo a \cite{cover2006elements} y entendiendo el retorno de un activo como una variable aleatoria, la entropía se define como:
 
@@ -43,7 +50,15 @@ Siguiendo a \cite{cover2006elements} y entendiendo el retorno de un activo como 
 H(X) = -\sum_{i=1}^n p(x_i) \log p(x_i)
 \end{equation}
 
-Donde $p(x_i)$ es la probabilidad de que el activo $i$ tenga un retorno $x_i$.
+Esta ecuación define la Entropía de Shannon, la cual constituye la unidad de medida fundamental de la incertidumbre en la Teoría de la Información. En el contexto de este trabajo, su interpretación y componentes se detallan a continuación:
+
+\begin{itemize}
+    \item $H(X)$ representa la entropía de la varibale aleatoria $X$ (los retornos del activo). No se debe interpretar como una medida de riesgo lineal, sino como una medida de dispersión de la información. Una entropía elevada indica que los retornos están muy distribuidos y son menos predecibles, mientras que una entropía baja sugiere una mayor concentración de la probabilidad en valores específicos.
+    \item $p(x_i)$ es la función de masa de probabilidad del retorno $x_i$. Indica la probabilidad de que el activo presente un rendmiento específico.
+    \item $\log p(x_i)$ es el logaritmo de la probabilidad de que el activo $i$ tenga un retorno $x_i$. La elección del logaritmo es una cuestión técnica, permite que la medida sea aditiva. Matemáticamente, los eventos menos probables, aportan una mayor cantidad de información sorpresa a la sumatoria. La naturaleza del logaritmo y de la probabilidad, siendo un número entre 0 y 1, hace que el logaritmo sea una cantidad negativa.
+\end{itemize}
+
+A diferencia de la varianza, la entropía captura la complejidad estructural de la distribución de los retornos de un activo. Al maximizar la entropía en la selección de carteras, bajo el principio de Máxima Entropía, se busca una distribución que sea compatible con los datos observados pero que no asuma información adicional inexistente, reduciendo así el sesgo del modelo ante regímenes de mercado desconocidos.
 
 Para medir la discrepancia entre dos distribuciones, se propone el uso de la divergencia de Kullback-Leibler (KLD), definida como:
 
