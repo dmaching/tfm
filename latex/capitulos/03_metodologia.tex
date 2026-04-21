@@ -2,14 +2,19 @@
 
 En este capítulo, se presentan los objetivos concretos y la metodología de trabajo seguida para la realización del presente trabajo de investigación. Se detalla el diseño experimental y la lógica de construcción de la arquitectura híbrida VAE-GAN. Asimismo, se presentan los fundamentos teóricos que justican el empleo de dichas aproximaciones. Se describe el proceso de preprocesamiento de datos, la formalización matemática de las funciones de pérdida y el protocolo de validación para la selección de carteras.
 
-\section{Definición del Problema y Métricas de Evaluación}
-\cite{markowitz1952} cierra su introducción a la teoría de la cartera moderna afirmando que en el uso de la regla de esperanza-varianza, el inversor debe, en su opinión,combinar procedimientos estadísticos y el jucio del hombre práctico.
+\section{Adquisición de Datos y Preprocesamiento de los Mismos}
 
-En el presente trabajo, se propone no solo ampliar el objetivo del inversor, considerando la entropía como medida del riesgo capaz de revelar relaciones no lineales entre activos, sino que también se propone ampliar las herramientas de evaluación del mercado. 
+Parte fundamental para realizar el experimiento que se propone es la adquisición de datos reales para poder llevar a cabo un estudio relevante.
 
-El objetivo de este informe es generar escenarios sintéticos mediante técnicas de aprendizaje profundo, de modo que se minimice la $D_{KL}$ entre la distribución de los retornos históricos (reales) y la distribución de los retornos generados (sintéticos). Esto garantiza que el modelo no solo optimiza el rendimiento, sino que replica fielmente la estructura estadística del mercado.
+Empleando la herramienta yfinance se creará un pipeline de datos para adquirir datos de series históricas de los últimos 10 años de los principales activos del S\&P 500.
+
+Se emplearán estos datos por su relevancia. El mercado estadounidense es sin duda el más importante en cuanto a capitalización de mercado. Este índice agrupa a las 500 mayores empresas de Estados Unidos. Con alta diversificación, un rendimiento histórico anual compuesto de más del 11\% y las empresas más grandes y con mayores beneficios del mundo. Se considera un escenario fundamental para cualquier inversor independientemente del tamaño de su cartera y su aversión al riesgo.
+
+Para el preprocesado, se ha aplicado una normalización Min-Max tras un tratamiento de valores atípicos (\textit{outliers}). Este escalado al rango [0, 1] es crítico para asegurar la estabilidad numérica de las funciones de activación de las redes neuronales y evitar la explosión del gradiente durante el entrenamiento del VAE y la GAN.
 
 \section{Arquitectura del Sistema Propuesto}
+
+Una vez habiendo extraído los datos, se elaborará una estructura en línea con lo expuesto en los apartados previos.
 
 La arquitectura propuesta para el modelo se articula en tres módulos independientes:
 \begin{itemize}
@@ -104,6 +109,7 @@ o, de forma equivalente, separando sus componentes principales:
 \end{equation}
 
 Esta formulación revela dos términos fundamentales:
+
 \begin{itemize}
      \item Un término de regularización, que fuerza la distribución latente aproximada $q_{\phi}(z|x)$ a mantenerse cercana a la probabilidad a priori $p(z)$.
      \item Un término de reconstrucción, que mide la capacidad del modelo generativo para reproducir los datos observados a partir de las variables latentes.
@@ -115,10 +121,12 @@ No obstante, la optimización presenta dificultades prácticas. En particular, e
     z = \mu_{\phi}(x) + \sigma_{\phi}(x) \cdot \epsilon,
 \quad \epsilon \sim \mathcal{N}(0, I)
 \end{equation}
+
 Esta reformulación permite trasladar la fuente de aleatoriedad fuera de la red neuronal, haciendo posible aplicar técnicas estándar de optimización basadas en gradiente (backpropagation) con estimadores de baja varianza.
 
 En conjunto, este marco convierte el problema de inferencia variacional en uno de optimización eficiente, permitiendo el entrenamiento conjunto del encoder y el decoder dentro de una arquitectura diferenciable end-to-end.
 
+En secciones posteriores se describen cada una de las etapas, así como la validación final de la cartera mediante la comparación con diferentes modelos de elaboración de carteras.
 
 \section{Generación y Selección de Pesos}
 
@@ -127,11 +135,5 @@ Una vez estructurado el Espacio Latente, se procede a la generación de escenari
 El Discriminador sustituye pues en el enfoque moderno a lo que \cite{markowitz1952} denominaba como el juicio del hombre práctico. El Generador entrena para buscar escenarios que sean indistinguibles de la realidad, utilizando la estructura latente previamente establecida así como ruido aleatorio introducido en la entrada. 
 
 Por lo tanto, tenemos un juego minimax de suma cero donde el objetivo es alcanzar un equilibrio de Nash. En este escenario, el Generador ($G$) busca maximizar la probabilidad de error del Discriminador ($D$), mientras que este último se optimiza para distinguir con precisión entre la distribución de datos reales $p_{data}$ y la distribución sintética $p_g$.
-
-\section{Elección de Datos y Preprocesamiento}
-
-Los datos empleados para el entrenamiento proceden de los retornos históricos de las empresas integrantes del índice S\&P 500, obtenidos a través de la API de Yahoo Finance. La selección de este universo se justifica por la representatividad del mercado estadounidense y su alta capitalización, lo que ofrece un entorno con suficiente liquidez y profundidad estadística para el entrenamiento de arquitecturas generativas, en línea con estudios recientes de la industria \cite{rasekhschaffe2026}.
-
-Para el preprocesado, se ha aplicado una normalización Min-Max tras un tratamiento de valores atípicos (\textit{outliers}). Este escalado al rango [0, 1] es crítico para asegurar la estabilidad numérica de las funciones de activación de las redes neuronales y evitar la explosión del gradiente durante el entrenamiento del VAE y la GAN.
 
 \section{Herramientas y Tecnologías Utilizadas}

@@ -88,16 +88,32 @@ Los modelos generativos permiten aprender directamente de la distribución subya
 
 \subsection{Autoencoders Variacionales (VAEs)}
 
-Los Autoencoders Variacionales (VAEs), introducidos por \cite{kingma2013auto}, son un tipo de modelos generativos que reconstruyen la distribución de los datos empleando métodos probabilísticos para aprender un espacio latente comprimido y estructurado. 
+Los Autoencoders Variacionales (VAEs), introducidos por \cite{kingma2013auto}, representan una evolución respecto a los autoencoders tradicionales, al transitar de un aprendizaje determinista a uno probabilístico. Mientras que un autoencoder convencional mapea los datos a un punto fijo en el espacio latente, el VAE mapea la entrada a una distribución de probabilidad, generalmente una Gaussiana multivariante.
 
-El concepto fundamental de los VAEs es que la distribución de los datos se puede explicar mediante un espacio de menor dimensión formado por factores ocultos que capturan relaciones subyacentes en los datos originales. 
+La arquitectura se divide en dos componentes críticos: el Encoder (codificador) y el Decoder (decodificador). El codificador extrae una representación comprimida de los retornos financieros, definiendo los parámetros de la distribución latente: la media $\mu$ y la varianza $\sigma$. Para permitir el entrenamiento mediante retropropagación, se emplea el \textit{reparameterization trick}, donde el vector latente $z$ se calcula como:
 
-Desde el punto de vista económico, los VAEs permiten imbuir al modelo de selección de activos con componentes no lineales, permitiendo capturar relaciones complejas entre activos.
+\begin{equation}
+    z = \mu + \sigma \odot \epsilon, \quad \text{donde } \epsilon \sim \mathcal{N}(0, I)
+\end{equation}
+
+Desde una perspectiva económica, esta estructura permite filtrar el ruido propio del mercado, reteniendo únicamente los factores latentes o ``señales estructurales'' que explican el comportamiento conjunto de los activos. La función de pérdida del VAE, conocida como ELBO (Evidence Lower Bound), equilibra la precisión de la reconstrucción de los datos con un término de regularización basado en la divergencia de Kullback-Leibler, garantizando que el espacio latente sea continuo y estructurado, evitando así el sobreajuste a eventos ruidosos transitorios.
 
 \subsection{Redes Generativas Adversarias (GANs)}
 
-Las Redes Generativas Adversarias (GANs), introducidas en \cite{NIPS2016_8a3363ab}, son un paradigma de modelos generativos que aprenden a generar datos realistas mediante un proceso de aprendizaje adversario.
+Las Redes Generativas Adversarias (GANs), propuestas por \cite{NIPS2016_8a3363ab}, introducen un paradigma de aprendizaje basado en la teoría de juegos. A diferencia de otros modelos, las GANs no maximizan una verosimilitud explícita, sino que establecen una competición entre dos redes neuronales: el Generador ($G$) y el Discriminador ($D$).
 
-El concepto fundamental de las GANs, es que el generador ($G$) aprende a generar datos realistas mediante un proceso de aprendizaje adversario con el discriminador ($D$).
+En el contexto financiero, el Generador intenta sintetizar series temporales de retornos que sean estadísticamente indistinguibles de los reales, mientras que el Discriminador se entrena para identificar si una muestra proviene del conjunto de datos histórico ($p_{data}$) o si ha sido creada artificialmente ($p_g$). Este proceso se formaliza mediante una función de valor minimax $V(D, G)$:
 
-El entrenamiento de las GANs se define como un juego minimax de suma cero donde el objetivo es alcanzar un equilibrio de Nash. En este escenario, el Generador ($G$) busca maximizar la probabilidad de error del Discriminador ($D$), mientras que este último se optimiza para distinguir con precisión entre la distribución de datos reales $p_{data}$ y la distribución sintética $p_g$.
+\begin{equation}
+    \min_{G} \max_{D} V(D, G) = \mathbb{E}{x \sim p{data}(x)}[\log D(x)] + \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
+\end{equation}
+
+La gran ventaja de las GANs para la optimización de carteras radica en su capacidad para capturar momentos de orden superior (asimetría y curtosis) sin necesidad de definirlos manualmente. Al alcanzar un equilibrio de Nash, el generador es capaz de producir escenarios de ``estrés'' realistas que no están presentes de forma idéntica en el pasado, pero que son estadísticamente posibles, proporcionando una base mucho más robusta para el cálculo del riesgo que la simple matriz de covarianza. Sin embargo, su entrenamiento presenta desafíos como el \textit{mode collapse}, lo que justifica en este trabajo el uso de una arquitectura híbrida con VAE para estabilizar el aprendizaje.
+
+\subsection{Estado del Arte Reciente: Modelos de Difusión}
+
+En los últimos dos años, el modelado generativo ha experimentado un cambio de paradigma hacia los Score-based Diffusion Models. Tal como proponen \cite{aghapour2025solving}, estos modelos superan algunas de las inestabilidades de las GANs al aprender a revertir un proceso de difusión estocástica.
+
+El principio fundamental consiste en destruir gradualmente la estructura de los retornos financieros añadiendo ruido Gaussiano hasta obtener ruido blanco, para después entrenar una red neuronal que aprenda a ``des-ruidizar'' el proceso. Este enfoque permite una generación de escenarios estable y diversificada.
+
+\cite{aghapour2025solving} demuestra que, al aplicar modelos de difusión a problemas de selección dinámica de carteras, es posible obtener resultados que baten sistemáticamente a los índices de referencia (como el S\&P 500) y a las carteras de Markowitz tradicionales. Esta metodología es innovadora, siendo estos estudios relativamente recientes. Permite modelar la evolución temporal de los activos con una fidelidad superior, capturando la dependencia temporal y el agrupamiento de volatilidad (\textit{volatility clustering}) de manera orgánica y no paramétrica.
