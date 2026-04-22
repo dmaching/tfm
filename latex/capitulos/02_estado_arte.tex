@@ -35,7 +35,9 @@ Markowitz fue pionero, sin embargo su modelo presenta limitaciones aparentes, qu
 
 El modelo asume que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica muestra que no siempre se puede asumir la normalidad en los retornos de los activos. Por otro lado, las correlaciones entre activos financieros no son estáticas, sino que varían a lo largo del tiempo.
 
-En periodos de alta volatilidad, el modelo de Markowitz no es capaz de capturar los cambios en la correlación entre activos, lo que puede llevar a errores en la gestión de la cartera. Esta limitación es especialmente relevante, teniendo en cuenta que dichos momentos son los que presentan una mayor oportunidad para el inversor. 
+En periodos de alta volatilidad, el modelo de Markowitz no es capaz de capturar los cambios en la correlación entre activos, lo que puede llevar a errores en la gestión de la cartera. Esta limitación es especialmente relevante, teniendo en cuenta que dichos momentos son los que presentan una mayor oportunidad para el inversor.
+
+El modelo es incapaz de considerar relaciones de orden superior, al asumir la varianza como medida de riesgo. Para capturar la distribución completa, es necesario ir más allá del método media-varianza.
 
 En este trabajo, se propone una metodología híbrida, que combine las bases teóricas tradicionales con el modelado generativo y la potencia de cálculo moderna.
 
@@ -98,6 +100,21 @@ La arquitectura se divide en dos componentes críticos: el Encoder (codificador)
 
 Desde una perspectiva económica, esta estructura permite filtrar el ruido propio del mercado, reteniendo únicamente los factores latentes o ``señales estructurales'' que explican el comportamiento conjunto de los activos. La función de pérdida del VAE, conocida como ELBO (Evidence Lower Bound), equilibra la precisión de la reconstrucción de los datos con un término de regularización basado en la divergencia de Kullback-Leibler, garantizando que el espacio latente sea continuo y estructurado, evitando así el sobreajuste a eventos ruidosos transitorios.
 
+La ecuación del ELBO es la siguiente:
+\begin{equation}
+    \mathcal{L}(\theta, \phi; \mathbf{x}) = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})} [\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \parallel p(\mathbf{z}))
+\end{equation}
+
+La ecuación anterior se descompone en dos términos fundamentales que rigen el aprendizaje del modelo:
+
+\begin{itemize}
+    \item \textbf{$\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})} [\log p_\theta(\mathbf{x}|\mathbf{z})]$ (Término de Reconstrucción):} Representa la log-verosimilitud esperada de los datos. En el contexto financiero, mide la capacidad del decodificador para reconstruir los retornos originales $\mathbf{x}$ a partir de las muestras del espacio latente $\mathbf{z}$. Un valor alto indica que el modelo preserva la información esencial del mercado.
+    
+    \item \textbf{$D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \parallel p(\mathbf{z}))$ (Regularizador de Divergencia KL):} Actúa como una penalización que mide la discrepancia entre la distribución posteria aprendida por el codificador y una distribución \textit{prior} (generalmente una Normal unitaria $\mathcal{N}(0,I)$). Este término garantiza que el espacio latente sea continuo y regular, evitando el colapso de la información y permitiendo la generación de nuevos escenarios coherentes.
+\end{itemize}
+
+En definitiva, en su intento por engañar al decodificador, el codificador aprende la estructura latente del mercado, modelando factores no observables y reduciendo la dimensionalidad del problema.
+
 \subsection{Redes Generativas Adversarias (GANs)}
 
 Las Redes Generativas Adversarias (GANs), propuestas por \cite{NIPS2016_8a3363ab}, introducen un paradigma de aprendizaje basado en la teoría de juegos. A diferencia de otros modelos, las GANs no maximizan una verosimilitud explícita, sino que establecen una competición entre dos redes neuronales: el Generador ($G$) y el Discriminador ($D$).
@@ -108,12 +125,12 @@ En el contexto financiero, el Generador intenta sintetizar series temporales de 
     \min_{G} \max_{D} V(D, G) = \mathbb{E}{x \sim p{data}(x)}[\log D(x)] + \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
 \end{equation}
 
-La gran ventaja de las GANs para la optimización de carteras radica en su capacidad para capturar momentos de orden superior (asimetría y curtosis) sin necesidad de definirlos manualmente. Al alcanzar un equilibrio de Nash, el generador es capaz de producir escenarios de ``estrés'' realistas que no están presentes de forma idéntica en el pasado, pero que son estadísticamente posibles, proporcionando una base mucho más robusta para el cálculo del riesgo que la simple matriz de covarianza. Sin embargo, su entrenamiento presenta desafíos como el \textit{mode collapse}, lo que justifica en este trabajo el uso de una arquitectura híbrida con VAE para estabilizar el aprendizaje.
+La gran ventaja de las GANs para la optimización de carteras radica en su capacidad para capturar momentos de orden superior (asimetría y curtosis) sin necesidad de definirlos manualmente. Al alcanzar un equilibrio de Nash, el generador es capaz de producir escenarios de ``estrés'' realistas que no están presentes de forma idéntica en el pasado, pero que son estadísticamente posibles, proporcionando una base mucho más robusta para el cálculo del riesgo que la simple matriz de covarianza. No es necesario asumir ninguna distribución en concreto, sino que se modelan directamente los datos observados, siendo esto particularmente útil para escenarios extremos. Sin embargo, su entrenamiento presenta desafíos como el \textit{mode collapse}, lo que justifica en este trabajo el uso de una arquitectura híbrida con VAE para estabilizar el aprendizaje.
 
 \subsection{Estado del Arte Reciente: Modelos de Difusión}
 
-En los últimos dos años, el modelado generativo ha experimentado un cambio de paradigma hacia los Score-based Diffusion Models. Tal como proponen \cite{aghapour2025solving}, estos modelos superan algunas de las inestabilidades de las GANs al aprender a revertir un proceso de difusión estocástica.
+En los últimos dos años, el modelado generativo ha experimentado un cambio de paradigma hacia los Score-based Diffusion Models. Tal como proponen \cite{aghapour2025solving}, estos modelos pueden superar algunas de las inestabilidades de las GANs al aprender a revertir un proceso de difusión estocástica.
 
-El principio fundamental consiste en destruir gradualmente la estructura de los retornos financieros añadiendo ruido Gaussiano hasta obtener ruido blanco, para después entrenar una red neuronal que aprenda a ``des-ruidizar'' el proceso. Este enfoque permite una generación de escenarios estable y diversificada.
+El principio fundamental consiste en destruir gradualmente la estructura de los retornos financieros añadiendo ruido Gaussiano hasta obtener ruido blanco, para después entrenar una red neuronal que aprenda a revertir el proceso de difusión. Este enfoque permite una generación de escenarios estable y diversificada.
 
-\cite{aghapour2025solving} demuestra que, al aplicar modelos de difusión a problemas de selección dinámica de carteras, es posible obtener resultados que baten sistemáticamente a los índices de referencia (como el S\&P 500) y a las carteras de Markowitz tradicionales. Esta metodología es innovadora, siendo estos estudios relativamente recientes. Permite modelar la evolución temporal de los activos con una fidelidad superior, capturando la dependencia temporal y el agrupamiento de volatilidad (\textit{volatility clustering}) de manera orgánica y no paramétrica.
+\cite{aghapour2025solving} demuestra que, al aplicar modelos de difusión a problemas de selección dinámica de carteras, es posible a priori obtener resultados que batan sistemáticamente a los índices de referencia (como el S\&P 500) y a las carteras de Markowitz tradicionales. Esta metodología es innovadora, siendo estos estudios relativamente recientes. Permite modelar la evolución temporal de los activos con una fidelidad aparentementesuperior, capturando la dependencia temporal y el agrupamiento de volatilidad (\textit{volatility clustering}) de manera orgánica y no paramétrica.

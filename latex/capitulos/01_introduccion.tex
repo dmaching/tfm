@@ -24,14 +24,14 @@ En el contexto actual de Big Data, la incapacidad de los modelos lineales para g
 Frente a otras aproximaciones, como el uso de modelos de Machine Learning o Sistemas de Ecuaciones Diferenciales, los modelos generativos no son deterministas. Estos modelos se adaptan a los datos, siendo flexibles frente a cambios drásticos.
 
 \section{Objetivos}
-El objetivo general del trabajo es proponer un nuevo sistema de selección de carteras de inversión. Para ello, se utilizarán modelos generativos para intentar superar a las carteras elegidas empleando métodos clásicos (Markowitz, carteras equiponderadas, etc.).
+El objetivo general del trabajo es proponer un método de selección de carteras de inversión innovador, capaz de ofrecer una alternativa a las carteras confeccionadas por métodos clásicos y hacer frente a otros métodos modernos, así como a los resultados obtenidos por grandes fondos de inversión.
 
-Los objetivos específicos de este trabajo son los siguientes:
+Para desarrollar el objetivo general, se proponen los siguientes objetivos específicos, que marcan los pasos a seguir:
 \begin{enumerate}
-    \item Diseñar e implementar una arquitectura VAE para la reducción de dimensionalidad y búsqueda de relaciones subyacentes no lineales en datos de series históricas del S\&P 500.
+    \item Diseñar e implementar una arquitectura VAE para la reducción de dimensionalidad y búsqueda de relaciones subyacentes no lineales en datos de series históricas de los principales (a determinar) activos del S\&P 500.
     \item Entrenar una red GAN que sintetice escenarios de mercado preservando las cualidades encontradas en el espacio latente.
     \item Validación de la calidad de los escenarios generados mediante la Divergencia de Kullback-Leibler como métrica de riesgo.
-    \item Comparar el rendimiento de la cartera resultante frente a la cartera de Markowitz y a la cartera equiponderada mediante el ratio de Sharpe y métricas de error de reconstrucción.
+    \item Comparar el rendimiento de la cartera resultante frente a carteras elegidas mediante otros métodos, en particular frente al método de media-varianza de Markowitz, carteras equiponderadas y carteras elaboradas históricamente por grandes fondos de inversión.
 \end{enumerate}
 
 \section{Planteamiento del trabajo} 

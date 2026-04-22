@@ -8,9 +8,13 @@ Parte fundamental para realizar el experimiento que se propone es la adquisició
 
 Empleando la herramienta yfinance se creará un pipeline de datos para adquirir datos de series históricas de los últimos 10 años de los principales activos del S\&P 500.
 
-Se emplearán estos datos por su relevancia. El mercado estadounidense es sin duda el más importante en cuanto a capitalización de mercado. Este índice agrupa a las 500 mayores empresas de Estados Unidos. Con alta diversificación, un rendimiento histórico anual compuesto de más del 11\% y las empresas más grandes y con mayores beneficios del mundo. Se considera un escenario fundamental para cualquier inversor independientemente del tamaño de su cartera y su aversión al riesgo.
+Se emplearán estos datos por su relevancia. El mercado estadounidense es sin duda el más importante en cuanto a capitalización de mercado. Este índice agrupa a las 500 mayores empresas de Estados Unidos. Con alta diversificación, un rendimiento histórico anual compuesto de más del 11\% y las empresas más grandes y con mayores beneficios del mundo, se considera un escenario fundamental para cualquier inversor independientemente del tamaño de su cartera y su aversión al riesgo.
 
 Para el preprocesado, se ha aplicado una normalización Min-Max tras un tratamiento de valores atípicos (\textit{outliers}). Este escalado al rango [0, 1] es crítico para asegurar la estabilidad numérica de las funciones de activación de las redes neuronales y evitar la explosión del gradiente durante el entrenamiento del VAE y la GAN.
+
+Asimismo, se llevarán a cabo todas las transformaciones que sean pertinentes para poder llevar a cabo los objetivos del trabajo.
+
+Se procurará establecer la trazabilidad de los datos, para asegurar que los mismos son de fuentes confiables.
 
 \section{Arquitectura del Sistema Propuesto}
 
