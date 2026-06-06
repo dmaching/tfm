@@ -1,50 +1,42 @@
 \chapter{Introducción}
 
-El Mercado Financiero, entendido como el espacio en el cual se compran y se venden activos financieros (acciones, bonos, divisas, materias primas y criptomonedas principalmente), es el sujeto de estudio perfecto para poner en práctica el uso de tecnologías Big Data.
+El mercado financiero, entendido como el espacio en el cual se compran y se venden activos financieros (acciones, bonos, divisas, materias primas y criptomonedas principalmente), constituye un ámbito de estudio especialmente adecuado para poner en práctica el uso de tecnologías Big Data.
 
-Las tecnologías Big Data se definen como las herramientas que permiten gestionar, almacenar y analizar conjuntos de datos masivos, que superan a la capacidad tradicional.
+Las tecnologías Big Data se definen como las herramientas que permiten gestionar, almacenar y analizar conjuntos de datos masivos que superan la capacidad de tratamiento tradicional.
 
-Desde los comienzos de la teoría económica moderna, se considera al Mercado Financiero como un sistema caótico. A diferencia de un sistema puramente aleatorio, un sistema caótico presenta patrones y reglas subyacentes que permiten hacer predicciones sobre el mismo.
+Desde los comienzos de la teoría económica moderna, se ha considerado el mercado financiero como un sistema caótico. A diferencia de un sistema puramente aleatorio, un sistema caótico presenta patrones y reglas subyacentes que permiten realizar determinadas predicciones sobre su comportamiento.
 
-El caos se caracteriza por la complejidad. En un sistema caótico, las variables presentan relaciones no lineales, a menudo difíciles de detecar a simple vista. Esto deriva en la impredicibilidad del sistema, puesto que pequeñas variaciones en las condiciones iniciales pueden llevar a resultados completamente diferentes.
+El caos se caracteriza por la complejidad. En un sistema caótico, las variables presentan relaciones no lineales, a menudo difíciles de detectar a simple vista. Esto deriva en la impredecibilidad del sistema, puesto que pequeñas variaciones en las condiciones iniciales pueden llevar a resultados completamente diferentes.
 
-El Mercado Financiero además es un sistema de nivel dos, por lo tanto, las propias predicciones que se realizan sobre el mismo influyen en los resultados que se obtienen.
+Además, el mercado financiero puede entenderse como un sistema de segundo orden, dado que las propias predicciones que se realizan sobre él pueden influir en los resultados que se obtienen.
 
-En el presente trabajo, se propone abordar el problema de confeccionar una cartera de inversión, esto es, un subconjunto de los activos financieros disponibles, de la mejor manera posible. 
+En el presente trabajo se propone abordar el problema de confeccionar una cartera de inversión, esto es, un subconjunto de los activos financieros disponibles, de forma eficiente.
 
-\cite{markowitz1952} introduce el modelo de media-varianza como la mejor manera de gestionar la cartera de inversión. Este modelo se fundamenta en el principio del riesgo-rendimiento, buscando para un riesgo determinado, el cuál el inversor asume, maximizar el rendimiento esperado.m 
+\cite{markowitz1952} introduce el modelo de media-varianza como una de las aproximaciones clásicas para la gestión de carteras de inversión. Este modelo se fundamenta en el principio riesgo-rendimiento, buscando maximizar el rendimiento esperado para un determinado nivel de riesgo asumido por el inversor.
 
-Con el uso de las tecnologías Big Data, en particular, con el uso de modelos generativos \textbf{Autoencoders Variacionales (VAEs)} y \textbf{Redes Generativas Adversarias (GANs)}, se propone una aproximación a la confección de carteras desde una perspectiva no lineal. 
+Con el uso de tecnologías Big Data y, en particular, con el uso de modelos generativos como los \textbf{Autoencoders Variacionales (VAEs)} y las \textbf{Redes Generativas Adversarias (GANs)}, se propone una aproximación a la confección de carteras desde una perspectiva no lineal.
 
 \section{Motivación}
+
 La gestión de carteras de inversión ha estado dominada durante décadas por la Teoría de Cartera Moderna (MPT), introducida por \cite{markowitz1952}. Este marco teórico se fundamenta en la optimización media-varianza, bajo el supuesto de que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica en el análisis de datos masivos financieros demuestra que los mercados reales presentan características que este modelo no logra capturar: la curtosis excesiva (colas pesadas), la asimetría y la volatilidad estocástica.
 
-En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa un riesgo sistémico. Los eventos de ``extremo'' ocurren con una frecuencia mayor en la realidad, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{NIPS2016_8a3363ab} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos, pero esta vez libre de modelos.
+En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa una limitación relevante. Los eventos extremos ocurren con una frecuencia mayor en la realidad de la que predeciría un modelo normal, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{NIPS2016_8a3363ab} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos sin imponer una forma paramétrica rígida.
 
-Frente a otras aproximaciones, como el uso de modelos de Machine Learning o Sistemas de Ecuaciones Diferenciales, los modelos generativos no son deterministas. Estos modelos se adaptan a los datos, siendo flexibles frente a cambios drásticos.
+Frente a otras aproximaciones, como el uso de modelos de Machine Learning o sistemas de ecuaciones diferenciales, los modelos generativos permiten trabajar desde una perspectiva probabilística. Estos modelos se adaptan a los datos y ofrecen flexibilidad frente a cambios drásticos.
 
-\section{Objetivos}
-El objetivo general del trabajo es proponer un método de selección de carteras de inversión innovador, capaz de ofrecer una alternativa a las carteras confeccionadas por métodos clásicos y hacer frente a otros métodos modernos, así como a los resultados obtenidos por grandes fondos de inversión.
+\section{Planteamiento del trabajo}
 
-Para desarrollar el objetivo general, se proponen los siguientes objetivos específicos, que marcan los pasos a seguir:
+La elección de esta arquitectura, como se exponía previamente, no busca predecir el precio futuro de los activos, sino generar diversos escenarios posibles para comprender el riesgo subyacente de los mismos.
+
+El presente Trabajo de Fin de Máster propone una metodología híbrida que integra el modelado generativo y la teoría de la información. El núcleo de la investigación se divide en cuatro fases:
+
 \begin{enumerate}
-    \item Diseñar e implementar una arquitectura VAE para la reducción de dimensionalidad y búsqueda de relaciones subyacentes no lineales en datos de series históricas de los principales (a determinar) activos del S\&P 500.
-    \item Entrenar una red GAN que sintetice escenarios de mercado preservando las cualidades encontradas en el espacio latente.
-    \item Validación de la calidad de los escenarios generados mediante la Divergencia de Kullback-Leibler como métrica de riesgo.
-    \item Comparar el rendimiento de la cartera resultante frente a carteras elegidas mediante otros métodos, en particular frente al método de media-varianza de Markowitz, carteras equiponderadas y carteras elaboradas históricamente por grandes fondos de inversión.
-\end{enumerate}
-
-\section{Planteamiento del trabajo} 
-
-La elección de esta arquitectura, como se exponía previamente, no busca predecir el precio futuro de los activos, sino generar diversos escenarios posibles para comprender el riesgo central subyacente de los mismos.
-
-El presente Trabajo de Fin de Máster propone una metodología híbrida que integra el modelado generativo y la teoría de la información. El núcleo de la investigación se divide en tres fases:
-\begin{enumerate}
-    \item Extracción de datos de series históricas del S\&P 500. Se propone la creación de un pipeline de datos que permita la implementación de la arquitectura propuesta.
-    \item Uso de \textbf{Autoencoders Variacionales (VAEs)} para la reducción de dimensionalidad no lineal.
-    \item Desarrollo de una \textbf{Red Generativa Adversaria (GAN)} para sintetizar escenarios de mercado realistas.
-    \item Optimización de la cartera mediante la \textbf{Divergencia de Kullback-Leibler} como métrica de riesgo informativo.
+\item Extracción de datos de series históricas del S\&P 500. Se propone la creación de un pipeline de datos que permita la implementación de la arquitectura propuesta.
+\item Uso de \textbf{Autoencoders Variacionales (VAEs)} para la reducción de dimensionalidad no lineal.
+\item Desarrollo de una \textbf{Red Generativa Adversaria (GAN)} para sintetizar escenarios de mercado realistas.
+\item Optimización de la cartera mediante la \textbf{Divergencia de Kullback-Leibler} como métrica de riesgo informativo.
 \end{enumerate}
 
 \section{Estructura del trabajo}
-La memoria se organiza de la siguiente manera: el Capítulo 2 revisa el estado del arte; el Capítulo 3 detalla la metodología y objetivos; el Capítulo 4 expone el marco normativo; el Capítulo 5 desarrolla de forma específica la contribución; el Capítulo 6 describe el código fuente y los datos analizados; el Capítulo 7 recoge las conclusiones; y el Capítulo 8 aborda limitaciones y prospectiva.
+
+La memoria se organiza de la siguiente manera: el Capítulo 2 presenta los objetivos del trabajo, diferenciando entre el objetivo general, los objetivos específicos y el alcance de la investigación. El Capítulo 3 desarrolla el marco teórico, introduciendo la teoría moderna de carteras, el modelo de media-varianza de Markowitz, la teoría de la información y los principales modelos generativos considerados. El Capítulo 4 revisa el estado del arte, analizando los enfoques existentes en optimización de carteras, aprendizaje automático aplicado a finanzas y modelado generativo de series financieras. El Capítulo 5 describe la metodología propuesta, incluyendo la adquisición y el preprocesamiento de datos, la arquitectura VAE-GAN, la generación de escenarios sintéticos y los criterios de comparación. El Capítulo 6 recoge las herramientas y tecnologías empleadas. El Capítulo 7 expone el marco normativo, ético y de protección de datos. El Capítulo 8 presenta la planificación del trabajo. Finalmente, el Capítulo 9 recoge las conclusiones del estudio.

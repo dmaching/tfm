@@ -1,1 +1,37 @@
+\clearpage
 \chapter{Objetivos}
+
+\section{Objetivo general}
+
+El objetivo principal del trabajo es diseñar una metodología para la optimización de carteras basada en la generación de escenarios sintéticos mediante técnicas de inteligencia artificial.
+
+En concreto, la metodología propuesta se orienta al análisis de retornos financieros de activos pertenecientes al S\&P 500, empleando una arquitectura híbrida VAE-GAN. El propósito es estudiar si la generación de escenarios sintéticos puede proporcionar una base alternativa para la construcción de carteras, especialmente frente a enfoques clásicos basados en supuestos lineales y medidas de riesgo tradicionales.
+
+Para ello, se plantea comparar los resultados obtenidos mediante la metodología propuesta con carteras construidas a partir del modelo de media-varianza de Markowitz y con una cartera equiponderada. De este modo, se busca evaluar si el uso de modelos generativos puede aportar información adicional en el proceso de asignación de pesos, especialmente en contextos donde los retornos financieros presentan colas pesadas, asimetrías y dependencias no lineales.
+
+\section{Objetivos específicos}
+
+A continuación, se detallan los objetivos específicos que guiarán el desarrollo del trabajo:
+
+\begin{itemize}
+    \item Revisar la teoría moderna de carteras y el modelo de media-varianza de Markowitz como base clásica de la optimización de carteras.
+    \item Analizar las limitaciones de la varianza y de la matriz de covarianzas como medidas suficientes para representar el riesgo financiero.
+    \item Estudiar conceptos relevantes de la teoría de la información, como la entropía, la divergencia de Kullback-Leibler y la información mutua, en relación con el análisis de distribuciones de retornos.
+    \item Revisar los fundamentos de los modelos generativos profundos, especialmente VAE, GAN, WGAN y modelos de difusión.
+    \item Construir un pipeline de adquisición de datos financieros de activos pertenecientes al S\&P 500.
+    \item Preprocesar los datos financieros para su uso posterior, incluyendo el tratamiento de precios ajustados, cálculo de log-retornos, limpieza de datos y normalización.
+    \item Diseñar una arquitectura VAE para obtener una representación latente de la distribución de retornos financieros.
+    \item Diseñar una arquitectura GAN o WGAN para la generación de escenarios sintéticos de mercado.
+    \item Evaluar la calidad de los escenarios generados mediante métricas estadísticas e informacionales.
+    \item Comparar las carteras obtenidas mediante la metodología propuesta con carteras construidas mediante el modelo de Markowitz, una cartera equiponderada y el índice S\&P 500 como benchmark.
+\end{itemize}
+
+\section{Alcance y delimitación del trabajo}
+
+Este trabajo tiene un carácter académico y experimental. No pretende ofrecer una recomendación de inversión ni una propuesta de asignación de capital a valores concretos. Tampoco busca predecir de forma puntual los precios futuros de determinados activos financieros. Su objetivo se centra en estudiar la generación de escenarios sintéticos de retornos y su posible utilización dentro de un proceso de optimización de carteras.
+
+El ámbito de aplicación se limita a un conjunto de activos financieros pertenecientes al S\&P 500. La selección final de activos dependerá de la disponibilidad, calidad y completitud de los datos históricos, así como de la capacidad de procesamiento disponible para entrenar los modelos propuestos.
+
+Asimismo, el trabajo estará condicionado por la frecuencia temporal de los datos utilizados y por las decisiones adoptadas en el preprocesamiento, tales como el cálculo de retornos, el tratamiento de valores ausentes, la normalización y la división entre conjuntos de entrenamiento y evaluación.
+
+Los resultados obtenidos deberán interpretarse como evidencia experimental dentro del marco definido en este trabajo. En ningún caso deben entenderse como garantía de rendimiento futuro ni como recomendación financiera aplicable directamente a decisiones reales de inversión.

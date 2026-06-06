@@ -1,136 +1,56 @@
+\clearpage
 \chapter{Estado del Arte}
 
-En este capítulo, se presenta una revisión de los principales enfoques existentes en la literatura para la optimización de carteras y el uso de técnicas de aprendizaje automático en finanzas. En primer lugar, se presentan los métodos clásicos basados en la media-varianza. A continuación, se introducen los enfoques de aprendizaje automático y aprendizaje profundo aplicados al análsis financiero. Finalmente, se presentan los modelos generativos, como una línea de investigación emergente con potencial para abordar las limitaciones de los enfoques tradicionales.
+En este capítulo se revisan los principales trabajos y líneas de investigación relacionados con la optimización de carteras y el uso de modelos de aprendizaje automático y modelado generativo en finanzas. A diferencia del marco teórico, cuyo objetivo es presentar los conceptos fundamentales, el estado del arte se centra en identificar qué enfoques han sido propuestos previamente, qué limitaciones presentan y en qué punto se sitúa la contribución planteada en este trabajo.
 
+\section{Optimización clásica de carteras}
 
-\section{El Modelo de Media-Varianza de Markowitz}
+La optimización clásica de carteras tiene como punto de partida el trabajo de Markowitz, quien introduce el modelo de media-varianza como una formulación matemática para la selección de carteras de inversión \cite{markowitz1952}. La aportación fundamental de este enfoque consiste en establecer que la elección de activos no debe basarse únicamente en la maximización del retorno esperado, sino también en el control del riesgo asociado a la cartera.
 
-En 1952, Harry Markowitz introdujo el modelo de media-varianza para la optimización de carteras En el modelo de \cite{markowitz1952}, el autor toma la varianza como la media del riesgo. Definiendo cada activo como una variable aleatoria, teniendo en cosndieración el retorno esperado para un tiempo determinado, así como la variabilidad medida a través de la varianza de dicho retorno. De forma pionera, se desmiente la idea de que el inversor deba limitarse a buscar el máximo retorno esperado a la hora de confeccionar su cartera. Si uno se guía únicamente por esta premisa, Markowtiz nos muestra que no tiene en consideración el riesgo asociado a los activos seleccionados, así como la correlación entre los retornos de los mismos. 
+El modelo de Markowitz permite obtener combinaciones eficientes de activos a partir de la relación entre rentabilidad esperada y varianza. En este marco, una cartera será preferible si, para un determinado nivel de riesgo, ofrece una mayor rentabilidad esperada, o si, para una rentabilidad esperada dada, presenta una menor varianza. Esta idea da lugar al concepto de frontera eficiente, que constituye uno de los fundamentos de la teoría moderna de carteras.
 
-Es por ello que el artículo se centra en la optimización de carteras buscando aquellas combinaciones de activos que, para igual retorno esperado, minimicen la varianza, es decir, el riesgo. Por lo tanto, el problema de optimizar una cartera se reduce a encontrar máximos o mínimos dentro de una función de dos variables, fijando una de ellas. Teniendo en cuenta solo aquellas combinaciones de activos que se puedan realizar, las combinaciones deseadas forman lo que el autor denomina la frontera eficiente.
+No obstante, aunque el modelo de media-varianza continúa siendo una referencia esencial en la literatura financiera, presenta limitaciones relevantes. En particular, resume el comportamiento de los activos mediante momentos de primer y segundo orden, es decir, medias, varianzas y covarianzas. Esta simplificación puede resultar insuficiente cuando los retornos financieros presentan colas pesadas, asimetrías, volatilidad cambiante o dependencias no lineales.
 
-Se establece la idea de que el inversor debe confeccionar su cartera buscando como objetivo no solo el máximo retorno esperado, sino considerando el riesgo asociado y valorando positivamente por lo tanto la diversificación entre diversos activos para mitigar el riesgo.
+Estas limitaciones han motivado el desarrollo de enfoques alternativos, tanto desde la estadística financiera tradicional como desde el aprendizaje automático. En este trabajo, el modelo de Markowitz se considera como referencia clásica frente a la cual comparar la metodología basada en escenarios sintéticos generados mediante modelos profundos.
 
-Matemáticamente, el problema de optimización se puede formular como la maximización de la utilidad esperada, ponderando el retorno esperado frente al riesgo:
+\section{Aprendizaje automático y deep learning en gestión de carteras}
 
-\begin{equation} 
-\max_{w} \; w^\top \mu - \frac{\lambda}{2} \, w^\top \Sigma w 
-\quad \text{s.a.} \quad \mathbf{1}^\top w = 1
-\end{equation}
+El aprendizaje automático ha introducido nuevas aproximaciones para el análisis de datos financieros, especialmente en contextos donde las relaciones entre variables son complejas, no lineales y difíciles de modelar mediante técnicas paramétricas tradicionales. En el ámbito de la gestión de carteras, estas técnicas se han aplicado principalmente a la predicción de precios, la estimación de retornos, la clasificación de activos y la construcción de señales de inversión.
 
-En ella, el objetivo es determinar el vector de pesos ( w ) que maximiza la rentabilidad esperada de la cartera penalizada por su nivel de riesgo.
+Sin embargo, una parte importante de estos enfoques se centra en predecir directamente la evolución futura de los precios o retornos. Esta estrategia presenta dificultades importantes, ya que los mercados financieros son sistemas altamente ruidosos y sensibles a cambios de régimen. Además, una predicción puntual de precios no equivale directamente a una decisión de inversión, sino que requiere una capa adicional de lógica para convertir dicha predicción en pesos de cartera.
 
-En ella, el objetivo es determinar el vector de pesos $w$ que maximiza la rentabilidad esperada de la cartera penalizada por su nivel de riesgo.
+En este contexto, el aprendizaje profundo aporta la capacidad de modelar relaciones no lineales y trabajar con datos de alta dimensionalidad. Las redes neuronales profundas permiten aprender representaciones complejas de los datos, lo que resulta especialmente relevante en finanzas, donde los activos pueden presentar relaciones dinámicas, dependencias no lineales y comportamientos distintos en función del régimen de mercado.
 
-El primer término, $w^\top \mu$, representa la rentabilidad esperada de la cartera. Matemáticamente, se trata del producto escalar entre el vector de pesos $w \in \mathbb{R}^n$ y el vector de retornos esperados $\mu \in \mathbb{R}^n$, lo que equivale a una combinación lineal de los retornos esperados de los activos ponderados por su peso en la cartera.
+A pesar de ello, el enfoque de este trabajo no consiste en utilizar aprendizaje profundo para predecir directamente precios futuros, sino en emplearlo para modelar distribuciones de retornos y generar escenarios sintéticos. Esta distinción es relevante, ya que desplaza el problema desde la predicción puntual hacia la generación de posibles trayectorias o escenarios de mercado sobre los que evaluar la robustez de una cartera.
 
-El segundo término, $\frac{\lambda}{2} w^\top \Sigma w$, introduce una penalización por riesgo. En este caso, $\Sigma \in \mathbb{R}^{n \times n}$ es la matriz de varianzas-covarianzas de los retornos, y la expresión cuadrática $w^\top \Sigma w$ representa la varianza de la cartera. El parámetro $\lambda > 0$ es el coeficiente de aversión al riesgo, que controla el equilibrio entre rentabilidad y riesgo: valores más altos de $\lambda$ implican una mayor penalización del riesgo y, por tanto, una preferencia por carteras más conservadoras.
+\section{Modelos generativos para series financieras}
 
-La restricción $\mathbf{1}^\top w = 1$ garantiza que la suma de los pesos sea igual a uno, lo que implica que se invierte la totalidad del capital disponible. Esta restricción define carteras totalmente invertidas y excluye la posibilidad de mantener capital sin asignar.
+Los modelos generativos han ganado relevancia en el análisis de series financieras debido a su capacidad para aprender distribuciones complejas directamente a partir de los datos. A diferencia de los modelos clásicos, que requieren especificar de forma explícita una distribución o una estructura paramétrica, los modelos generativos permiten aproximar la distribución subyacente y producir nuevas muestras con propiedades similares a las observadas.
 
-En conjunto, este problema establece un compromiso entre maximizar la rentabilidad esperada y minimizar la varianza, constituyendo la base de la teoría moderna de carteras.
+En el caso de las series financieras, esta capacidad resulta especialmente útil porque los retornos de los activos presentan propiedades que no siempre quedan recogidas por modelos gaussianos o lineales. Entre estas propiedades se encuentran las colas pesadas, la asimetría, la dependencia temporal, el agrupamiento de volatilidad y los cambios en las correlaciones entre activos. Por este motivo, el modelado generativo constituye una línea de investigación relevante para la generación de escenarios financieros sintéticos.
 
-\section{Limitaciones de la Teoría Clásica}
-Markowitz fue pionero, sin embargo su modelo presenta limitaciones aparentes, que con las herramientas actuales de análisis de datos, se pueden superar. 
+Dentro de esta familia de modelos, las Redes Generativas Adversarias, propuestas originalmente por \cite{goodfellow2014generative}, han sido utilizadas para sintetizar series temporales financieras y reproducir propiedades estadísticas observadas en los mercados. En este enfoque, el generador aprende a producir muestras sintéticas, mientras que el discriminador evalúa si dichas muestras proceden de la distribución real o de la distribución generada. Este procedimiento permite construir escenarios que no aparecen de forma idéntica en el conjunto histórico, pero que pueden resultar estadísticamente plausibles.
 
-El modelo asume que los retornos de los activos financieros siguen una distribución normal. Sin embargo, la evidencia empírica muestra que no siempre se puede asumir la normalidad en los retornos de los activos. Por otro lado, las correlaciones entre activos financieros no son estáticas, sino que varían a lo largo del tiempo.
+Los Autoencoders Variacionales también resultan relevantes en este contexto, ya que permiten aprender una representación latente y probabilística de los datos. En el caso de los retornos financieros, el espacio latente puede interpretarse como una representación comprimida de factores no observables que influyen en el comportamiento conjunto de los activos. Esta característica justifica su uso como componente previo o complementario en arquitecturas híbridas de generación de escenarios.
 
-En periodos de alta volatilidad, el modelo de Markowitz no es capaz de capturar los cambios en la correlación entre activos, lo que puede llevar a errores en la gestión de la cartera. Esta limitación es especialmente relevante, teniendo en cuenta que dichos momentos son los que presentan una mayor oportunidad para el inversor.
+A partir de estas ideas, el presente trabajo plantea una arquitectura híbrida VAE-GAN. El VAE se orienta a obtener una representación latente de los retornos financieros, mientras que la GAN se emplea para generar escenarios sintéticos a partir de dicha representación. Esta combinación busca aprovechar la capacidad del VAE para estructurar el espacio latente y la capacidad de la GAN para producir muestras realistas.
 
-El modelo es incapaz de considerar relaciones de orden superior, al asumir la varianza como medida de riesgo. Para capturar la distribución completa, es necesario ir más allá del método media-varianza.
+\section{Modelos de difusión para selección dinámica de carteras}
 
-En este trabajo, se propone una metodología híbrida, que combine las bases teóricas tradicionales con el modelado generativo y la potencia de cálculo moderna.
+En los últimos años, los modelos de difusión han adquirido una relevancia creciente dentro del modelado generativo. Estos modelos se basan en aprender un proceso inverso de eliminación de ruido, permitiendo generar nuevas observaciones a partir de una distribución inicial simple, normalmente ruido gaussiano. Su principal atractivo reside en la estabilidad del proceso generativo y en su capacidad para producir muestras diversas.
 
-\section{Fundamentos de la Teoría de la Información}
-La identificación del riesgo con la varianza, limita la capacidad de los modelos tradicionales para capturar relaciones no lineales entre acitvos. Como alternativa, se propone el uso de la teoría de la información, que propone un tratamiento heurístico del riesgo. Se propone el uso de la entropía como medida de la relación o explicabilidad de los rendimientos de un activo financiero mediante los de otros.
+En el ámbito financiero, los modelos de difusión han comenzado a explorarse como herramientas para la generación de escenarios y la selección dinámica de carteras. En particular, Aghapour, Bayraktar y Yuan proponen el uso de modelos de difusión para abordar problemas de selección dinámica de carteras \cite{aghapour2025solving}. Este enfoque resulta relevante para el presente trabajo porque comparte la idea de utilizar modelos generativos para simular posibles escenarios de mercado y tomar decisiones de asignación de activos.
 
-De manera intuitiva, la entropía es la magnitud que trata de medir la incertidumbre de un sistema. Es, por lo tanto, la cantidad de ruido que contiene el mismo. La entropía se define entonces como la medida de incertidumbre pura del mercado.
+Según los resultados reportados por estos autores, los modelos de difusión pueden ofrecer resultados competitivos frente a índices de referencia como el S\&P 500 y frente a carteras construidas mediante enfoques tradicionales de Markowitz. Esta línea de investigación es todavía reciente, pero muestra el potencial del modelado generativo para superar algunas de las limitaciones de los modelos clásicos, especialmente cuando se trabaja con mercados dinámicos, dependencia temporal y cambios en la volatilidad.
 
-Siguiendo a \cite{cover2006elements} y entendiendo el retorno de un activo como una variable aleatoria, la entropía se define como:
+Aunque el presente trabajo no se centra directamente en modelos de difusión, su inclusión en el estado del arte permite situar la propuesta VAE-GAN dentro de una tendencia más amplia: el uso de modelos generativos profundos para construir escenarios sintéticos y mejorar los procesos de optimización de carteras.
 
-\begin{equation}
-H(X) = -\sum_{i=1}^n p(x_i) \log p(x_i)
-\end{equation}
+\section{Síntesis crítica y hueco de investigación}
 
-Esta ecuación define la Entropía de Shannon, la cual constituye la unidad de medida fundamental de la incertidumbre en la Teoría de la Información. En el contexto de este trabajo, su interpretación y componentes se detallan a continuación:
+La revisión anterior permite identificar una evolución clara en las técnicas aplicadas a la optimización de carteras. En primer lugar, la teoría clásica de Markowitz establece una formulación matemática sólida basada en el equilibrio entre rentabilidad esperada y riesgo. Sin embargo, su dependencia de la media, la varianza y la matriz de covarianzas limita su capacidad para capturar distribuciones no gaussianas, colas pesadas y relaciones no lineales entre activos.
 
-\begin{itemize}
-    \item $H(X)$ representa la entropía de la varibale aleatoria $X$ (los retornos del activo). No se debe interpretar como una medida de riesgo lineal, sino como una medida de dispersión de la información. Una entropía elevada indica que los retornos están muy distribuidos y son menos predecibles, mientras que una entropía baja sugiere una mayor concentración de la probabilidad en valores específicos.
-    \item $p(x_i)$ es la función de masa de probabilidad del retorno $x_i$. Indica la probabilidad de que el activo presente un rendmiento específico.
-    \item $\log p(x_i)$ es el logaritmo de la probabilidad de que el activo $i$ tenga un retorno $x_i$. La elección del logaritmo es una cuestión técnica, permite que la medida sea aditiva. Matemáticamente, los eventos menos probables, aportan una mayor cantidad de información sorpresa a la sumatoria. La naturaleza del logaritmo y de la probabilidad, siendo un número entre 0 y 1, hace que el logaritmo sea una cantidad negativa.
-\end{itemize}
+En segundo lugar, las técnicas de aprendizaje automático y aprendizaje profundo han ampliado las posibilidades de análisis financiero, permitiendo modelar relaciones más complejas a partir de datos históricos. No obstante, muchos de estos enfoques se han centrado en la predicción puntual de precios o retornos, lo que no resuelve directamente el problema de la construcción de carteras robustas bajo incertidumbre.
 
-A diferencia de la varianza, la entropía captura la complejidad estructural de la distribución de los retornos de un activo. Al maximizar la entropía en la selección de carteras, bajo el principio de Máxima Entropía, se busca una distribución que sea compatible con los datos observados pero que no asuma información adicional inexistente, reduciendo así el sesgo del modelo ante regímenes de mercado desconocidos.
+En tercer lugar, los modelos generativos ofrecen una alternativa especialmente adecuada para este contexto, ya que permiten aprender distribuciones de datos y generar escenarios sintéticos. Esta capacidad resulta útil para analizar la robustez de una cartera no solo bajo el escenario histórico observado, sino también bajo posibles escenarios generados que preserven propiedades estadísticas relevantes del mercado.
 
-Para medir la discrepancia entre dos distribuciones, se propone el uso de la divergencia de Kullback-Leibler (KLD), definida como:
-
-\begin{equation}
-D_{KL}(P \parallel Q) = \sum_{i=1}^n p(x_i) \log \frac{p(x_i)}{q(x_i)}
-\end{equation}
-
-Donde $p(x_i)$ es la probabilidad de que el activo $i$ tenga un retorno $x_i$ en la distribución $P$, y $q(x_i)$ es la probabilidad de que el activo $i$ tenga un retorno $x_i$ en la distribución $Q$.
-
-Como evolución de la correlación de \cite{markowitz1952}, se propone el uso de la Información Mutua (MI), definida como:
-
-\begin{equation}
-I(X;Y) = H(X) + H(Y) - H(X,Y)
-\end{equation}
-
-Donde $H(X)$ es la entropía de la variable $X$, $H(Y)$ es la entropía de la variable $Y$, y $H(X,Y)$ es la entropía conjunta de las variables $X$ y $Y$.
-
-La MI se puede entender como la medida de la relación o explicabilidad de los rendimientos de un activo financiero mediante los de otros.
-
-Mientras que la correlación es una medida de la relación lineal entre dos variables, la MI es una medida de la relación no lineal, permitiendo detectar relaciones caóticas o complejas.
-
-\section{Modelado Generativo}
-
-Para superar las limitaciones de la Teoría Clásica a la hora de gestionar la complejidad subyacente a los mercados financieros, se propone el uso de modelos generativos.
-
-Los modelos generativos permiten aprender directamente de la distribución subyacente de los datos, minimizando la dependencia de supuestos paraméricos rígidos. Este enfoque resulta especialmente útil para modelar colas pesadas, asimetrías y dependencias no lineales presentes en los precios de activos.
-
-\subsection{Autoencoders Variacionales (VAEs)}
-
-Los Autoencoders Variacionales (VAEs), introducidos por \cite{kingma2013auto}, representan una evolución respecto a los autoencoders tradicionales, al transitar de un aprendizaje determinista a uno probabilístico. Mientras que un autoencoder convencional mapea los datos a un punto fijo en el espacio latente, el VAE mapea la entrada a una distribución de probabilidad, generalmente una Gaussiana multivariante.
-
-La arquitectura se divide en dos componentes críticos: el Encoder (codificador) y el Decoder (decodificador). El codificador extrae una representación comprimida de los retornos financieros, definiendo los parámetros de la distribución latente: la media $\mu$ y la varianza $\sigma$. Para permitir el entrenamiento mediante retropropagación, se emplea el \textit{reparameterization trick}, donde el vector latente $z$ se calcula como:
-
-\begin{equation}
-    z = \mu + \sigma \odot \epsilon, \quad \text{donde } \epsilon \sim \mathcal{N}(0, I)
-\end{equation}
-
-Desde una perspectiva económica, esta estructura permite filtrar el ruido propio del mercado, reteniendo únicamente los factores latentes o ``señales estructurales'' que explican el comportamiento conjunto de los activos. La función de pérdida del VAE, conocida como ELBO (Evidence Lower Bound), equilibra la precisión de la reconstrucción de los datos con un término de regularización basado en la divergencia de Kullback-Leibler, garantizando que el espacio latente sea continuo y estructurado, evitando así el sobreajuste a eventos ruidosos transitorios.
-
-La ecuación del ELBO es la siguiente:
-\begin{equation}
-    \mathcal{L}(\theta, \phi; \mathbf{x}) = \mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})} [\log p_\theta(\mathbf{x}|\mathbf{z})] - D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \parallel p(\mathbf{z}))
-\end{equation}
-
-La ecuación anterior se descompone en dos términos fundamentales que rigen el aprendizaje del modelo:
-
-\begin{itemize}
-    \item \textbf{$\mathbb{E}_{q_\phi(\mathbf{z}|\mathbf{x})} [\log p_\theta(\mathbf{x}|\mathbf{z})]$ (Término de Reconstrucción):} Representa la log-verosimilitud esperada de los datos. En el contexto financiero, mide la capacidad del decodificador para reconstruir los retornos originales $\mathbf{x}$ a partir de las muestras del espacio latente $\mathbf{z}$. Un valor alto indica que el modelo preserva la información esencial del mercado.
-    
-    \item \textbf{$D_{KL}(q_\phi(\mathbf{z}|\mathbf{x}) \parallel p(\mathbf{z}))$ (Regularizador de Divergencia KL):} Actúa como una penalización que mide la discrepancia entre la distribución posteria aprendida por el codificador y una distribución \textit{prior} (generalmente una Normal unitaria $\mathcal{N}(0,I)$). Este término garantiza que el espacio latente sea continuo y regular, evitando el colapso de la información y permitiendo la generación de nuevos escenarios coherentes.
-\end{itemize}
-
-En definitiva, en su intento por engañar al decodificador, el codificador aprende la estructura latente del mercado, modelando factores no observables y reduciendo la dimensionalidad del problema.
-
-\subsection{Redes Generativas Adversarias (GANs)}
-
-Las Redes Generativas Adversarias (GANs), propuestas por \cite{NIPS2016_8a3363ab}, introducen un paradigma de aprendizaje basado en la teoría de juegos. A diferencia de otros modelos, las GANs no maximizan una verosimilitud explícita, sino que establecen una competición entre dos redes neuronales: el Generador ($G$) y el Discriminador ($D$).
-
-En el contexto financiero, el Generador intenta sintetizar series temporales de retornos que sean estadísticamente indistinguibles de los reales, mientras que el Discriminador se entrena para identificar si una muestra proviene del conjunto de datos histórico ($p_{data}$) o si ha sido creada artificialmente ($p_g$). Este proceso se formaliza mediante una función de valor minimax $V(D, G)$:
-
-\begin{equation}
-    \min_{G} \max_{D} V(D, G) = \mathbb{E}{x \sim p{data}(x)}[\log D(x)] + \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
-\end{equation}
-
-La gran ventaja de las GANs para la optimización de carteras radica en su capacidad para capturar momentos de orden superior (asimetría y curtosis) sin necesidad de definirlos manualmente. Al alcanzar un equilibrio de Nash, el generador es capaz de producir escenarios de ``estrés'' realistas que no están presentes de forma idéntica en el pasado, pero que son estadísticamente posibles, proporcionando una base mucho más robusta para el cálculo del riesgo que la simple matriz de covarianza. No es necesario asumir ninguna distribución en concreto, sino que se modelan directamente los datos observados, siendo esto particularmente útil para escenarios extremos. Sin embargo, su entrenamiento presenta desafíos como el \textit{mode collapse}, lo que justifica en este trabajo el uso de una arquitectura híbrida con VAE para estabilizar el aprendizaje.
-
-\subsection{Estado del Arte Reciente: Modelos de Difusión}
-
-En los últimos dos años, el modelado generativo ha experimentado un cambio de paradigma hacia los Score-based Diffusion Models. Tal como proponen \cite{aghapour2025solving}, estos modelos pueden superar algunas de las inestabilidades de las GANs al aprender a revertir un proceso de difusión estocástica.
-
-El principio fundamental consiste en destruir gradualmente la estructura de los retornos financieros añadiendo ruido Gaussiano hasta obtener ruido blanco, para después entrenar una red neuronal que aprenda a revertir el proceso de difusión. Este enfoque permite una generación de escenarios estable y diversificada.
-
-\cite{aghapour2025solving} demuestra que, al aplicar modelos de difusión a problemas de selección dinámica de carteras, es posible a priori obtener resultados que batan sistemáticamente a los índices de referencia (como el S\&P 500) y a las carteras de Markowitz tradicionales. Esta metodología es innovadora, siendo estos estudios relativamente recientes. Permite modelar la evolución temporal de los activos con una fidelidad aparentementesuperior, capturando la dependencia temporal y el agrupamiento de volatilidad (\textit{volatility clustering}) de manera orgánica y no paramétrica.
+El hueco de investigación que aborda este trabajo se sitúa precisamente en la conexión entre generación de escenarios sintéticos y optimización de carteras. La propuesta consiste en estudiar una arquitectura híbrida VAE-GAN aplicada a retornos financieros del S\&P 500, con el objetivo de generar escenarios de mercado y comparar la cartera resultante con enfoques clásicos como Markowitz y carteras equiponderadas.
