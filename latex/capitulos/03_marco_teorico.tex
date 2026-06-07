@@ -45,7 +45,7 @@ Estas características son especialmente relevantes en la gestión de carteras, 
 
 Aunque el modelo de Markowitz fue pionero y sigue constituyendo una referencia fundamental en la optimización de carteras, presenta limitaciones importantes. Una de las principales es la identificación del riesgo con la varianza de los retornos. Esta elección implica asumir que las desviaciones positivas y negativas respecto a la media son tratadas de la misma forma, aunque desde el punto de vista del inversor las pérdidas suelen ser más relevantes que las ganancias inesperadas.
 
-Además, el uso de la varianza como medida de riesgo resulta especialmente restrictivo cuando los retornos financieros no siguen una distribución normal. En presencia de colas pesadas, asimetrías o eventos extremos, la varianza puede infraestimar el riesgo real de la cartera. Del mismo modo, la matriz de covarianzas solo captura relaciones lineales entre activos, por lo que puede no ser suficiente para representar dependencias no lineales o cambios estructurales en el mercado.
+Además, el uso de la varianza como medida de riesgo es muy restrictivo cuando los retornos financieros no siguen una distribución normal. En presencia de colas pesadas, asimetrías o eventos extremos, la varianza puede infraestimar el riesgo real de la cartera. Del mismo modo, la matriz de covarianzas solo captura relaciones lineales entre activos, por lo que puede no ser suficiente para representar dependencias no lineales o cambios estructurales en el mercado.
 
 Otra limitación relevante es la sensibilidad del modelo a la estimación de sus parámetros. Pequeñas variaciones en los retornos esperados o en la matriz de covarianzas pueden generar diferencias significativas en los pesos óptimos de la cartera. Esto resulta especialmente problemático en mercados financieros, donde los parámetros estimados a partir de datos históricos pueden no mantenerse estables en el futuro.
 
@@ -94,7 +94,7 @@ I(X;Y) = H(X) + H(Y) - H(X,Y)
 
 donde $H(X)$ y $H(Y)$ representan las entropías marginales de las variables $X$ e $Y$, y $H(X,Y)$ representa su entropía conjunta. La información mutua mide la reducción de incertidumbre sobre una variable al conocer la otra.
 
-En el análisis financiero, la información mutua puede interpretarse como una medida de dependencia entre los retornos de distintos activos. A diferencia de la correlación, que mide únicamente relaciones lineales, la información mutua permite capturar dependencias más generales, incluyendo relaciones no lineales. Por este motivo, puede resultar útil para complementar el análisis tradicional basado en matrices de covarianzas.
+En el análisis financiero, la información mutua puede interpretarse como una medida de dependencia entre los retornos de distintos activos. A diferencia de la correlación, que mide únicamente relaciones lineales, la información mutua capta dependencias más generales, incluyendo relaciones no lineales. Por este motivo, puede resultar útil para complementar el análisis tradicional basado en matrices de covarianzas.
 
 \section{Inteligencia artificial, aprendizaje automático y aprendizaje profundo}
 
