@@ -1,22 +1,56 @@
 \chapter{Desarrollo específico de la contribución}
 
-
+En este capítulo se describe el desarrollo técnico de la contribución propuesta. En particular, se expone el diseño e implementación de un pipeline experimental orientado a generar escenarios sintéticos de retornos financieros y utilizarlos posteriormente como entrada para un proceso de optimización de carteras. El objetivo no es sustituir los modelos clásicos de optimización, sino analizar si la incorporación de escenarios generados mediante modelos de aprendizaje profundo puede aportar información adicional respecto al uso exclusivo de datos históricos.
 
 \section{Diseño del pipeline experimental}
 
+La fase de optimización se apoya en los fundamentos de la teoría moderna de carteras introducida por \cite{Markowitz1952}. Por tanto, la innovación principal del trabajo no se sitúa en la sustitución del marco media-varianza, sino en la etapa previa de generación de escenarios. En lugar de estimar únicamente medias y covarianzas a partir de los retornos históricos observados, se introduce un modelo generativo capaz de aprender una representación latente de dichos retornos y producir escenarios sintéticos que posteriormente alimentan la optimización.
 
+Con este propósito, se ha diseñado un pipeline experimental modular y reproducible. El flujo parte de la adquisición de precios históricos diarios para un subconjunto de activos del S\&P 500 durante el periodo 2014--2024. A partir de estos precios ajustados se calculan retornos logarítmicos, se realiza una división temporal entre datos de entrenamiento y datos de test, y se aplican transformaciones de escalado necesarias para el entrenamiento del modelo generativo.
+
+En una primera fase, se implementan varios modelos de referencia con los que comparar la propuesta: una cartera equiponderada, una cartera de Markowitz clásica y una variante de Markowitz con restricción de peso máximo por activo. Esta última restricción se introduce para evitar concentraciones excesivas y favorecer una mayor diversificación de la cartera.
+
+Posteriormente, se entrena un Autoencoder Variacional sobre los retornos escalados de entrenamiento. El modelo aprende una representación latente de la distribución histórica de retornos y permite generar nuevos escenarios mediante muestreo en dicho espacio latente y posterior decodificación. Estos escenarios sintéticos se transforman de nuevo a la escala original de retornos y se utilizan para estimar medias y covarianzas sintéticas.
+
+Finalmente, se optimiza una cartera a partir de los escenarios generados y se evalúa su rendimiento sobre el conjunto de test real. Esta evaluación fuera de muestra permite comparar la estrategia propuesta frente a los benchmarks clásicos utilizando métricas homogéneas, como retorno acumulado, retorno anualizado, volatilidad anualizada, ratio de Sharpe y máximo drawdown.
 
 \section{Selección del universo de activos}
 
+Dado el alcance del trabajo, se ha seleccionado un subconjunto inicial de 30 activos pertenecientes al S\&P 500. Esta decisión experimental permite trabajar con un universo de inversión suficientemente amplio para observar efectos de diversificación, pero acotado en términos de dimensionalidad y coste computacional. De este modo, la primera implementación del pipeline se plantea como una aproximación controlada y reproducible, susceptible de ampliarse en trabajos posteriores a un universo de activos más extenso.
 
+La utilización completa del conjunto de activos del S\&P 500 incrementaría de forma significativa la dimensionalidad del problema, el coste de entrenamiento de los modelos generativos y la complejidad de la estimación de matrices de covarianza. Por ello, se ha optado por un subconjunto representativo de compañías líquidas y ampliamente negociadas. Esta decisión es coherente con otros trabajos aplicados de aprendizaje automático en optimización de carteras, donde el universo de activos suele acotarse para hacer viable la evaluación experimental \cite{zhang2020deep}.
 
 \section{Adquisición de datos financieros}
 
+El subconjunto de activos seleccionado está compuesto por 30 compañías pertenecientes al S\&P 500: AAPL, MSFT, AMZN, GOOGL, META, NVDA, JPM, V, PG, UNH, HD, MA, DIS, BAC, XOM, KO, PEP, CSCO, PFE, MRK, WMT, ADBE, NFLX, CRM, INTC, T, VZ, CMCSA, NKE y ORCL.
 
+Para obtener los datos de precios ajustados diarios correspondientes al periodo 2014--2024 se ha utilizado la librería \texttt{yfinance}, que permite descargar información financiera histórica desde Yahoo Finance. En concreto, se emplean precios ajustados de cierre (\textit{Adjusted Close}), ya que incorporan el efecto de eventos corporativos como dividendos y desdoblamientos de acciones, proporcionando una base más adecuada para el cálculo de retornos.
+
+La adquisición de datos se implementa mediante el script \texttt{src/data/download\_data.py}, disponible en el repositorio del proyecto\footnote{Repositorio del proyecto: \url{https://github.com/dmaching/tfm}.}. Este script define el universo de activos, el intervalo temporal de análisis y la ruta de salida de los datos descargados. El resultado del proceso se almacena en el archivo \texttt{data/raw/sp500\_prices\_adj\_close.csv}, que constituye la entrada principal para la fase posterior de preprocesamiento.
 
 \section{Construcción del conjunto de retornos}
 
+Para comparar activos financieros, el modelo no trabaja directamente con los precios, ya que estos no son comparables entre sí en términos absolutos. Un activo puede cotizar a cientos de dólares y otro a unas pocas unidades monetarias, sin que esa diferencia implique necesariamente mayor rentabilidad o menor riesgo. Por este motivo, el análisis se realiza sobre retornos, que permiten medir la variación relativa del precio de cada activo entre dos instantes consecutivos.
 
+En este trabajo se emplean retornos logarítmicos diarios, definidos como:
+
+\begin{equation}
+r_t = \log\left(\frac{P_t}{P_{t-1}}\right)
+\end{equation}
+
+donde \(P_t\) representa el precio ajustado de cierre del activo en el día \(t\), y \(P_{t-1}\) el precio ajustado de cierre del día anterior. El uso de precios ajustados permite incorporar el efecto de eventos corporativos como dividendos o desdoblamientos de acciones, evitando que dichos eventos distorsionen el cálculo de los retornos.
+
+Los retornos logarítmicos presentan varias ventajas en este contexto. En primer lugar, expresan los cambios de precio en una escala relativa, lo que permite comparar activos con niveles de precio diferentes. En segundo lugar, tienen una interpretación conveniente desde el punto de vista temporal, ya que los retornos logarítmicos son aditivos en el tiempo. Además, son una transformación habitual en el análisis de series financieras, puesto que permite trabajar con variaciones de precio en lugar de precios absolutos.
+
+La construcción del conjunto de retornos se implementa mediante el script \texttt{src/data/preprocess.py}. Este script carga los precios ajustados previamente descargados, ordena las observaciones temporalmente, aplica un filtrado de activos en función del porcentaje de valores ausentes y calcula los retornos logarítmicos diarios. En caso de valores no disponibles, se aplica una propagación hacia delante de los precios disponibles antes del cálculo de retornos, evitando así discontinuidades innecesarias en la serie temporal.
+
+Una vez calculados los retornos, el conjunto se divide temporalmente en datos de entrenamiento y datos de test. Esta división se realiza respetando el orden cronológico de las observaciones, de modo que la información futura no intervenga en el entrenamiento de los modelos. En concreto, el 80 \% inicial de las observaciones se utiliza como conjunto de entrenamiento, mientras que el 20 \% final se reserva para la evaluación fuera de muestra.
+
+El conjunto de entrenamiento se emplea para estimar los parámetros de los modelos de referencia y para entrenar el Autoencoder Variacional. El conjunto de test se reserva exclusivamente para evaluar el rendimiento final de las carteras construidas. Esta separación resulta especialmente relevante en problemas financieros, ya que permite analizar si las estrategias obtenidas mantienen su comportamiento sobre datos no utilizados durante la fase de entrenamiento u optimización.
+
+Adicionalmente, para el entrenamiento del VAE se genera una versión escalada de los retornos mediante normalización Min-Max en el intervalo \([-1,1]\). Este escalado se ajusta únicamente sobre el conjunto de entrenamiento y posteriormente se aplica al conjunto de test. De este modo, se evita introducir información del periodo de evaluación en la fase de entrenamiento. La versión escalada se utiliza como entrada del modelo generativo, mientras que las métricas financieras y la optimización de carteras se calculan sobre los retornos en su escala original.
+
+Como resultado de este proceso, se obtiene una matriz de retornos diarios formada por 2766 observaciones y 30 activos. La división temporal genera 2212 observaciones para entrenamiento y 554 observaciones para test. Estos conjuntos se almacenan en los archivos \texttt{returns\_train.csv}, \texttt{returns\_test.csv}, \texttt{returns\_train\_scaled.csv} y \texttt{returns\_test\_scaled.csv}, que sirven como entrada para las fases posteriores del pipeline experimental.
 
 \section{Implementación de modelos de referencia}
 
