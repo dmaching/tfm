@@ -4,7 +4,7 @@ En este capítulo se describe el desarrollo técnico de la contribución propues
 
 \section{Diseño del pipeline experimental}
 
-La fase de optimización se apoya en los fundamentos de la teoría moderna de carteras introducida por \cite{Markowitz1952}. Por tanto, la innovación principal del trabajo no se sitúa en la sustitución del marco media-varianza, sino en la etapa previa de generación de escenarios. En lugar de estimar únicamente medias y covarianzas a partir de los retornos históricos observados, se introduce un modelo generativo capaz de aprender una representación latente de dichos retornos y producir escenarios sintéticos que posteriormente alimentan la optimización.
+La fase de optimización se apoya en los fundamentos de la teoría moderna de carteras introducida por \cite{markowitz1952}. Por tanto, la innovación principal del trabajo no se sitúa en la sustitución del marco media-varianza, sino en la etapa previa de generación de escenarios. En lugar de estimar únicamente medias y covarianzas a partir de los retornos históricos observados, se introduce un modelo generativo capaz de aprender una representación latente de dichos retornos y producir escenarios sintéticos que posteriormente alimentan la optimización.
 
 Con este propósito, se ha diseñado un pipeline experimental modular y reproducible. El flujo parte de la adquisición de precios históricos diarios para un subconjunto de activos del S\&P 500 durante el periodo 2014--2024. A partir de estos precios ajustados se calculan retornos logarítmicos, se realiza una división temporal entre datos de entrenamiento y datos de test, y se aplican transformaciones de escalado necesarias para el entrenamiento del modelo generativo.
 
@@ -36,23 +36,107 @@ En este trabajo se emplean retornos logarítmicos diarios, definidos como:
 
 \begin{equation}
 r_t = \log\left(\frac{P_t}{P_{t-1}}\right)
+\label{eq:retorno_logaritmico}
 \end{equation}
 
 donde \(P_t\) representa el precio ajustado de cierre del activo en el día \(t\), y \(P_{t-1}\) el precio ajustado de cierre del día anterior. El uso de precios ajustados permite incorporar el efecto de eventos corporativos como dividendos o desdoblamientos de acciones, evitando que dichos eventos distorsionen el cálculo de los retornos.
 
-Los retornos logarítmicos presentan varias ventajas en este contexto. En primer lugar, expresan los cambios de precio en una escala relativa, lo que permite comparar activos con niveles de precio diferentes. En segundo lugar, tienen una interpretación conveniente desde el punto de vista temporal, ya que los retornos logarítmicos son aditivos en el tiempo. Además, son una transformación habitual en el análisis de series financieras, puesto que permite trabajar con variaciones de precio en lugar de precios absolutos.
+Los retornos logarítmicos presentan varias ventajas en este contexto. En primer lugar, expresan los cambios de precio en una escala relativa, lo que permite comparar activos con niveles de precio diferentes. En segundo lugar, tienen una interpretación conveniente desde el punto de vista temporal, ya que son aditivos en el tiempo. Además, constituyen una transformación habitual en el análisis de series financieras, puesto que permiten trabajar con variaciones de precio en lugar de precios absolutos.
 
-La construcción del conjunto de retornos se implementa mediante el script \texttt{src/data/preprocess.py}. Este script carga los precios ajustados previamente descargados, ordena las observaciones temporalmente, aplica un filtrado de activos en función del porcentaje de valores ausentes y calcula los retornos logarítmicos diarios. En caso de valores no disponibles, se aplica una propagación hacia delante de los precios disponibles antes del cálculo de retornos, evitando así discontinuidades innecesarias en la serie temporal.
+La construcción del conjunto de retornos se implementa mediante el script \texttt{src/data/preprocess.py}. Este script carga los precios ajustados previamente descargados, ordena las observaciones temporalmente, aplica un filtrado de activos en función del porcentaje de valores ausentes y calcula los retornos logarítmicos diarios. En caso de valores no disponibles, se aplica una propagación hacia delante de los precios disponibles antes del cálculo de los retornos, evitando así discontinuidades innecesarias en la serie temporal.
 
-Una vez calculados los retornos, el conjunto se divide temporalmente en datos de entrenamiento y datos de test. Esta división se realiza respetando el orden cronológico de las observaciones, de modo que la información futura no intervenga en el entrenamiento de los modelos. En concreto, el 80 \% inicial de las observaciones se utiliza como conjunto de entrenamiento, mientras que el 20 \% final se reserva para la evaluación fuera de muestra.
+Una vez calculados los retornos, el conjunto se divide temporalmente en datos de entrenamiento y datos de test. Esta división se realiza respetando el orden cronológico de las observaciones, de modo que la información futura no intervenga en el entrenamiento de los modelos. En concreto, el 80,% inicial de las observaciones se utiliza como conjunto de entrenamiento, mientras que el 20,% final se reserva para la evaluación fuera de muestra.
 
 El conjunto de entrenamiento se emplea para estimar los parámetros de los modelos de referencia y para entrenar el Autoencoder Variacional. El conjunto de test se reserva exclusivamente para evaluar el rendimiento final de las carteras construidas. Esta separación resulta especialmente relevante en problemas financieros, ya que permite analizar si las estrategias obtenidas mantienen su comportamiento sobre datos no utilizados durante la fase de entrenamiento u optimización.
 
-Adicionalmente, para el entrenamiento del VAE se genera una versión escalada de los retornos mediante normalización Min-Max en el intervalo \([-1,1]\). Este escalado se ajusta únicamente sobre el conjunto de entrenamiento y posteriormente se aplica al conjunto de test. De este modo, se evita introducir información del periodo de evaluación en la fase de entrenamiento. La versión escalada se utiliza como entrada del modelo generativo, mientras que las métricas financieras y la optimización de carteras se calculan sobre los retornos en su escala original.
+Adicionalmente, para el entrenamiento del VAE se genera una versión escalada de los retornos mediante normalización Min-Max en el intervalo ([-1,1]). Este escalado se ajusta únicamente sobre el conjunto de entrenamiento y posteriormente se aplica al conjunto de test. De este modo, se evita introducir información del periodo de evaluación en la fase de entrenamiento. La versión escalada se utiliza como entrada del modelo generativo, mientras que las métricas financieras y la optimización de carteras se calculan sobre los retornos en su escala original.
 
-Como resultado de este proceso, se obtiene una matriz de retornos diarios formada por 2766 observaciones y 30 activos. La división temporal genera 2212 observaciones para entrenamiento y 554 observaciones para test. Estos conjuntos se almacenan en los archivos \texttt{returns\_train.csv}, \texttt{returns\_test.csv}, \texttt{returns\_train\_scaled.csv} y \texttt{returns\_test\_scaled.csv}, que sirven como entrada para las fases posteriores del pipeline experimental.
+Como resultado de este proceso, se obtiene una matriz de retornos diarios formada por 2766 observaciones y 30 activos. La división temporal genera 2212 observaciones para entrenamiento y 554 observaciones para test. Los resultados se almacenan en los archivos \texttt{returns.csv}, \texttt{returns\_train.csv}, \texttt{returns\_test.csv}, \texttt{returns\_train\_scaled.csv} y \texttt{returns\_test\_scaled.csv}. Asimismo, los parámetros del escalado se conservan en el archivo \texttt{minmax\_scaler.pkl}, lo que permite aplicar posteriormente la transformación inversa a los escenarios sintéticos generados.
 
 \section{Implementación de modelos de referencia}
+
+Para evaluar la cartera construida mediante la metodología propuesta, se han implementado varias estrategias de referencia que permiten comparar los resultados obtenidos. La inclusión de estos modelos resulta necesaria para determinar si la generación de escenarios sintéticos aporta alguna mejora respecto a métodos más simples o respecto a una optimización basada exclusivamente en los retornos históricos. Esta forma de evaluación es habitual en los trabajos de aprendizaje automático aplicado a la gestión de carteras, en los que el modelo propuesto se compara con diferentes algoritmos base bajo un mismo marco experimental \cite{zhang2020deep}.
+
+Markowitz divide el proceso de selección de una cartera en dos etapas. La primera consiste en formar expectativas sobre el comportamiento futuro de los activos, mientras que la segunda utiliza dichas expectativas para elegir la composición de la cartera \cite{markowitz1952}. El valor principal de este planteamiento se encuentra en rechazar la maximización del retorno esperado como único criterio de selección. El riesgo asociado a la cartera pasa a ocupar un papel fundamental en la toma de decisiones, por lo que el objetivo no consiste únicamente en buscar la combinación con mayor retorno esperado, sino en considerar conjuntamente su rentabilidad y su exposición al riesgo.
+
+El retorno esperado de una cartera puede expresarse como la suma ponderada de los retornos esperados de los activos que la componen:
+
+\begin{equation}
+\mu_p = \sum_{i=1}^{n} w_i \mu_i,
+\end{equation}
+
+donde \(w_i\) representa el peso asignado al activo \(i\), \(\mu_i\) su retorno esperado y \(n\) el número total de activos. Sin embargo, el riesgo de la cartera no depende únicamente de la varianza individual de cada activo. También intervienen las covarianzas entre los diferentes retornos, que reflejan en qué medida los activos tienden a variar conjuntamente. La varianza de la cartera se expresa como:
+
+\begin{equation}
+\sigma_p^2 = \mathbf{w}^{T}\boldsymbol{\Sigma}\mathbf{w},
+\end{equation}
+
+donde \(\mathbf{w}\) es el vector de pesos y \(\boldsymbol{\Sigma}\) la matriz de covarianzas. Por tanto, la diversificación no depende exclusivamente del número de activos incluidos, sino también de la relación existente entre ellos \cite{markowitz1952}.
+
+Como se ha expuesto a lo largo del trabajo, la metodología propuesta no pretende sustituir el marco clásico de selección de carteras ni desarrollar una nueva función de optimización. Su aportación se sitúa en la etapa anterior a la optimización: el aprendizaje de una representación latente de los retornos históricos y la generación de escenarios sintéticos a partir de dicha representación. Estos escenarios se utilizan posteriormente para estimar medias y covarianzas alternativas, manteniendo una fase final de optimización financiera interpretable.
+
+Para establecer una comparación progresiva, se han implementado tres modelos de referencia: una cartera equiponderada, una cartera de Markowitz sin límite máximo específico por activo y una cartera de Markowitz restringida. Todas las estrategias se construyen utilizando únicamente la información disponible en el conjunto de entrenamiento y se evalúan posteriormente sobre el mismo conjunto de test.
+
+\subsection{Cartera equiponderada}
+
+La primera estrategia de referencia es una cartera equiponderada, en la que el capital se distribuye por igual entre todos los activos disponibles. El peso de cada activo se calcula como:
+
+\begin{equation}
+w_i = \frac{1}{n}.
+\end{equation}
+
+Dado que el universo considerado está formado por 30 activos, cada uno recibe inicialmente un peso aproximado del (3{,}33,%). Esta estrategia se implementa mediante el script \texttt{src/optimization/equal_weight.py}.
+
+La cartera equiponderada no requiere estimar retornos esperados ni matrices de covarianzas. Su inclusión proporciona una referencia sencilla, transparente y con un riesgo reducido de sobreajuste. Además, permite comprobar si la complejidad adicional introducida por los modelos de optimización y por la generación de escenarios se traduce en una mejora observable sobre los datos de test.
+
+\subsection{Cartera de Markowitz clásica}
+
+La segunda estrategia implementada se basa en la optimización media-varianza propuesta por Markowitz. Para construirla se utilizan los retornos del conjunto de entrenamiento, a partir de los cuales se estiman el vector de retornos medios y la matriz de covarianzas histórica.
+
+Los pesos de la cartera actúan como variables de decisión del problema. Como restricciones básicas, se exige que todo el capital quede invertido y que no existan posiciones cortas:
+
+\begin{equation}
+\sum_{i=1}^{n} w_i = 1,
+\end{equation}
+
+\begin{equation}
+w_i \geq 0 \quad \forall i.
+\end{equation}
+
+Estas condiciones definen una cartera \textit{long-only}, en la que ningún activo puede recibir un peso negativo. La formulación mediante una función objetivo y un conjunto de restricciones permite representar el problema de selección de carteras dentro del marco general de la optimización matemática \cite{boyd2004convex}.
+
+En la implementación realizada, la función objetivo busca una combinación de activos con una relación favorable entre retorno esperado y volatilidad. La estrategia se encuentra desarrollada en el script \texttt{src/optimization/markowitz.py}. Una vez obtenidos los pesos mediante los datos de entrenamiento, estos se mantienen constantes y se aplican a los retornos del conjunto de test para evaluar el comportamiento fuera de muestra.
+
+La solución obtenida presenta una concentración elevada en un número reducido de activos. En particular, el activo UNH recibe un peso cercano al (48{,}89,%), seguido por NVDA, AAPL y MSFT. Este resultado muestra una de las dificultades prácticas de la optimización media-varianza: pequeñas diferencias en las estimaciones de medias y covarianzas pueden producir asignaciones muy concentradas.
+
+\subsection{Cartera de Markowitz restringida}
+
+Con el objetivo de reducir la concentración observada en la solución anterior, se ha implementado una segunda variante de Markowitz que incorpora un límite máximo del (20,%) por activo. En este caso, las restricciones sobre los pesos quedan definidas como:
+
+\begin{equation}
+0 \leq w_i \leq 0.20 \quad \forall i,
+\end{equation}
+
+manteniendo igualmente la condición de inversión completa:
+
+\begin{equation}
+\sum_{i=1}^{n} w_i = 1.
+\end{equation}
+
+La incorporación de límites inferiores y superiores sobre las variables de decisión permite adaptar la solución matemática a condiciones de inversión concretas \cite{boyd2004convex}. En este trabajo, el límite máximo se introduce para evitar que un único activo domine el comportamiento global de la cartera y para favorecer una distribución menos concentrada del capital.
+
+Esta variante se implementa mediante el script \texttt{src/optimization/markowitz\_constrained.py}. El límite del \(20, \%\) no garantiza por sí mismo una diversificación completa, ya que una cartera puede seguir concentrándose en cinco activos situados en el máximo permitido. Sin embargo, impide las asignaciones extremas observadas en la variante sin esta restricción y establece un marco común para compararla posteriormente con la cartera optimizada a partir de escenarios sintéticos.
+
+En la solución obtenida, UNH y NVDA alcanzan el límite del \(20,\%\), mientras que AAPL, MSFT, MRK y PEP reciben también pesos relevantes. La distribución resultante es menos concentrada que la de Markowitz sin límite máximo.
+
+\subsection{Evaluación común de las estrategias}
+
+Las tres estrategias se evalúan sobre el mismo conjunto de test y utilizando las mismas métricas financieras. En particular, se calculan el retorno acumulado, el retorno anualizado, la volatilidad anualizada, el ratio de Sharpe y el máximo \textit{drawdown}. La utilización de un procedimiento común permite que las diferencias observadas se atribuyan a la construcción de las carteras y no a cambios en el periodo de evaluación o en las métricas empleadas.
+
+Los resultados obtenidos muestran que la cartera equiponderada alcanza un retorno acumulado del \(64{,}93,\%\), con un ratio de Sharpe de \(1{,}88\) y un máximo \textit{drawdown} del \(-7{,}96,\%\). La cartera de Markowitz clásica obtiene un retorno acumulado del \(95{,}60,\%\), un ratio de Sharpe de \(1{,}89\) y un máximo \textit{drawdown} del \(-12{,}78,\%\). Por su parte, la variante restringida alcanza un retorno acumulado del \(101{,}38,\%\), un ratio de Sharpe de \(2{,}20\) y un máximo \textit{drawdown} del \(-11{,}26,\%\).
+
+En el periodo de test analizado, la cartera restringida presenta un mejor equilibrio entre rentabilidad y riesgo que la solución de Markowitz sin límite máximo. No obstante, estos resultados deben interpretarse dentro del periodo temporal estudiado y no implican que una estrategia sea universalmente superior. Su función principal en este trabajo es establecer referencias homogéneas frente a las que evaluar posteriormente la cartera optimizada mediante escenarios generados por el VAE.
+
 
 
 
