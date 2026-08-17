@@ -1,10 +1,10 @@
-\section{Resultados experimentales}
+\chapter{Resultados}
 
 En este capítulo se presentan los resultados empíricos obtenidos a partir de la evaluación de las distintas estrategias de construcción de carteras implementadas en el trabajo. Todas las métricas han sido calculadas mediante el módulo de evaluación del sistema y almacenadas en el archivo \texttt{benchmark\_comparison.csv}, garantizando la reproducibilidad del análisis.
 
 El objetivo es comparar el rendimiento fuera de muestra de las estrategias clásicas basadas en media-varianza con la estrategia propuesta basada en escenarios sintéticos generados mediante un Autoencoder Variacional.
 
-\subsection{Métricas de evaluación}
+\section{Métricas de evaluación}
 
 Las métricas utilizadas para la comparación de estrategias son las siguientes:
 
@@ -18,7 +18,7 @@ Las métricas utilizadas para la comparación de estrategias son las siguientes:
 
 Estas métricas permiten caracterizar simultáneamente el rendimiento y el riesgo asociado a cada estrategia de inversión.
 
-\subsection{Resultados empíricos}
+\section{Resultados empíricos}
 
 En la Tabla \ref{tab:resultados} se muestran los resultados obtenidos para cada una de las estrategias evaluadas.
 
@@ -36,10 +36,9 @@ VAE (propuesto) & 242.32\% & 75.02\% & -- & 2.99 & -13.96\% \\
 \end{tabular}
 \caption{Comparación de estrategias de inversión fuera de muestra.}
 \label{tab:resultados}
-\par\small Fuente: elaboración propia a partir de los resultados del pipeline experimental.
 \end{table}
 
-\subsection{Resultados detallados (valores completos)}
+\section{Resultados detallados (valores completos)}
 
 Los resultados completos obtenidos del sistema son los siguientes:
 
@@ -50,7 +49,7 @@ Los resultados completos obtenidos del sistema son los siguientes:
 \item \textbf{VAE sintético}: retorno acumulado = 242.32\%, Sharpe = 2.99, drawdown = -13.96\%
 \end{itemize}
 
-\subsection{Análisis de resultados}
+\section{Análisis de resultados}
 
 Los resultados muestran diferencias claras entre las estrategias evaluadas.
 
@@ -62,7 +61,7 @@ La variante de Markowitz restringido introduce una limitación en la concentraci
 
 La estrategia propuesta basada en escenarios sintéticos generados mediante el Autoencoder Variacional obtiene el mejor rendimiento en términos de retorno acumulado y ratio de Sharpe. Sin embargo, este incremento en rentabilidad viene acompañado de un aumento en la volatilidad y en el máximo drawdown, lo que sugiere un perfil de riesgo más agresivo.
 
-\subsection{Evaluación comparativa}
+\section{Evaluación comparativa}
 
 En conjunto, los resultados indican que las estrategias basadas en optimización media-varianza son sensibles a la estimación de los parámetros de entrada, especialmente en lo relativo a la matriz de covarianzas.
 

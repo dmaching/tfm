@@ -1,0 +1,163 @@
+Listado de rutas de carpetas para el volumen Windows
+El número de serie del volumen es 000000BC E471:C979
+C:.
+¦   .gitignore
+¦   bibliografiaextra.txt
+¦   MACHIN_GONZALEZ_DANIEL_ENTREGA1.pdf
+¦   project_structure.txt
+¦   README.md
+¦   requirements.txt
+¦   texput.log
+¦   TODO_TFM.md
+¦   version1406.pdf
+¦   
++---data
+¦   +---generated
+¦   ¦       benchmark_comparison.csv
+¦   ¦       benchmark_comparison_formatted.csv
+¦   ¦       equal_weight_metrics.csv
+¦   ¦       equal_weight_returns.csv
+¦   ¦       equal_weight_weights.csv
+¦   ¦       markowitz_constrained_metrics.csv
+¦   ¦       markowitz_constrained_returns.csv
+¦   ¦       markowitz_constrained_weights.csv
+¦   ¦       markowitz_metrics.csv
+¦   ¦       markowitz_returns.csv
+¦   ¦       markowitz_weights.csv
+¦   ¦       vae_loss_history.csv
+¦   ¦       vae_reconstructed_test_scaled.csv
+¦   ¦       vae_reconstructed_train_scaled.csv
+¦   ¦       vae_reconstruction_error_by_asset.csv
+¦   ¦       vae_reconstruction_metrics.csv
+¦   ¦       vae_synthetic_evaluation.csv
+¦   ¦       vae_synthetic_markowitz_metrics.csv
+¦   ¦       vae_synthetic_markowitz_returns.csv
+¦   ¦       vae_synthetic_markowitz_weights.csv
+¦   ¦       vae_synthetic_returns.csv
+¦   ¦       vae_synthetic_returns_scaled.csv
+¦   ¦       vae_synthetic_summary.csv
+¦   ¦       
+¦   +---processed
+¦   ¦       minmax_scaler.pkl
+¦   ¦       returns.csv
+¦   ¦       returns_test.csv
+¦   ¦       returns_test_scaled.csv
+¦   ¦       returns_train.csv
+¦   ¦       returns_train_scaled.csv
+¦   ¦       
+¦   +---raw
+¦           sp500_prices_adj_close.csv
+¦           
++---figures
+¦       strategy_cumulative_returns.png
+¦       vae_loss.png
+¦       vae_real_vs_reconstructed_distribution.png
+¦       vae_real_vs_reconstructed_scatter.png
+¦       vae_reconstruction_error_by_asset.png
+¦       vae_synthetic_correlation_real.png
+¦       vae_synthetic_correlation_synthetic.png
+¦       vae_synthetic_distribution.png
+¦       vae_synthetic_volatility_comparison.png
+¦       
++---latex
+¦   ¦   bibliografia.bib
+¦   ¦   estilo_unir-1.sty
+¦   ¦   logo_unir.pdf
+¦   ¦   main.aux
+¦   ¦   main.bbl
+¦   ¦   main.blg
+¦   ¦   main.lof
+¦   ¦   main.log
+¦   ¦   main.lot
+¦   ¦   main.out
+¦   ¦   main.pdf
+¦   ¦   main.synctex.gz
+¦   ¦   main.tex
+¦   ¦   main.toc
+¦   ¦   
+¦   +---capitulos
+¦           01_introduccion.aux
+¦           01_introduccion.tex
+¦           02_objetivos.aux
+¦           02_objetivos.tex
+¦           03_marco_teorico.aux
+¦           03_marco_teorico.tex
+¦           04_estado_arte.aux
+¦           04_estado_arte.tex
+¦           05_metodologia.aux
+¦           05_metodologia.tex
+¦           06_desarrollo.aux
+¦           06_desarrollo.tex
+¦           07_codigo.aux
+¦           07_codigo.tex
+¦           08_resultados.aux
+¦           08_resultados.tex
+¦           09_herramientas.aux
+¦           09_herramientas.tex
+¦           10_marco_normativo.aux
+¦           10_marco_normativo.tex
+¦           11_conclusiones.aux
+¦           11_conclusiones.tex
+¦           12_limitaciones.aux
+¦           12_limitaciones.tex
+¦           
++---models
+¦       vae.pt
+¦       
++---notebooks
++---papers
+¦       Aghapour2025.pdf
+¦       Arjovsky_Wassertein_GAN.pdf
+¦       BoydVandenberghe.pdf
+¦       Elements_of_Information_Theory_Elements.pdf
+¦       HuangZhouSong.pdf
+¦       Jing_et_al_Deep_Reinforcement.pdf
+¦       Kingma-and-Welling-2022 Auto-Encoding Variational Bayes.pdf
+¦       Markowitz1952.pdf
+¦       Opitz2017.pdf
+¦       Rasekhschaffe2026.pdf
+¦       Salimans_et_al_Improved_Techniques.pdf
+¦       ssrn-3104847.pdf
+¦       Takahashi_et_al_Modeling.pdf
+¦       Voronina2025.pdf
+¦       zhangetal.pdf
+¦       
++---src
+    ¦   __init__.py
+    ¦   
+    +---data
+    ¦       download_data.py
+    ¦       preprocess.py
+    ¦       __init__.py
+    ¦       
+    +---evaluation
+    ¦   ¦   compare_benchmarks.py
+    ¦   ¦   evaluate_synthetic_scenarios.py
+    ¦   ¦   evaluate_vae.py
+    ¦   ¦   metrics.py
+    ¦   ¦   plot_strategy_comparison.py
+    ¦   ¦   __init__.py
+    ¦   ¦   
+    ¦   +---__pycache__
+    ¦           metrics.cpython-311.pyc
+    ¦           __init__.cpython-311.pyc
+    ¦           
+    +---models
+    ¦   ¦   generate_vae_scenarios.py
+    ¦   ¦   vae.py
+    ¦   ¦   __init__.py
+    ¦   ¦   
+    ¦   +---__pycache__
+    ¦           vae.cpython-311.pyc
+    ¦           __init__.cpython-311.pyc
+    ¦           
+    +---optimization
+    ¦       equal_weight.py
+    ¦       markowitz.py
+    ¦       markowitz_constrained.py
+    ¦       vae_synthetic_markowitz.py
+    ¦       __init__.py
+    ¦       
+    +---__pycache__
+            __init__.cpython-311.pyc
+            

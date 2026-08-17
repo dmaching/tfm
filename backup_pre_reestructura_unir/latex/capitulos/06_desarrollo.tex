@@ -1,34 +1,5 @@
 \chapter{Desarrollo específico de la contribución}
 
-\section{Análisis exploratorio de datos}
-
-\subsection{Descripción del dataset}
-% TODO: Documentar origen, periodo temporal, frecuencia, dimensiones y unidad de observación del dataset real.
-
-\subsection{Variables utilizadas}
-% TODO: Identificar las variables originales y derivadas empleadas en el análisis.
-
-\subsection{Valores perdidos y calidad de los datos}
-% TODO: Cuantificar valores ausentes, duplicados y criterios de calidad sin alterar los datos originales.
-
-\subsection{Estadísticos descriptivos}
-% TODO: Incorporar y comentar los estadísticos descriptivos calculados sobre los datos procesados.
-
-\subsection{Distribución de los retornos}
-% TODO: Analizar forma, asimetría, curtosis y posibles valores extremos de los retornos.
-
-\subsection{Evolución temporal}
-% TODO: Examinar la evolución temporal de retornos y rendimientos acumulados en una muestra representativa.
-
-\subsection{Análisis de volatilidad}
-% TODO: Analizar la volatilidad histórica y móvil con una ventana temporal justificada.
-
-\subsection{Análisis de correlaciones}
-% TODO: Analizar la matriz de correlaciones y las relaciones más intensas entre activos.
-
-\subsection{Conclusiones del análisis exploratorio}
-% TODO: Redactar las conclusiones del EDA a partir de resultados reales, sin anticipar resultados del modelado.
-
 En este capítulo se describe el desarrollo técnico de la contribución propuesta. En particular, se expone el diseño e implementación de un pipeline experimental orientado a generar escenarios sintéticos de retornos financieros y utilizarlos posteriormente como entrada para un proceso de optimización de carteras. El objetivo no es sustituir los modelos clásicos de optimización, sino analizar si la incorporación de escenarios generados mediante modelos de aprendizaje profundo puede aportar información adicional respecto al uso exclusivo de datos históricos.
 
 \section{Diseño del pipeline experimental}
@@ -171,38 +142,36 @@ En el periodo de test analizado, la cartera restringida presenta un mejor equili
 
 El Autoencoder Variacional \(VAE, *Variational Autoencoder*\) es un modelo generativo basado en variables latentes continuas que permite aprender una representación comprimida y estructurada de los datos. En el contexto de este trabajo, se asume que los vectores de retornos diarios normalizados de los treinta activos seleccionados pueden explicarse a través de una distribución latente de menor dimensionalidad que captura factores subyacentes comunes del mercado.
 
-De forma operativa, el modelo no genera directamente una variable latente determinista, sino que el encoder aprende a parametrizar una distribución probabilística condicional. En particular, dado un vector de entrada \(x\), el encoder produce dos vectores: la media \(\mu(x)\) y el logaritmo de la varianza \(\log \sigma^2(x)\). Estos parámetros definen una distribución gaussiana multivariante diagonal de la forma:
+De forma operativa, el modelo no genera directamente una variable latente determinista, sino que el encoder aprende a parametrizar una distribución probabilística condicional. En particular, dado un vector de entrada \(x\), el encoder produce dos vectores: la media (\mu(x)) y el logaritmo de la varianza (\log \sigma^2(x)). Estos parámetros definen una distribución gaussiana multivariante diagonal de la forma:
 
-\[
+[
 q_\phi(z|x) = \mathcal{N}(\mu(x), \sigma^2(x) I)
-\]
+]
 
 A partir de esta distribución no se selecciona directamente un valor determinista, sino que se realiza un muestreo estocástico del espacio latente. Este muestreo se implementa mediante el truco de reparametrización, que permite mantener la diferenciabilidad del modelo:
 
-\[
+[
 z = \mu(x) + \sigma(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
-\]
+]
 
-El decoder toma como entrada este vector latente \(z\) y genera una reconstrucción \(\hat{x}\) del vector original de retornos. En este caso, la salida del modelo tiene la misma dimensionalidad que la entrada (30 activos), por lo que el decoder actúa como una transformación inversa del espacio latente hacia el espacio original de observaciones financieras.
+El decoder toma como entrada este vector latente (z) y genera una reconstrucción (\hat{x}) del vector original de retornos. En este caso, la salida del modelo tiene la misma dimensionalidad que la entrada (30 activos), por lo que el decoder actúa como una transformación inversa del espacio latente hacia el espacio original de observaciones financieras.
 
 El objetivo del entrenamiento es que la reconstrucción sea lo más fiel posible a la entrada original, al mismo tiempo que el espacio latente mantiene una estructura regular. Para ello, el modelo se entrena maximizando la Evidence Lower Bound (ELBO), que en la práctica se implementa como la minimización de una función de pérdida compuesta por dos términos:
 
-\begin{itemize}
-\item un término de reconstrucción, medido mediante error cuadrático medio (MSE) entre \(x\) y \(\hat{x}\),
-\item un término de regularización basado en la divergencia de Kullback-Leibler entre la distribución latente aprendida y una distribución normal estándar.
-\end{itemize}
+* un término de reconstrucción, medido mediante error cuadrático medio (MSE) entre (x) y (\hat{x}),
+* un término de regularización basado en la divergencia de Kullback-Leibler entre la distribución latente aprendida y una distribución normal estándar.
 
 En este trabajo, la función de pérdida se define como:
 
-\[
-\mathcal{L} = \mathcal{L}_{rec} + \beta \mathcal{L}_{KL}
-\]
+[
+\mathcal{L} = \mathcal{L}*{rec} + \beta \mathcal{L}*{KL}
+]
 
-donde el parámetro \(\beta = 0.001\) controla el peso de la regularización del espacio latente.
+donde el parámetro (\beta = 0.001) controla el peso de la regularización del espacio latente.
 
 El encoder está compuesto por una red neuronal feedforward con una capa oculta de 64 neuronas, mientras que el espacio latente tiene dimensión 8. El decoder simétrico reconstruye el vector de retornos a partir de esta representación comprimida.
 
-El modelo se entrena durante 150 épocas utilizando el optimizador Adam. La función de pérdida se calcula sobre los retornos escalados en el intervalo \([-1, 1]\), utilizando únicamente el conjunto de entrenamiento para evitar fuga de información. El aprendizaje converge de forma estable, observándose una reducción progresiva tanto del error de reconstrucción como del término de regularización KL.
+El modelo se entrena durante 150 épocas utilizando el optimizador Adam. La función de pérdida se calcula sobre los retornos escalados en el intervalo ([-1, 1]), utilizando únicamente el conjunto de entrenamiento para evitar fuga de información. El aprendizaje converge de forma estable, observándose una reducción progresiva tanto del error de reconstrucción como del término de regularización KL.
 
 En términos empíricos, el modelo alcanza una pérdida total en torno a 0.0095 al final del entrenamiento, con un error de reconstrucción en torno a 0.0077 en el conjunto de entrenamiento y aproximadamente 0.0105 en test, lo que indica una capacidad de generalización razonable del modelo. Asimismo, el error medio absoluto de reconstrucción se sitúa en torno a 0.060 en train y 0.069 en test, lo que confirma que el modelo preserva adecuadamente la estructura estadística de los retornos financieros sin sobreajustar significativamente los datos de entrenamiento.
 
@@ -270,23 +239,3 @@ En segundo lugar, se entrena un Autoencoder Variacional sobre los retornos escal
 Finalmente, estos escenarios sintéticos se utilizan para estimar parámetros estadísticos que alimentan un proceso de optimización de carteras basado en teoría media-varianza. La cartera resultante se evalúa sobre datos reales no observados durante el entrenamiento.
 
 Este diseño experimental permite analizar si la incorporación de modelos generativos mejora la calidad de las decisiones de inversión frente a enfoques clásicos basados exclusivamente en datos históricos.
-
-\section{Entrenamiento y comparación de modelos}
-
-\subsection{Modelos candidatos}
-% TODO: Comparar al menos tres modelos o variantes ya implementados en el proyecto.
-% Modelos/estrategias detectados en el código: cartera equiponderada, Markowitz, Markowitz restringido y Markowitz con escenarios sintéticos VAE.
-
-\subsection{Configuración experimental}
-% TODO: Documentar partición temporal, hiperparámetros, semillas, recursos y protocolo común de entrenamiento.
-
-\subsection{Métricas de comparación}
-% TODO: Definir métricas homogéneas para calidad generativa, reconstrucción y rendimiento financiero.
-
-\subsection{Resultados de entrenamiento}
-% TODO: Incorporar curvas y métricas obtenidas de ejecuciones reales de los modelos candidatos.
-
-\subsection{Selección del modelo final}
-% TODO: Justificar la selección final mediante las métricas reales y los criterios definidos previamente.
-
-\input{capitulos/08_resultados}

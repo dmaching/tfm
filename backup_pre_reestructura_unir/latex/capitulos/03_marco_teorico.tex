@@ -1,13 +1,9 @@
 \clearpage
-\chapter{Contexto y estado del arte}
-
-\section{Contexto del problema}
-
-% TODO: Añadir figura teórica correctamente citada.
+\chapter{Marco Teórico}
 
 En este capítulo se presentan los fundamentos conceptuales sobre los que se apoya el presente Trabajo de Fin de Máster. En primer lugar, se introducen los principios básicos de la teoría moderna de carteras y el modelo de media-varianza de Markowitz. A continuación, se analizan algunas de sus principales limitaciones, especialmente en lo relativo al uso de la varianza como medida de riesgo. Posteriormente, se presentan conceptos fundamentales de la teoría de la información, así como su utilidad para comparar distribuciones y medir incertidumbre. Finalmente, se introducen los modelos generativos profundos, con especial atención a los Autoencoders Variacionales, las Redes Generativas Adversarias y los modelos de difusión.
 
-\subsection{Teoría moderna de carteras}
+\section{Teoría moderna de carteras}
 
 La teoría moderna de carteras constituye uno de los marcos fundamentales para la gestión cuantitativa de inversiones. Su aportación principal consiste en formalizar la relación entre rentabilidad esperada y riesgo, mostrando que la selección de activos no debe basarse únicamente en maximizar el rendimiento esperado, sino también en considerar la variabilidad de dichos rendimientos y la relación entre los distintos activos que componen la cartera.
 
@@ -15,7 +11,7 @@ Desde esta perspectiva, una cartera de inversión puede entenderse como una comb
 
 La teoría moderna de carteras establece, por tanto, que el inversor debe buscar combinaciones eficientes de activos. Estas combinaciones son aquellas que, para un determinado nivel de riesgo, maximizan la rentabilidad esperada o, de forma equivalente, que para una rentabilidad esperada dada minimizan el riesgo asumido. El conjunto de estas carteras recibe el nombre de frontera eficiente.
 
-\subsection{Modelo de media-varianza de Markowitz}
+\section{Modelo de media-varianza de Markowitz}
 
 \cite{markowitz1952} introduce el modelo de media-varianza para la optimización de carteras. Este modelo supuso un cambio relevante frente a enfoques previos basados únicamente en la búsqueda del máximo retorno esperado, ya que incorpora explícitamente el riesgo asociado a los activos seleccionados y la correlación entre sus retornos.
 
@@ -37,7 +33,7 @@ El segundo término, $\frac{\lambda}{2} w^\top \Sigma w$, introduce una penaliza
 
 La restricción $\mathbf{1}^\top w = 1$ garantiza que la suma de los pesos sea igual a uno, es decir, que se invierta la totalidad del capital disponible. En conjunto, este problema establece el compromiso fundamental de la teoría moderna de carteras: maximizar la rentabilidad esperada y, al mismo tiempo, controlar el riesgo asumido.
 
-\subsection{Riesgo financiero y hechos estilizados}
+\section{Riesgo financiero y hechos estilizados}
 
 El riesgo financiero puede entenderse como la incertidumbre asociada a la evolución futura del valor de los activos financieros. En el marco clásico de Markowitz, este riesgo se identifica principalmente con la varianza de los retornos. Sin embargo, los mercados financieros reales presentan propiedades estadísticas que no siempre pueden describirse adecuadamente mediante una distribución normal ni mediante relaciones lineales entre activos.
 
@@ -45,7 +41,7 @@ Entre estas propiedades destacan las colas pesadas, la asimetría, la volatilida
 
 Estas características son especialmente relevantes en la gestión de carteras, ya que afectan directamente a la estimación del riesgo. En periodos de estrés financiero, las correlaciones entre activos pueden aumentar de forma significativa, reduciendo los beneficios esperados de la diversificación. Por ello, una aproximación basada únicamente en medias, varianzas y covarianzas puede resultar insuficiente para capturar la complejidad de los mercados financieros.
 
-\subsection{Limitaciones de la varianza como medida de riesgo}
+\section{Limitaciones de la varianza como medida de riesgo}
 
 Aunque el modelo de Markowitz fue pionero y sigue constituyendo una referencia fundamental en la optimización de carteras, presenta limitaciones importantes. Una de las principales es la identificación del riesgo con la varianza de los retornos. Esta elección implica asumir que las desviaciones positivas y negativas respecto a la media son tratadas de la misma forma, aunque desde el punto de vista del inversor las pérdidas suelen ser más relevantes que las ganancias inesperadas.
 
@@ -55,7 +51,7 @@ Otra limitación relevante es la sensibilidad del modelo a la estimación de sus
 
 Estas limitaciones motivan la búsqueda de enfoques alternativos capaces de capturar una descripción más rica de la distribución de retornos. En lugar de resumir el comportamiento de los activos únicamente mediante media y varianza, resulta necesario considerar herramientas que permitan aproximar la distribución completa y modelar relaciones no lineales entre activos.
 
-\subsection{Teoría de la información}
+\section{Teoría de la información}
 
 La teoría de la información proporciona un marco matemático para estudiar la incertidumbre, la dependencia y la transmisión de información en sistemas aleatorios \cite{cover2006elements}. En el contexto de este trabajo, resulta especialmente relevante porque permite analizar distribuciones de probabilidad y cuantificar diferencias entre ellas.
 
@@ -63,7 +59,7 @@ Mientras que el enfoque clásico de media-varianza resume el comportamiento de l
 
 Desde esta perspectiva, conceptos como la entropía, la divergencia de Kullback-Leibler y la información mutua permiten estudiar aspectos distintos del comportamiento de los activos financieros. La entropía mide el grado de incertidumbre de una variable aleatoria; la divergencia KL permite comparar dos distribuciones de probabilidad; y la información mutua permite cuantificar dependencias entre variables, incluyendo relaciones no lineales.
 
-\subsection{Entropía, divergencia KL e información mutua}
+\section{Entropía, divergencia KL e información mutua}
 
 Siguiendo a Cover y Thomas \cite{cover2006elements}, la entropía de Shannon mide la incertidumbre asociada a una variable aleatoria discreta. Si se entiende el retorno de un activo como una variable aleatoria $X$, su entropía puede definirse como:
 
@@ -100,7 +96,7 @@ donde $H(X)$ y $H(Y)$ representan las entropías marginales de las variables $X$
 
 En el análisis financiero, la información mutua puede interpretarse como una medida de dependencia entre los retornos de distintos activos. A diferencia de la correlación, que mide únicamente relaciones lineales, la información mutua capta dependencias más generales, incluyendo relaciones no lineales. Por este motivo, puede resultar útil para complementar el análisis tradicional basado en matrices de covarianzas.
 
-\subsection{Inteligencia artificial, aprendizaje automático y aprendizaje profundo}
+\section{Inteligencia artificial, aprendizaje automático y aprendizaje profundo}
 
 La inteligencia artificial engloba un conjunto amplio de técnicas orientadas a desarrollar sistemas capaces de realizar tareas que requieren algún tipo de aprendizaje, razonamiento o adaptación. Dentro de este campo, el aprendizaje automático se centra en métodos que permiten a los modelos aprender patrones a partir de datos, sin necesidad de programar explícitamente todas las reglas de decisión.
 
@@ -108,7 +104,7 @@ El aprendizaje profundo constituye una rama del aprendizaje automático basada e
 
 En este trabajo, el interés principal no se encuentra en utilizar modelos de aprendizaje profundo para predecir directamente el precio futuro de los activos, sino en emplearlos para modelar distribuciones de retornos y generar escenarios sintéticos. Esta diferencia es relevante: mientras que un modelo predictivo busca estimar un valor futuro concreto, un modelo generativo busca aprender la estructura estadística de los datos para producir nuevas muestras coherentes con la distribución observada.
 
-\subsection{Modelos generativos profundos}
+\section{Modelos generativos profundos}
 
 Los modelos generativos profundos son modelos de aprendizaje automático cuyo objetivo es aprender la distribución subyacente de los datos para generar nuevas observaciones con propiedades similares a las reales. En lugar de limitarse a predecir una etiqueta o un valor, estos modelos buscan capturar la estructura probabilística de los datos.
 
@@ -116,7 +112,7 @@ Este enfoque resulta especialmente útil en el análisis financiero, ya que perm
 
 En el contexto de la optimización de carteras, los modelos generativos permiten desplazar el foco desde la estimación de parámetros concretos, como la media y la matriz de covarianzas, hacia la aproximación de la distribución completa de retornos. Una vez aprendida dicha distribución, es posible generar escenarios sintéticos sobre los que evaluar la robustez de distintas asignaciones de cartera.
 
-\subsection{Autoencoders Variacionales}
+\section{Autoencoders Variacionales}
 
 Los Autoencoders Variacionales, introducidos por Kingma y Welling \cite{kingma2013auto}, representan una extensión probabilística de los autoencoders tradicionales. Mientras que un autoencoder convencional aprende una representación determinista de los datos en un espacio latente, un VAE aprende una distribución de probabilidad sobre dicho espacio latente, habitualmente parametrizada mediante una distribución normal multivariante.
 
@@ -154,7 +150,7 @@ El primer término mide la capacidad del modelo para reconstruir los datos obser
 
 En conjunto, el VAE permite aprender una representación comprimida y probabilística de los datos financieros. Esta representación puede ser útil para filtrar parte del ruido presente en las series de retornos y conservar patrones latentes relevantes para la posterior generación de escenarios.
 
-\subsection{Redes Generativas Adversarias y Wasserstein GAN}
+\section{Redes Generativas Adversarias y Wasserstein GAN}
 
 Las Redes Generativas Adversarias, introducidas por \cite{goodfellow2014generative}, introducen un marco de aprendizaje generativo basado en la interacción entre dos redes neuronales: un generador y un discriminador. El generador transforma un vector de ruido en una muestra sintética, mientras que el discriminador intenta distinguir entre muestras reales y muestras generadas.
 
@@ -180,12 +176,10 @@ Las GANs resultan atractivas para la optimización de carteras porque pueden cap
 
 Como respuesta a estas limitaciones, las Wasserstein GAN introducen una formulación alternativa basada en la distancia de Wasserstein entre distribuciones \cite{arjovsky2017wasserstein}. Esta aproximación mejora la estabilidad del entrenamiento y proporciona una señal de optimización más informativa cuando la distribución generada todavía se encuentra lejos de la distribución real. Por este motivo, las WGAN constituyen una extensión relevante dentro del modelado generativo aplicado a datos financieros.
 
-\subsection{Modelos de difusión}
+\section{Modelos de difusión}
 
 Los modelos de difusión constituyen una familia reciente de modelos generativos basados en la idea de añadir ruido de forma progresiva a los datos hasta transformar la distribución original en una distribución simple, habitualmente ruido gaussiano. Posteriormente, el modelo aprende el proceso inverso, es decir, cómo eliminar gradualmente el ruido para reconstruir muestras coherentes con la distribución original.
 
 En términos generales, el proceso se divide en dos fases. En la fase directa, los datos se degradan progresivamente mediante la adición de ruido. En la fase inversa, una red neuronal aprende a revertir ese proceso, generando nuevas observaciones a partir de ruido inicial. Esta formulación permite obtener muestras diversas y estables, lo que ha hecho que los modelos de difusión se hayan convertido en una línea destacada dentro del modelado generativo.
 
 Aplicados al ámbito financiero, estos modelos pueden utilizarse para generar trayectorias sintéticas de retornos o precios que preserven ciertas propiedades estadísticas de los datos reales. Aunque en este trabajo la arquitectura principal se centra en modelos VAE-GAN, los modelos de difusión se incluyen en el marco teórico por su relevancia reciente en la generación de escenarios y en problemas dinámicos de selección de carteras.
-
-\input{capitulos/04_estado_arte}

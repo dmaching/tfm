@@ -1,8 +1,9 @@
-\section{Estado del arte}
+\clearpage
+\chapter{Estado del Arte}
 
 En este capítulo se revisan los principales trabajos y líneas de investigación relacionados con la optimización de carteras y el uso de modelos de aprendizaje automático y modelado generativo en finanzas. A diferencia del marco teórico, cuyo objetivo es presentar los conceptos fundamentales, el estado del arte se centra en identificar qué enfoques han sido propuestos previamente, qué limitaciones presentan y en qué punto se sitúa la contribución planteada en este trabajo.
 
-\subsection{Optimización clásica de carteras}
+\section{Optimización clásica de carteras}
 
 La optimización clásica de carteras tiene como punto de partida el trabajo de Markowitz, quien introduce el modelo de media-varianza como una formulación matemática para la selección de carteras de inversión \cite{markowitz1952}. La aportación fundamental de este enfoque consiste en establecer que la elección de activos no debe basarse únicamente en la maximización del retorno esperado, sino también en el control del riesgo asociado a la cartera.
 
@@ -12,7 +13,7 @@ No obstante, aunque el modelo de media-varianza continúa siendo una referencia 
 
 Estas limitaciones han motivado el desarrollo de enfoques alternativos, tanto desde la estadística financiera tradicional como desde el aprendizaje automático. En este trabajo, el modelo de Markowitz se considera como referencia clásica frente a la cual comparar la metodología basada en escenarios sintéticos generados mediante modelos profundos.
 
-\subsection{Aprendizaje automático y deep learning en gestión de carteras}
+\section{Aprendizaje automático y deep learning en gestión de carteras}
 
 El aprendizaje automático ha introducido nuevas aproximaciones para el análisis de datos financieros, especialmente en contextos donde las relaciones entre variables son complejas, no lineales y difíciles de modelar mediante técnicas paramétricas tradicionales. En el ámbito de la gestión de carteras, estas técnicas se han aplicado principalmente a la predicción de precios, la estimación de retornos, la clasificación de activos y la construcción de señales de inversión.
 
@@ -22,7 +23,7 @@ En este contexto, el aprendizaje profundo aporta la capacidad de modelar relacio
 
 A pesar de ello, el enfoque de este trabajo no consiste en utilizar aprendizaje profundo para predecir directamente precios futuros, sino en emplearlo para modelar distribuciones de retornos y generar escenarios sintéticos. Esta distinción es relevante, ya que desplaza el problema desde la predicción puntual hacia la generación de posibles trayectorias o escenarios de mercado sobre los que evaluar la robustez de una cartera.
 
-\subsection{Modelos generativos para series financieras}
+\section{Modelos generativos para series financieras}
 
 Los modelos generativos han ganado relevancia en el análisis de series financieras debido a su capacidad para aprender distribuciones complejas directamente a partir de los datos. A diferencia de los modelos clásicos, que requieren especificar de forma explícita una distribución o una estructura paramétrica, los modelos generativos permiten aproximar la distribución subyacente y producir nuevas muestras con propiedades similares a las observadas.
 
@@ -34,7 +35,7 @@ Los Autoencoders Variacionales también resultan relevantes en este contexto, ya
 
 A partir de estas ideas, el presente trabajo plantea una arquitectura híbrida VAE-GAN. El VAE se orienta a obtener una representación latente de los retornos financieros, mientras que la GAN se emplea para generar escenarios sintéticos a partir de dicha representación. Esta combinación busca aprovechar la capacidad del VAE para estructurar el espacio latente y la capacidad de la GAN para producir muestras realistas.
 
-\subsection{Modelos de difusión para selección dinámica de carteras}
+\section{Modelos de difusión para selección dinámica de carteras}
 
 En los últimos años, los modelos de difusión han adquirido una relevancia creciente dentro del modelado generativo. Estos modelos se basan en aprender un proceso inverso de eliminación de ruido, permitiendo generar nuevas observaciones a partir de una distribución inicial simple, normalmente ruido gaussiano. Su principal atractivo reside en la estabilidad del proceso generativo y en su capacidad para producir muestras diversas.
 
@@ -44,9 +45,7 @@ Según los resultados reportados por estos autores, los modelos de difusión pue
 
 Aunque el presente trabajo no se centra directamente en modelos de difusión, su inclusión en el estado del arte permite situar la propuesta VAE-GAN dentro de una tendencia más amplia: el uso de modelos generativos profundos para construir escenarios sintéticos y mejorar los procesos de optimización de carteras.
 
-\section{Conclusiones}
-
-\subsection{Síntesis crítica y hueco de investigación}
+\section{Síntesis crítica y hueco de investigación}
 
 La revisión anterior permite identificar una evolución clara en las técnicas aplicadas a la optimización de carteras. En primer lugar, la teoría clásica de Markowitz establece una formulación matemática sólida basada en el equilibrio entre rentabilidad esperada y riesgo. Sin embargo, su dependencia de la media, la varianza y la matriz de covarianzas limita su capacidad para capturar distribuciones no gaussianas, colas pesadas y relaciones no lineales entre activos.
 

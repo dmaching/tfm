@@ -1,6 +1,9 @@
+\clearpage
+\chapter{Metodología}
+
 En este capítulo se presenta la metodología de trabajo seguida para la realización del presente trabajo de investigación. Se detalla el diseño experimental y la lógica de construcción de la arquitectura híbrida VAE-GAN. Asimismo, se describe el proceso de adquisición y preprocesamiento de datos, la formalización matemática de las funciones de pérdida y el protocolo de validación para la selección de carteras.
 
-\subsection{Diseño general del experimento}
+\section{Diseño general del experimento}
 
 Se pretende construir un flujo completo, desde la adquisición de datos hasta la validación de los resultados de los modelos, pasando por la generación de escenarios sintéticos.
 
@@ -8,7 +11,7 @@ En primer lugar, se realizará la adquisición de datos históricos de retornos 
 
 A continuación, se entrenará el modelo GAN/WGAN a partir de los resultados previamente obtenidos, con el objetivo de generar escenarios sintéticos. Basándose en los escenarios generados, se asignarán los pesos orientados a optimizar la cartera. Finalmente, se compararán los resultados obtenidos con la cartera construida mediante el modelo de Markowitz, una cartera equiponderada y el índice S\&P 500 como referencia de mercado.
 
-\subsection{Adquisición de datos}
+\section{Adquisición de datos}
 
 Una parte fundamental del experimento propuesto es la adquisición de datos reales que permitan llevar a cabo un estudio relevante.
 
@@ -18,7 +21,7 @@ Se emplearán estos datos por su relevancia. El mercado estadounidense es uno de
 
 Asimismo, se procurará establecer la trazabilidad de los datos, con el fin de asegurar que proceden de fuentes confiables y que el proceso de adquisición sea reproducible.
 
-\subsection{Preprocesamiento de los datos}
+\section{Preprocesamiento de los datos}
 
 Tras la adquisición de los datos, se llevarán a cabo las transformaciones necesarias para poder desarrollar los objetivos del trabajo. Este preprocesamiento permitirá adaptar las series históricas al formato requerido por los modelos generativos y por el proceso posterior de optimización.
 
@@ -28,7 +31,7 @@ Para el preprocesado, se aplicará una normalización Min-Max tras un tratamient
 
 Asimismo, se realizarán las transformaciones adicionales que sean necesarias para garantizar que los datos puedan ser utilizados de forma adecuada dentro del pipeline experimental. A priori, se pretende realizar una división temporal de los datos, separando los conjuntos de entrenamiento y validación.
 
-\subsection{Arquitectura VAE-GAN propuesta}
+\section{Arquitectura VAE-GAN propuesta}
 
 Una vez extraídos y preprocesados los datos, se elaborará una estructura en línea con lo expuesto en los apartados previos.
 
@@ -51,7 +54,6 @@ El espacio latente $Z$ representa, por tanto, una codificación comprimida de la
 \begin{figure}[H]
 \centering
 \shorthandoff{>}
-\resizebox{0.85\textwidth}{!}{%
 \begin{tikzpicture}[
 node distance=1.2cm and 1cm,
 every node/.style={draw, rectangle, rounded corners, align=center, minimum width=2.2cm, minimum height=0.9cm, font=\footnotesize},
@@ -91,16 +93,13 @@ arrow/.style={->, >=Stealth, thick}
 \draw[arrow] (kld) -- (opt);
 
 \end{tikzpicture}
-}
 \shorthandon{>}
 \caption{Arquitectura híbrida VAE-GAN para la generación y optimización de carteras.}
-\label{fig:arquitectura_vae_gan}
-\par\small Fuente: elaboración propia.
 \end{figure}
 
 El VAE toma datos históricos de retornos reales para obtener variables latentes asociadas a los mismos, modelando relaciones subyacentes entre distintos activos. El Generador recibe este espacio latente y, trabajando junto con el Discriminador, introduce variaciones mediante ruido aleatorio. Con este modelo, se busca crear escenarios sintéticos suficientemente similares a los retornos históricos para que resulten útiles en el proceso de optimización. Esto permite realizar la optimización final sobre un conjunto ampliado de escenarios probables, generando un conjunto de pesos para la cartera resultante.
 
-\subsection{Generación de escenarios sintéticos}
+\section{Generación de escenarios sintéticos}
 
 Una vez entrenado el VAE, se obtiene un espacio latente $Z$ que resume parte de la información relevante contenida en los retornos históricos. Para la generación de nuevas muestras, la GAN/WGAN utiliza este espacio latente junto con ruido aleatorio, con el objetivo de producir nuevos vectores de retornos sintéticos para los activos considerados.
 
@@ -110,7 +109,7 @@ La utilidad de estos escenarios depende de su capacidad para preservar propiedad
 
 Esta evaluación resulta necesaria para evitar que la optimización posterior se base en escenarios artificiales que no representen adecuadamente el comportamiento observado en los mercados financieros. En consecuencia, la generación de escenarios sintéticos no constituye un fin en sí mismo, sino una etapa intermedia orientada a mejorar la evaluación y selección de carteras bajo incertidumbre.
 
-\subsection{Función de pérdida y criterios de optimización}
+\section{Función de pérdida y criterios de optimización}
 
 La metodología propuesta combina tres niveles de optimización. En primer lugar, el VAE se entrena mediante una función de pérdida variacional, cuyo objetivo es obtener una representación latente estructurada de los datos. En segundo lugar, la GAN/WGAN se entrena mediante un criterio adversarial, con el objetivo de generar escenarios sintéticos estadísticamente próximos a los retornos reales. Finalmente, los escenarios generados se utilizan como base para la optimización de los pesos de la cartera.
 
@@ -237,7 +236,7 @@ donde $w$ representa el vector de pesos de la cartera, $\hat{\mu}_{gen}$ el vect
 
 Esta formulación permite conectar la generación de escenarios sintéticos con la optimización de carteras. En lugar de estimar los parámetros únicamente a partir de la muestra histórica observada, se plantea utilizar la distribución generada por el modelo como base adicional para evaluar la robustez de distintas asignaciones de pesos.
 
-\subsection{Optimización y selección de pesos}
+\section{Optimización y selección de pesos}
 
 En este apartado se describe cómo se obtiene la cartera resultante a partir de los escenarios sintéticos generados. Tras la generación de dichos escenarios, se procede a la fase de optimización y selección de pesos de la cartera.
 
@@ -276,7 +275,7 @@ La principal diferencia con el método clásico radica en la fuente de los pará
 
 De este modo, la asignación de pesos obtenida no depende exclusivamente de la muestra histórica original, sino también de una distribución generada que busca preservar ciertas propiedades estadísticas relevantes del mercado. La cartera resultante debe interpretarse, por tanto, como la asignación obtenida bajo el criterio de optimización definido y no como una cartera óptima en términos absolutos.
 
-\subsection{Benchmarks de comparación}
+\section{Benchmarks de comparación}
 
 Para evaluar la metodología propuesta, los resultados obtenidos se compararán con estrategias de referencia ampliamente utilizadas en optimización de carteras.
 
