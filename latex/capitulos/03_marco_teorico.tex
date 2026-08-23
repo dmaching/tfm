@@ -37,6 +37,8 @@ La restricción $\mathbf{1}^\top w = 1$ garantiza que la suma de los pesos sea i
 
 La relación entre retorno y volatilidad puede representarse mediante la frontera eficiente de la Figura~\ref{fig:frontera_eficiente_propia}. Los puntos situados por debajo son dominados por combinaciones que ofrecen más retorno para igual riesgo. La figura es conceptual: no representa pesos ni resultados calculados para el dataset del trabajo.
 
+La caracterización analítica de la frontera eficiente fue desarrollada posteriormente por \cite{merton1972analytic}, reforzando la interpretación geométrica del problema media-varianza y su papel como referencia clásica en la selección cuantitativa de carteras.
+
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[x=1cm,y=1cm]
@@ -56,6 +58,8 @@ La relación entre retorno y volatilidad puede representarse mediante la fronter
 El riesgo financiero puede entenderse como la incertidumbre asociada a la evolución futura del valor de los activos financieros. En el marco clásico de Markowitz, este riesgo se identifica principalmente con la varianza de los retornos. Sin embargo, los mercados financieros reales presentan propiedades estadísticas que no siempre pueden describirse adecuadamente mediante una distribución normal ni mediante relaciones lineales entre activos.
 
 Entre estas propiedades destacan las colas pesadas, la asimetría, la volatilidad estocástica y los cambios en las correlaciones entre activos a lo largo del tiempo \cite{takahashi2019modeling}. Las colas pesadas indican que los eventos extremos ocurren con mayor frecuencia de la que predeciría una distribución normal. La asimetría refleja que las pérdidas y ganancias no necesariamente se distribuyen de forma simétrica. La volatilidad estocástica y el agrupamiento de volatilidad muestran que los periodos de alta volatilidad tienden a concentrarse en el tiempo.
+
+La variación temporal de la volatilidad y su agrupamiento han sido estudiados ampliamente en la literatura econométrica, especialmente a partir de los modelos ARCH propuestos por \cite{engle1982autoregressive}.
 
 Estas características son especialmente relevantes en la gestión de carteras, ya que afectan directamente a la estimación del riesgo. En periodos de estrés financiero, las correlaciones entre activos pueden aumentar de forma significativa, reduciendo los beneficios esperados de la diversificación. Por ello, una aproximación basada únicamente en medias, varianzas y covarianzas puede resultar insuficiente para capturar la complejidad de los mercados financieros.
 
