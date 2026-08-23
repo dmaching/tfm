@@ -1,0 +1,3244 @@
+     Universidad Internacional de la Rioja (UNIR)
+
+     Escuela Superior de Ingenierı́a y
+     Tecnologı́a
+     Máster Universitario en Análisis y Visualización de
+     Datos Masivos
+
+
+
+     Generación de Escenarios Sintéticos
+     para Optimización de Carteras del S&P 500
+     mediante Arquitecturas VAE-GAN
+
+
+
+
+Trabajo Fin de Estudios
+
+presentado por: Daniel Machı́n González
+
+Dirigido por: Jesús Cigales Canga
+
+
+
+
+Ciudad: San Bartolomé
+Fecha: 23 de agosto de 2026
+Índice general
+
+
+Resumen                                                                                       VII
+
+
+Abstract                                                                                      VIII
+
+
+1. Introducción                                                                                1
+   1.1. Motivación . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     2
+   1.2. Planteamiento del trabajo . . . . . . . . . . . . . . . . . . . . . . . . . . . .       2
+   1.3. Estructura del trabajo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      3
+
+2. Contexto y estado del arte                                                                   4
+   2.1. Contexto del problema . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       4
+        2.1.1. Teorı́a moderna de carteras . . . . . . . . . . . . . . . . . . . . . . .        4
+        2.1.2. Modelo de media-varianza de Markowitz . . . . . . . . . . . . . . . .            5
+        2.1.3. Riesgo financiero y hechos estilizados . . . . . . . . . . . . . . . . . .       6
+        2.1.4. Limitaciones de la varianza como medida de riesgo . . . . . . . . . .            7
+        2.1.5. Teorı́a de la información . . . . . . . . . . . . . . . . . . . . . . . . .     7
+        2.1.6. Entropı́a, divergencia KL e información mutua . . . . . . . . . . . .           8
+        2.1.7. Inteligencia artificial, aprendizaje automático y aprendizaje profundo          9
+        2.1.8. Modelos generativos profundos . . . . . . . . . . . . . . . . . . . . . 10
+        2.1.9. Autoencoders Variacionales . . . . . . . . . . . . . . . . . . . . . . . 10
+        2.1.10. Redes Generativas Adversarias y Wasserstein GAN . . . . . . . . . . 12
+        2.1.11. Modelos de difusión . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+   2.2. Estado del arte . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+        2.2.1. Optimización clásica de carteras . . . . . . . . . . . . . . . . . . . . 13
+        2.2.2. Aprendizaje automático y deep learning en gestión de carteras . . . 14
+        2.2.3. Modelos generativos para series financieras . . . . . . . . . . . . . . 15
+        2.2.4. Modelos de difusión para selección dinámica de carteras . . . . . . . 16
+   2.3. Conclusiones . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+        2.3.1. Sı́ntesis crı́tica y hueco de investigación . . . . . . . . . . . . . . . . 17
+
+3. Objetivos concretos y metodologı́a de trabajo                                               18
+   3.1. Objetivo general . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+   3.2. Objetivos especı́ficos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+
+                                               i
+                                                                       Daniel Machı́n González
+                           Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+   3.3. Metodologı́a del trabajo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+        3.3.1. Alcance y delimitación del trabajo . . . . . . . . . . . . . . . . . . . 19
+        3.3.2. Justificación de la metodologı́a CRISP-DM . . . . . . . . . . . . . . 20
+        3.3.3. Adaptación de CRISP-DM al presente trabajo . . . . . . . . . . . . 21
+        3.3.4. Visión general y secuencia experimental . . . . . . . . . . . . . . . . 23
+        3.3.5. Diseño general del experimento . . . . . . . . . . . . . . . . . . . . . 24
+        3.3.6. Adquisición de datos . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+        3.3.7. Preprocesamiento de los datos . . . . . . . . . . . . . . . . . . . . . 24
+        3.3.8. Arquitectura VAE-GAN considerada en el diseño inicial . . . . . . . 25
+        3.3.9. Generación de escenarios sintéticos . . . . . . . . . . . . . . . . . . . 26
+        3.3.10. Función de pérdida y criterios de optimización . . . . . . . . . . . . 27
+        3.3.11. Optimización y selección de pesos   . . . . . . . . . . . . . . . . . . . 29
+        3.3.12. Benchmarks de comparación . . . . . . . . . . . . . . . . . . . . . . 30
+
+4. Marco normativo                                                                         32
+   4.1. Identificación del tratamiento de datos . . . . . . . . . . . . . . . . . . . . . 32
+   4.2. RGPD y Ley Orgánica 3/2018 . . . . . . . . . . . . . . . . . . . . . . . . . 32
+   4.3. Fuente financiera y propiedad intelectual . . . . . . . . . . . . . . . . . . . . 32
+   4.4. Uso responsable de inteligencia artificial . . . . . . . . . . . . . . . . . . . . 33
+   4.5. Carácter académico y no recomendación financiera . . . . . . . . . . . . . . 33
+   4.6. Reproducibilidad y transparencia . . . . . . . . . . . . . . . . . . . . . . . . 33
+
+5. Desarrollo especı́fico de la contribución                                              34
+   5.1. Análisis exploratorio de datos . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+        5.1.1. Descripción del dataset . . . . . . . . . . . . . . . . . . . . . . . . . 34
+        5.1.2. Variables utilizadas . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34
+        5.1.3. Valores perdidos y calidad de los datos . . . . . . . . . . . . . . . . . 34
+        5.1.4. Estadı́sticos descriptivos . . . . . . . . . . . . . . . . . . . . . . . . . 35
+        5.1.5. Distribución de los retornos . . . . . . . . . . . . . . . . . . . . . . . 36
+        5.1.6. Evolución temporal . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36
+        5.1.7. Análisis de volatilidad . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+        5.1.8. Análisis de correlaciones . . . . . . . . . . . . . . . . . . . . . . . . . 37
+        5.1.9. Conclusiones del análisis exploratorio    . . . . . . . . . . . . . . . . . 38
+   5.2. Diseño del pipeline experimental . . . . . . . . . . . . . . . . . . . . . . . . 40
+
+                                                                                                 ii
+                                                                       Daniel Machı́n González
+                           Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+  5.3. Selección del universo de activos . . . . . . . . . . . . . . . . . . . . . . . . 41
+  5.4. Adquisición de datos financieros . . . . . . . . . . . . . . . . . . . . . . . . . 41
+  5.5. Construcción del conjunto de retornos . . . . . . . . . . . . . . . . . . . . . 42
+  5.6. Implementación de modelos de referencia . . . . . . . . . . . . . . . . . . . 43
+       5.6.1. Cartera equiponderada . . . . . . . . . . . . . . . . . . . . . . . . . . 45
+       5.6.2. Cartera de Markowitz clásica . . . . . . . . . . . . . . . . . . . . . . 45
+       5.6.3. Cartera de Markowitz restringida . . . . . . . . . . . . . . . . . . . . 46
+       5.6.4. Evaluación común de las estrategias . . . . . . . . . . . . . . . . . . 47
+  5.7. Implementación del Autoencoder Variacional . . . . . . . . . . . . . . . . . 47
+  5.8. Generación de escenarios sintéticos . . . . . . . . . . . . . . . . . . . . . . . 49
+  5.9. Optimización de cartera a partir de escenarios sintéticos . . . . . . . . . . . 50
+  5.10. Sı́ntesis del pipeline experimental . . . . . . . . . . . . . . . . . . . . . . . . 51
+  5.11. Entrenamiento y comparación de modelos . . . . . . . . . . . . . . . . . . . 51
+       5.11.1. Modelos candidatos . . . . . . . . . . . . . . . . . . . . . . . . . . . 51
+       5.11.2. Configuración experimental . . . . . . . . . . . . . . . . . . . . . . . 52
+       5.11.3. Métricas de comparación . . . . . . . . . . . . . . . . . . . . . . . . 52
+       5.11.4. Resultados de entrenamiento . . . . . . . . . . . . . . . . . . . . . . 52
+       5.11.5. Selección del modelo final . . . . . . . . . . . . . . . . . . . . . . . . 53
+  5.12. Resultados experimentales . . . . . . . . . . . . . . . . . . . . . . . . . . . . 53
+       5.12.1. Métricas de evaluación . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+       5.12.2. Resultados empı́ricos . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+       5.12.3. Lectura por estrategia . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+       5.12.4. Por qué el resultado VAE puede ser elevado . . . . . . . . . . . . . . 56
+       5.12.5. Relación con la calidad generativa . . . . . . . . . . . . . . . . . . . 56
+       5.12.6. Evaluación comparativa y validez . . . . . . . . . . . . . . . . . . . . 56
+       5.12.7. Sı́ntesis de resultados . . . . . . . . . . . . . . . . . . . . . . . . . . . 57
+
+6. Código fuente y datos analizados                                                        58
+  6.1. Código fuente . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+       6.1.1. Herramientas y tecnologı́as . . . . . . . . . . . . . . . . . . . . . . . 58
+       6.1.2. Scripts principales . . . . . . . . . . . . . . . . . . . . . . . . . . . . 58
+       6.1.3. Flujo de ejecución . . . . . . . . . . . . . . . . . . . . . . . . . . . . 59
+       6.1.4. Dependencias y entorno . . . . . . . . . . . . . . . . . . . . . . . . . 59
+
+                                                                                                  iii
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+        6.1.5. Artefactos y trazabilidad . . . . . . . . . . . . . . . . . . . . . . . . 60
+   6.2. Datos analizados . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 60
+        6.2.1. Datos brutos y procesados . . . . . . . . . . . . . . . . . . . . . . . . 60
+        6.2.2. Datos generados . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 60
+        6.2.3. Pesos, retornos y métricas . . . . . . . . . . . . . . . . . . . . . . . . 60
+        6.2.4. Figuras y productos del EDA . . . . . . . . . . . . . . . . . . . . . . 61
+        6.2.5. Limitaciones de los datos . . . . . . . . . . . . . . . . . . . . . . . . 61
+
+7. Conclusiones                                                                             62
+   7.1. Cumplimiento de objetivos      . . . . . . . . . . . . . . . . . . . . . . . . . . . 62
+   7.2. Principales resultados obtenidos . . . . . . . . . . . . . . . . . . . . . . . . . 62
+   7.3. Valoración final de la metodologı́a . . . . . . . . . . . . . . . . . . . . . . . 63
+   7.4. Aportaciones del trabajo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 63
+   7.5. Conclusión general . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 64
+
+8. Limitaciones y prospectiva                                                               65
+   8.1. Limitaciones . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 65
+        8.1.1. Universo y periodo . . . . . . . . . . . . . . . . . . . . . . . . . . . . 65
+        8.1.2. Fuente de datos . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 65
+        8.1.3. No estacionariedad y validación temporal . . . . . . . . . . . . . . . 65
+        8.1.4. Modelos generativos . . . . . . . . . . . . . . . . . . . . . . . . . . . 65
+        8.1.5. Optimización y condiciones de mercado . . . . . . . . . . . . . . . . 66
+        8.1.6. Alcance de las conclusiones . . . . . . . . . . . . . . . . . . . . . . . 66
+   8.2. Trabajo futuro . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+        8.2.1. Comparación y robustez de modelos . . . . . . . . . . . . . . . . . . 66
+        8.2.2. Validación temporal y operación . . . . . . . . . . . . . . . . . . . . 67
+        8.2.3. Ampliación financiera . . . . . . . . . . . . . . . . . . . . . . . . . . 67
+        8.2.4. Variables condicionantes y herramienta reproducible . . . . . . . . . 67
+
+Referencias bibliográficas                                                                 69
+
+
+
+
+                                                                                                  iv
+Índice de figuras
+
+
+ 2.1. Representación conceptual de la frontera eficiente de Markowitz. Fuente:
+      elaboración propia. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   6
+ 2.2. Esquema conceptual del Autoencoder Variacional implementado. Fuente:
+      elaboración propia. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+
+ 3.1. Arquitectura hı́brida VAE-GAN considerada inicialmente y no implemen-
+      tada de forma completa. Fuente: elaboración propia. . . . . . . . . . . . . . 26
+
+ 5.1. Valores perdidos por activo en la matriz final de retornos. Fuente: elabora-
+      ción propia a partir de los datos procesados. . . . . . . . . . . . . . . . . . . 35
+ 5.2. Distribución agregada de los log-retornos diarios. Fuente: elaboración propia
+      a partir de los datos procesados. . . . . . . . . . . . . . . . . . . . . . . . . 36
+ 5.3. Evolución de los rendimientos acumulados en una muestra de activos. Fuen-
+      te: elaboración propia. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 37
+ 5.4. Volatilidad móvil anualizada en una muestra de activos. Fuente: elaboración
+      propia. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+ 5.5. Matriz de correlaciones de los retornos. Fuente: elaboración propia a partir
+      de los datos procesados. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+ 5.6. Evolución acumulada de las estrategias durante el periodo de test. Fuente:
+      elaboración propia a partir de los retornos generados por el pipeline. . . . . 55
+
+
+
+
+                                            v
+Índice de tablas
+
+
+ 3.1. Adaptación de CRISP-DM al desarrollo experimental del trabajo. Fuente:
+      elaboración propia. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+
+ 5.1. Selección de estadı́sticos descriptivos de log-retornos diarios. Fuente: elabo-
+      ración propia a partir de eda descriptive statistics.csv. . . . . . . . . 35
+ 5.2. Comparación reproducible de autoencoders en escala normalizada. Fuente:
+      elaboración propia a partir de autoencoder model comparison.csv. . . . . 53
+ 5.3. Comparación de estrategias de inversión fuera de muestra. Fuente: elabora-
+      ción propia a partir de benchmark comparison.csv. . . . . . . . . . . . . . 54
+
+ 6.1. Principales archivos de código fuente. Fuente: elaboración propia. . . . . . . 59
+
+
+
+
+                                           vi
+Resumen
+
+   La optimización media-varianza es sensible a los errores de estimación de retornos espe-
+rados y covarianzas, especialmente cuando los retornos financieros presentan colas pesadas,
+volatilidad cambiante y dependencias que no quedan plenamente descritas por supuestos
+gaussianos. Este Trabajo de Fin de Máster estudia si escenarios sintéticos pueden propor-
+cionar una base alternativa para estimar dichos parámetros. Se utilizan precios ajustados
+diarios de 30 activos del S&P 500 entre 2014 y 2024, transformados en 2.766 observaciones
+de log-retornos. El proceso sigue una adaptación de CRISP-DM e incluye análisis explo-
+ratorio, partición cronológica 80/20, escalado sin fuga de información, entrenamiento de
+modelos y evaluación fuera de muestra.
+   El núcleo generativo implementado es un Autoencoder Variacional (VAE) con ocho
+dimensiones latentes. A partir de su decoder se generan 5.000 escenarios conjuntos, cuyas
+medias y covarianzas alimentan una optimización de máximo ratio de Sharpe. La cartera
+resultante se compara con equiponderación, Markowitz clásico y Markowitz restringido
+sobre 554 sesiones no utilizadas para entrenar. En ese periodo, la estrategia VAE obtiene
+un retorno acumulado del 242,32 %, volatilidad anualizada del 25,08 %, Sharpe de 2,99 y
+máximo drawdown del -13,96 %. Estos resultados son favorables en rentabilidad y Shar-
+pe, pero también implican mayor volatilidad y no acreditan superioridad general. Una
+comparación adicional AE/VAE muestra que la calidad de reconstrucción no equivale ne-
+cesariamente a calidad generativa. Aunque el tı́tulo conserva la inspiración VAE-GAN,
+GAN/WGAN no forman parte de la implementación validada. El estudio es académico,
+sin costes, rebalanceo ni validación walk-forward.
+   Palabras clave: Autoencoder Variacional, escenarios sintéticos, optimización de car-
+teras, Markowitz, S&P 500.
+
+
+
+
+                                             vii
+Abstract
+
+   Mean–variance optimisation is sensitive to estimation errors in expected returns and
+covariances, particularly when financial returns exhibit heavy tails, changing volatility,
+and dependencies that are not fully described by Gaussian assumptions. This Master’s
+Thesis investigates whether synthetic scenarios can provide an alternative basis for para-
+meter estimation. Daily adjusted prices for 30 S&P 500 constituents from 2014 to 2024
+are transformed into 2,766 log-return observations. The process follows an adaptation of
+CRISP-DM and comprises exploratory analysis, an 80/20 chronological split, leakage-free
+scaling, model training, and out-of-sample evaluation.
+   The implemented generative core is a Variational Autoencoder (VAE) with eight latent
+dimensions. Its decoder generates 5,000 joint scenarios whose means and covariances feed a
+maximum-Sharpe optimisation. The resulting portfolio is compared with equal weighting,
+classical Markowitz, and constrained Markowitz strategies over 554 sessions excluded from
+training. During this period, the VAE strategy achieves a 242.32 % cumulative return,
+25.08 % annualised volatility, a 2.99 Sharpe ratio, and a -13.96 % maximum drawdown.
+These figures are favourable in terms of return and Sharpe, but they also entail greater
+volatility and do not establish general superiority. An additional AE/VAE comparison
+shows that reconstruction quality is not equivalent to generative quality. Although the
+title retains its VAE-GAN inspiration, GAN/WGAN models are not part of the validated
+implementation. The study is academic and excludes transaction costs, rebalancing, and
+walk-forward validation.
+   Keywords: Variational Autoencoder, synthetic scenarios, portfolio optimisation, Mar-
+kowitz, S&P 500.
+
+
+
+
+                                           viii
+1. Introducción
+
+
+   El mercado financiero, que se define como el espacio en el cual se compran y venden
+activos financieros (acciones, bonos, divisas, materias primas y criptomonedas principal-
+mente), demanda el procesamiento de flujos masivos de datos que superan las capacidades
+de las herramientas analı́ticas tradicionales. La enorme cantidad de relaciones e interde-
+pendencias que se suceden entre los diferentes activos lo convierte en un sistema caótico,
+donde el empleo de nuevos enfoques modernos puede suponer un avance significativo en
+la comprensión de su comportamiento y en la toma de decisiones de inversión.
+
+   Desde los comienzos de la teorı́a económica moderna, se ha considerado el mercado
+financiero como un sistema caótico. A diferencia de un sistema puramente aleatorio, un
+sistema caótico presenta patrones y reglas subyacentes que permiten realizar determina-
+das predicciones sobre su comportamiento. El caos se caracteriza por la complejidad. En
+un sistema caótico, las variables presentan relaciones no lineales, a menudo difı́ciles de
+detectar a simple vista. Esto deriva en la impredecibilidad del sistema, puesto que pe-
+queñas variaciones en las condiciones iniciales pueden llevar a resultados completamente
+diferentes.
+
+   Además, el mercado financiero puede entenderse como un sistema de segundo orden,
+dado que las propias predicciones que se realizan sobre él pueden influir en los resultados
+que se obtienen. Esto es, en el propio intento de predecir el comportamiento del mercado,
+se puede alterar su dinámica, fenómeno habitualmente observado en virajes que se suelen
+producir en precios de determinados activos cuando personas o entidades relevantes hacen
+declaraciones acerca de su futuro comportamiento.
+
+   En el presente trabajo se propone abordar el problema de confeccionar una cartera de
+inversión, esto es, un subconjunto de los activos financieros disponibles, de forma eficiente.
+(Markowitz, 1952) introduce el modelo de media-varianza como una de las aproximaciones
+clásicas para la gestión de carteras de inversión. Este modelo se fundamenta en el principio
+riesgo-rendimiento, buscando maximizar el rendimiento esperado para un determinado
+nivel de riesgo asumido por el inversor.
+
+   Con el uso de tecnologı́as Big Data y, en particular, con el uso de modelos generativos
+como los Autoencoders Variacionales (VAEs) y las Redes Generativas Adver-
+sarias (GANs), se propone una aproximación a la confección de carteras desde una
+perspectiva no lineal.
+
+                                              1
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+1.1.     Motivación
+
+   La gestión de carteras de inversión ha estado dominada durante décadas por la Teorı́a
+de Cartera Moderna (MPT), introducida por (Markowitz, 1952). Este marco teórico se
+fundamenta en la optimización media-varianza, bajo el supuesto de que los retornos de
+los activos financieros siguen una distribución normal. Sin embargo, la evidencia empı́rica
+en el análisis de datos masivos financieros demuestra que los mercados reales presentan
+caracterı́sticas que este modelo no logra capturar: la curtosis excesiva (colas pesadas), la
+asimetrı́a y la volatilidad estocástica.
+   En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar
+la complejidad representa una limitación relevante. Los eventos extremos ocurren con una
+frecuencia mayor en la realidad de la que predecirı́a un modelo normal, lo que hace que
+la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como
+las GANs (Salimans y cols., 2016) y los VAEs (Kingma y Welling, 2013) ofrece un nuevo
+paradigma para aprender la distribución subyacente de los datos sin imponer una forma
+paramétrica rı́gida.
+   Frente a otras aproximaciones, como el uso de modelos de Machine Learning o sistemas
+de ecuaciones diferenciales, los modelos generativos permiten trabajar desde una perspec-
+tiva probabilı́stica. Estos modelos se adaptan a los datos y ofrecen flexibilidad frente a
+cambios drásticos.
+
+
+
+1.2.     Planteamiento del trabajo
+
+   La elección de esta arquitectura, como se exponı́a previamente, no busca predecir el
+precio futuro de los activos, sino generar diversos escenarios posibles para comprender el
+riesgo subyacente de los mismos.
+   El presente Trabajo de Fin de Máster propone una metodologı́a hı́brida que integra el
+modelado generativo y la teorı́a de la información. El núcleo de la investigación se divide
+en cuatro fases:
+   Conviene delimitar desde el inicio el alcance alcanzado. Aunque el tı́tulo y el marco
+conceptual se inspiran en arquitecturas generativas hı́bridas, el desarrollo experimental
+validado se centra en el Autoencoder Variacional. GAN y WGAN se revisan por su rele-
+vancia teórica y se mantienen como ampliación futura, pero no se presentan como modelos
+
+                                                                                                 2
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+entrenados. Asimismo, la divergencia de Kullback–Leibler interviene en la regularización
+del espacio latente del VAE y no como función objetivo de la cartera. El trabajo no pre-
+tende predecir precios puntuales: genera vectores plausibles de retornos y evalúa los pesos
+resultantes sobre observaciones posteriores no utilizadas en el entrenamiento.
+
+   1. Extracción de datos de series históricas del S&P 500. Se propone la creación de un
+       pipeline de datos que permita la implementación de la arquitectura propuesta.
+
+   2. Uso de Autoencoders Variacionales (VAEs) para la reducción de dimensionali-
+       dad no lineal.
+
+   3. Generación de escenarios sintéticos mediante muestreo en el espacio latente y deco-
+       dificación con el VAE entrenado.
+
+   4. Estimación de medias y covarianzas sintéticas y optimización de máximo Sharpe,
+       seguida de evaluación fuera de muestra.
+
+   La contribución posee carácter académico. Las cifras obtenidas permiten comparar
+métodos bajo un protocolo común, pero no constituyen recomendación financiera ni ga-
+rantı́a de rendimiento. Esta cautela resulta particularmente importante porque el experi-
+mento utiliza un único universo, un único corte temporal y pesos estáticos sin costes de
+transacción.
+
+
+1.3.      Estructura del trabajo
+
+   La memoria se organiza de la siguiente manera: el Capı́tulo 2 reúne el contexto del
+problema, los fundamentos teóricos y el estado del arte. El Capı́tulo 3 presenta los objetivos
+general y especı́ficos, el alcance y la metodologı́a del trabajo. El Capı́tulo 4 expone el
+marco normativo. El Capı́tulo 5 desarrolla la contribución especı́fica e integra los resultados
+experimentales. El Capı́tulo 6 describe el código fuente, las herramientas empleadas y los
+datos analizados. El Capı́tulo 7 recoge las conclusiones. Finalmente, el Capı́tulo 8 presenta
+las principales limitaciones y posibles lı́neas de trabajo futuro.
+
+
+
+
+                                                                                                   3
+2. Contexto y estado del arte
+
+
+2.1.     Contexto del problema
+
+    En este capı́tulo se presentan los fundamentos conceptuales sobre los que se apoya el
+presente Trabajo de Fin de Máster. En primer lugar, se introducen los principios básicos de
+la teorı́a moderna de carteras y el modelo de media-varianza de Markowitz. A continuación,
+se analizan algunas de sus principales limitaciones, especialmente en lo relativo al uso de
+la varianza como medida de riesgo. Posteriormente, se presentan conceptos fundamentales
+de la teorı́a de la información, ası́ como su utilidad para comparar distribuciones y medir
+incertidumbre. Finalmente, se introducen los modelos generativos profundos, con especial
+atención a los Autoencoders Variacionales, las Redes Generativas Adversarias y los modelos
+de difusión.
+
+
+2.1.1.    Teorı́a moderna de carteras
+
+    La teorı́a moderna de carteras constituye uno de los marcos fundamentales para la
+gestión cuantitativa de inversiones. Su aportación principal consiste en formalizar la rela-
+ción entre rentabilidad esperada y riesgo, mostrando que la selección de activos no debe
+basarse únicamente en maximizar el rendimiento esperado, sino también en considerar la
+variabilidad de dichos rendimientos y la relación entre los distintos activos que componen
+la cartera.
+    Desde esta perspectiva, una cartera de inversión puede entenderse como una combina-
+ción ponderada de activos financieros. Cada activo aporta una rentabilidad esperada y un
+nivel de riesgo, pero el riesgo total de la cartera no depende únicamente del riesgo indivi-
+dual de cada activo, sino también de la forma en que sus retornos se relacionan entre sı́.
+Esta idea introduce el papel central de la diversificación: combinar activos imperfectamen-
+te correlacionados puede reducir el riesgo global de la cartera sin renunciar necesariamente
+a rentabilidad esperada.
+    La teorı́a moderna de carteras establece, por tanto, que el inversor debe buscar combi-
+naciones eficientes de activos. Estas combinaciones son aquellas que, para un determinado
+nivel de riesgo, maximizan la rentabilidad esperada o, de forma equivalente, que para una
+rentabilidad esperada dada minimizan el riesgo asumido. El conjunto de estas carteras
+recibe el nombre de frontera eficiente.
+
+                                              4
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+2.1.2.    Modelo de media-varianza de Markowitz
+
+   (Markowitz, 1952) introduce el modelo de media-varianza para la optimización de
+carteras. Este modelo supuso un cambio relevante frente a enfoques previos basados úni-
+camente en la búsqueda del máximo retorno esperado, ya que incorpora explı́citamente el
+riesgo asociado a los activos seleccionados y la correlación entre sus retornos.
+   En el modelo de Markowitz, cada activo financiero se representa como una variable
+aleatoria caracterizada por su retorno esperado y por la variabilidad de dicho retorno.
+La cartera se define mediante un vector de pesos, donde cada componente representa la
+proporción del capital invertida en cada activo. La rentabilidad esperada de la cartera se
+obtiene como una combinación lineal ponderada de los retornos esperados de los activos,
+mientras que el riesgo se mide a través de la varianza de la cartera.
+   Matemáticamente, el problema de optimización puede formularse como la maximiza-
+ción de una función objetivo que pondera la rentabilidad esperada frente al riesgo:
+
+                                                
+                                   λ
+                                  ⊤
+                         máx w µ − w⊤ Σw             s.a.   1⊤ w = 1                    (2.1)
+                          w        2
+
+   donde µ ∈ Rn es el vector de retornos esperados de los activos, w ∈ Rn representa
+el vector de pesos de la cartera, Σ ∈ Rn×n es la matriz de varianzas-covarianzas de los
+retornos y λ > 0 es el coeficiente de aversión al riesgo del inversor.
+   El primer término, w⊤ µ, representa la rentabilidad esperada de la cartera. Matemáti-
+camente, se trata del producto escalar entre el vector de pesos y el vector de retornos
+esperados, lo que equivale a calcular la rentabilidad esperada total como suma ponderada
+de las rentabilidades individuales de los activos.
+   El segundo término, λ2 w⊤ Σw, introduce una penalización por riesgo. La expresión
+cuadrática w⊤ Σw representa la varianza de la cartera, incorporando tanto la volatilidad
+individual de cada activo como las covarianzas entre activos. El parámetro λ controla el
+equilibrio entre rentabilidad y riesgo: cuanto mayor es su valor, mayor es la penalización
+asociada al riesgo y, por tanto, más conservadora será la cartera resultante.
+   La restricción 1⊤ w = 1 garantiza que la suma de los pesos sea igual a uno, es decir,
+que se invierta la totalidad del capital disponible. En conjunto, este problema establece
+el compromiso fundamental de la teorı́a moderna de carteras: maximizar la rentabilidad
+esperada y, al mismo tiempo, controlar el riesgo asumido.
+   La relación entre retorno y volatilidad puede representarse mediante la frontera eficiente
+
+                                                                                                 5
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+de la Figura 2.1. Los puntos situados por debajo son dominados por combinaciones que
+ofrecen más retorno para igual riesgo. La figura es conceptual: no representa pesos ni
+resultados calculados para el dataset del trabajo.
+
+              Retorno esperado
+
+
+
+                                             Frontera eficiente
+
+
+
+
+                                   Carteras dominadas
+
+                                                                    Volatilidad
+
+
+Figura 2.1: Representación conceptual de la frontera eficiente de Markowitz. Fuente: ela-
+boración propia.
+
+
+
+2.1.3.     Riesgo financiero y hechos estilizados
+
+   El riesgo financiero puede entenderse como la incertidumbre asociada a la evolución
+futura del valor de los activos financieros. En el marco clásico de Markowitz, este riesgo
+se identifica principalmente con la varianza de los retornos. Sin embargo, los mercados
+financieros reales presentan propiedades estadı́sticas que no siempre pueden describirse
+adecuadamente mediante una distribución normal ni mediante relaciones lineales entre
+activos.
+   Entre estas propiedades destacan las colas pesadas, la asimetrı́a, la volatilidad estocásti-
+ca y los cambios en las correlaciones entre activos a lo largo del tiempo (Takahashi, Chen,
+y Tanaka-Ishii, 2019). Las colas pesadas indican que los eventos extremos ocurren con
+mayor frecuencia de la que predecirı́a una distribución normal. La asimetrı́a refleja que las
+pérdidas y ganancias no necesariamente se distribuyen de forma simétrica. La volatilidad
+estocástica y el agrupamiento de volatilidad muestran que los periodos de alta volatilidad
+tienden a concentrarse en el tiempo.
+   Estas caracterı́sticas son especialmente relevantes en la gestión de carteras, ya que
+afectan directamente a la estimación del riesgo. En periodos de estrés financiero, las co-
+rrelaciones entre activos pueden aumentar de forma significativa, reduciendo los beneficios
+esperados de la diversificación. Por ello, una aproximación basada únicamente en medias,
+
+                                                                                                   6
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+varianzas y covarianzas puede resultar insuficiente para capturar la complejidad de los
+mercados financieros.
+
+
+2.1.4.    Limitaciones de la varianza como medida de riesgo
+
+   Aunque el modelo de Markowitz fue pionero y sigue constituyendo una referencia fun-
+damental en la optimización de carteras, presenta limitaciones importantes. Una de las
+principales es la identificación del riesgo con la varianza de los retornos. Esta elección
+implica asumir que las desviaciones positivas y negativas respecto a la media son tratadas
+de la misma forma, aunque desde el punto de vista del inversor las pérdidas suelen ser más
+relevantes que las ganancias inesperadas.
+   Además, el uso de la varianza como medida de riesgo es muy restrictivo cuando los
+retornos financieros no siguen una distribución normal. En presencia de colas pesadas,
+asimetrı́as o eventos extremos, la varianza puede infraestimar el riesgo real de la cartera.
+Del mismo modo, la matriz de covarianzas solo captura relaciones lineales entre activos,
+por lo que puede no ser suficiente para representar dependencias no lineales o cambios
+estructurales en el mercado.
+   Otra limitación relevante es la sensibilidad del modelo a la estimación de sus paráme-
+tros. Pequeñas variaciones en los retornos esperados o en la matriz de covarianzas pueden
+generar diferencias significativas en los pesos óptimos de la cartera. Esto resulta especial-
+mente problemático en mercados financieros, donde los parámetros estimados a partir de
+datos históricos pueden no mantenerse estables en el futuro.
+   Estas limitaciones motivan la búsqueda de enfoques alternativos capaces de capturar
+una descripción más rica de la distribución de retornos. En lugar de resumir el comporta-
+miento de los activos únicamente mediante media y varianza, resulta necesario considerar
+herramientas que permitan aproximar la distribución completa y modelar relaciones no
+lineales entre activos.
+
+
+2.1.5.    Teorı́a de la información
+
+   La teorı́a de la información proporciona un marco matemático para estudiar la incer-
+tidumbre, la dependencia y la transmisión de información en sistemas aleatorios (Cover
+y Thomas, 2006). En el contexto de este trabajo, resulta especialmente relevante porque
+permite analizar distribuciones de probabilidad y cuantificar diferencias entre ellas.
+   Mientras que el enfoque clásico de media-varianza resume el comportamiento de los
+
+                                                                                                 7
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+retornos mediante momentos de primer y segundo orden, la teorı́a de la información permi-
+te introducir medidas más generales de incertidumbre y discrepancia distribucional. Esto
+resulta útil cuando se trabaja con modelos generativos, ya que dichos modelos no buscan
+únicamente estimar una media o una matriz de covarianzas, sino aproximar la distribución
+subyacente de los datos.
+   Desde esta perspectiva, conceptos como la entropı́a, la divergencia de Kullback-Leibler
+y la información mutua permiten estudiar aspectos distintos del comportamiento de los
+activos financieros. La entropı́a mide el grado de incertidumbre de una variable aleatoria;
+la divergencia KL permite comparar dos distribuciones de probabilidad; y la información
+mutua permite cuantificar dependencias entre variables, incluyendo relaciones no lineales.
+
+
+2.1.6.    Entropı́a, divergencia KL e información mutua
+
+   Siguiendo a Cover y Thomas (Cover y Thomas, 2006), la entropı́a de Shannon mide la
+incertidumbre asociada a una variable aleatoria discreta. Si se entiende el retorno de un
+activo como una variable aleatoria X, su entropı́a puede definirse como:
+
+                                            n
+                                            X
+                                H(X) = −          p(xi ) log (p(xi ))                      (2.2)
+                                            i=1
+
+   donde H(X) representa la entropı́a de la variable aleatoria X y p(xi ) es la probabilidad
+asociada al valor xi . En términos intuitivos, una entropı́a elevada indica que la distribución
+está más dispersa y, por tanto, que existe mayor incertidumbre sobre el resultado de la va-
+riable. Por el contrario, una entropı́a baja indica que la probabilidad está más concentrada
+en ciertos valores, lo que implica menor incertidumbre.
+   El término log p(xi ) refleja la información asociada a cada evento. Dado que las proba-
+bilidades toman valores entre cero y uno, su logaritmo es negativo; por ello, la expresión
+incorpora un signo negativo para que la entropı́a sea una cantidad no negativa. Los even-
+tos menos probables aportan una mayor cantidad de información cuando ocurren, lo que
+permite interpretar la entropı́a como una medida agregada de incertidumbre.
+   Para medir la discrepancia entre dos distribuciones de probabilidad se emplea la diver-
+gencia de Kullback-Leibler, definida como:
+
+                                             n                              
+                                             X                      p(xi )
+                            DKL (P ∥ Q) =          p(xi ) log                              (2.3)
+                                                                    q(xi )
+                                             i=1
+
+   donde P y Q son dos distribuciones de probabilidad, p(xi ) representa la probabilidad
+
+                                                                                                    8
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+del valor xi bajo la distribución P , y q(xi ) representa la probabilidad del mismo valor bajo
+la distribución Q. La divergencia KL mide cuánta información se pierde cuando se utiliza
+la distribución Q para aproximar la distribución P .
+   En el contexto de este trabajo, esta medida resulta especialmente útil para comparar la
+distribución empı́rica de los retornos financieros con la distribución generada por un mode-
+lo generativo. Si la divergencia entre ambas distribuciones es reducida, puede interpretarse
+que los escenarios sintéticos generados reproducen de forma más fiel las propiedades es-
+tadı́sticas de los datos reales.
+   Otro concepto relevante es la información mutua, que permite medir la dependencia
+entre dos variables aleatorias. Se define como:
+
+
+                            I(X; Y ) = H(X) + H(Y ) − H(X, Y )                           (2.4)
+
+   donde H(X) y H(Y ) representan las entropı́as marginales de las variables X e Y , y
+H(X, Y ) representa su entropı́a conjunta. La información mutua mide la reducción de
+incertidumbre sobre una variable al conocer la otra.
+   En el análisis financiero, la información mutua puede interpretarse como una medida de
+dependencia entre los retornos de distintos activos. A diferencia de la correlación, que mide
+únicamente relaciones lineales, la información mutua capta dependencias más generales,
+incluyendo relaciones no lineales. Por este motivo, puede resultar útil para complementar
+el análisis tradicional basado en matrices de covarianzas.
+
+
+2.1.7.    Inteligencia artificial, aprendizaje automático y aprendizaje pro-
+          fundo
+
+   La inteligencia artificial engloba un conjunto amplio de técnicas orientadas a desarrollar
+sistemas capaces de realizar tareas que requieren algún tipo de aprendizaje, razonamiento
+o adaptación. Dentro de este campo, el aprendizaje automático se centra en métodos que
+permiten a los modelos aprender patrones a partir de datos, sin necesidad de programar
+explı́citamente todas las reglas de decisión.
+   El aprendizaje profundo constituye una rama del aprendizaje automático basada en
+redes neuronales con múltiples capas. Su principal ventaja reside en la capacidad de apren-
+der representaciones complejas y no lineales a partir de grandes volúmenes de datos. Esta
+caracterı́stica resulta especialmente relevante en finanzas, donde los mercados presentan
+alta dimensionalidad, ruido, relaciones no lineales y cambios de régimen.
+
+                                                                                                  9
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+   En este trabajo, el interés principal no se encuentra en utilizar modelos de aprendizaje
+profundo para predecir directamente el precio futuro de los activos, sino en emplearlos
+para modelar distribuciones de retornos y generar escenarios sintéticos. Esta diferencia
+es relevante: mientras que un modelo predictivo busca estimar un valor futuro concreto,
+un modelo generativo busca aprender la estructura estadı́stica de los datos para producir
+nuevas muestras coherentes con la distribución observada.
+
+
+2.1.8.   Modelos generativos profundos
+
+   Los modelos generativos profundos son modelos de aprendizaje automático cuyo obje-
+tivo es aprender la distribución subyacente de los datos para generar nuevas observaciones
+con propiedades similares a las reales. En lugar de limitarse a predecir una etiqueta o un
+valor, estos modelos buscan capturar la estructura probabilı́stica de los datos.
+   Este enfoque resulta especialmente útil en el análisis financiero, ya que permite trabajar
+con distribuciones complejas sin imponer de forma explı́cita supuestos paramétricos rı́gidos.
+En particular, los modelos generativos pueden ser útiles para representar colas pesadas,
+asimetrı́as, dependencias no lineales y escenarios de mercado que no aparecen de forma
+idéntica en el conjunto histórico, pero que son estadı́sticamente plausibles.
+   En el contexto de la optimización de carteras, los modelos generativos permiten des-
+plazar el foco desde la estimación de parámetros concretos, como la media y la matriz
+de covarianzas, hacia la aproximación de la distribución completa de retornos. Una vez
+aprendida dicha distribución, es posible generar escenarios sintéticos sobre los que evaluar
+la robustez de distintas asignaciones de cartera.
+
+
+2.1.9.   Autoencoders Variacionales
+
+   Los Autoencoders Variacionales, introducidos por Kingma y Welling (Kingma y We-
+lling, 2013), representan una extensión probabilı́stica de los autoencoders tradicionales.
+Mientras que un autoencoder convencional aprende una representación determinista de
+los datos en un espacio latente, un VAE aprende una distribución de probabilidad so-
+bre dicho espacio latente, habitualmente parametrizada mediante una distribución normal
+multivariante.
+   La arquitectura de un VAE se compone de dos elementos principales: un codificador o
+encoder y un decodificador o decoder. El codificador transforma la entrada en los paráme-
+tros de una distribución latente, normalmente una media µ y una desviación tı́pica σ.
+
+                                                                                                  10
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+A partir de estos parámetros se obtiene una muestra latente z, que posteriormente es
+utilizada por el decodificador para reconstruir la entrada original.
+
+   Para permitir el entrenamiento mediante retropropagación, se emplea el truco de repa-
+rametrización. En lugar de muestrear directamente desde la distribución latente, el vector
+z se expresa como una transformación determinista de una variable aleatoria auxiliar:
+
+
+
+                                z = µ + σ ⊙ ϵ,     ϵ ∼ N (0, I)                         (2.5)
+
+
+   Desde una perspectiva financiera, esta estructura puede interpretarse como una forma
+de obtener una representación latente de los retornos, reduciendo la dimensionalidad del
+problema y tratando de capturar factores no observables que influyen en el comportamiento
+conjunto de los activos.
+
+   La función objetivo del VAE se conoce como ELBO, Evidence Lower Bound, y combina
+dos términos principales: un término de reconstrucción y un término de regularización
+basado en la divergencia de Kullback-Leibler. Puede expresarse como:
+
+
+
+                L(θ, ϕ; x) = Eqϕ (z|x) [log pθ (x | z)] − DKL (qϕ (z | x) ∥ p(z))       (2.6)
+
+
+   El primer término mide la capacidad del modelo para reconstruir los datos observados
+a partir de las variables latentes. En el contexto de este trabajo, representa la capacidad
+del decodificador para reproducir la estructura esencial de los retornos financieros. El se-
+gundo término actúa como regularizador, forzando a que la distribución latente aprendida
+se mantenga próxima a una distribución prior, generalmente una normal estándar. Esto
+favorece un espacio latente continuo y estructurado, facilitando la generación de nuevos
+escenarios coherentes.
+
+   En conjunto, el VAE permite aprender una representación comprimida y probabilı́stica
+de los datos financieros. Esta representación puede ser útil para filtrar parte del ruido
+presente en las series de retornos y conservar patrones latentes relevantes para la posterior
+generación de escenarios.
+
+   La Figura 2.2 resume el flujo del VAE. El codificador no produce un código único,
+sino los parámetros de una distribución; la reparametrización permite entrenar mediante
+gradientes y el decodificador devuelve una reconstrucción o, cuando se muestrea el prior, un
+escenario nuevo. El término KL aproxima el posterior al prior y hace viable ese muestreo.
+
+                                                                                                11
+                                                                          Daniel Machı́n González
+                              Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+                   Retornos       Encoder           Muestreo           Decoder
+                                             2
+                      x           µ, log σ       z =µ+σ⊙ϵ                 x̂
+
+
+Figura 2.2: Esquema conceptual del Autoencoder Variacional implementado. Fuente: ela-
+boración propia.
+
+
+2.1.10.       Redes Generativas Adversarias y Wasserstein GAN
+
+   Las Redes Generativas Adversarias, introducidas por (Goodfellow y cols., 2014), in-
+troducen un marco de aprendizaje generativo basado en la interacción entre dos redes
+neuronales: un generador y un discriminador. El generador transforma un vector de ruido
+en una muestra sintética, mientras que el discriminador intenta distinguir entre muestras
+reales y muestras generadas.
+   El entrenamiento se formula como un juego adversarial. El generador trata de producir
+muestras cada vez más realistas, mientras que el discriminador mejora su capacidad para
+identificar si una observación procede de los datos reales o del modelo generativo. Esta
+interacción se expresa mediante una función objetivo minimax:
+
+
+
+       mı́n máx V (D, G) = Ex∼pdata (x) [log D(x)] + Ez∼pz (z) [log (1 − D(G(z)))]       (2.7)
+          G    D
+
+
+   En el contexto financiero, el generador puede interpretarse como un modelo capaz de
+producir escenarios sintéticos de retornos, mientras que el discriminador evalúa si dichos
+escenarios son estadı́sticamente distinguibles de los retornos históricos. La principal ventaja
+de este enfoque es que no requiere especificar explı́citamente una distribución paramétrica
+para los datos, sino que aprende directamente a partir de las observaciones.
+   Las GANs resultan atractivas para la optimización de carteras porque pueden capturar
+caracterı́sticas de la distribución que no quedan recogidas por la media y la covarianza,
+como asimetrı́as, curtosis o dependencias no lineales. Sin embargo, su entrenamiento puede
+ser inestable y presentar problemas como el mode collapse, situación en la que el generador
+produce una variedad limitada de muestras.
+   Como respuesta a estas limitaciones, las Wasserstein GAN introducen una formulación
+alternativa basada en la distancia de Wasserstein entre distribuciones (Arjovsky, Chintala,
+y Bottou, 2017). Esta aproximación mejora la estabilidad del entrenamiento y proporcio-
+na una señal de optimización más informativa cuando la distribución generada todavı́a
+
+                                                                                                   12
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+se encuentra lejos de la distribución real. Por este motivo, las WGAN constituyen una
+extensión relevante dentro del modelado generativo aplicado a datos financieros.
+
+
+2.1.11.    Modelos de difusión
+
+   Los modelos de difusión constituyen una familia reciente de modelos generativos ba-
+sados en la idea de añadir ruido de forma progresiva a los datos hasta transformar la
+distribución original en una distribución simple, habitualmente ruido gaussiano. Poste-
+riormente, el modelo aprende el proceso inverso, es decir, cómo eliminar gradualmente el
+ruido para reconstruir muestras coherentes con la distribución original.
+   En términos generales, el proceso se divide en dos fases. En la fase directa, los datos
+se degradan progresivamente mediante la adición de ruido. En la fase inversa, una red
+neuronal aprende a revertir ese proceso, generando nuevas observaciones a partir de ruido
+inicial. Esta formulación permite obtener muestras diversas y estables, lo que ha hecho que
+los modelos de difusión se hayan convertido en una lı́nea destacada dentro del modelado
+generativo.
+   Aplicados al ámbito financiero, estos modelos pueden utilizarse para generar trayecto-
+rias sintéticas. En este trabajo se incluyen por su relevancia reciente, mientras la arquitec-
+tura experimental se limita al VAE. La referencia VAE-GAN corresponde a la inspiración
+conceptual y no a un modelo adversario entrenado.
+
+
+
+2.2.      Estado del arte
+
+   En este capı́tulo se revisan los principales trabajos y lı́neas de investigación relacio-
+nados con la optimización de carteras y el uso de modelos de aprendizaje automático y
+modelado generativo en finanzas. A diferencia del marco teórico, cuyo objetivo es presen-
+tar los conceptos fundamentales, el estado del arte se centra en identificar qué enfoques
+han sido propuestos previamente, qué limitaciones presentan y en qué punto se sitúa la
+contribución planteada en este trabajo.
+
+
+2.2.1.    Optimización clásica de carteras
+
+   La optimización clásica de carteras tiene como punto de partida el trabajo de Marko-
+witz, quien introduce el modelo de media-varianza como una formulación matemática para
+la selección de carteras de inversión (Markowitz, 1952). La aportación fundamental de este
+
+                                                                                                  13
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+enfoque consiste en establecer que la elección de activos no debe basarse únicamente en
+la maximización del retorno esperado, sino también en el control del riesgo asociado a la
+cartera.
+   El modelo de Markowitz permite obtener combinaciones eficientes de activos a partir
+de la relación entre rentabilidad esperada y varianza. En este marco, una cartera será
+preferible si, para un determinado nivel de riesgo, ofrece una mayor rentabilidad esperada,
+o si, para una rentabilidad esperada dada, presenta una menor varianza. Esta idea da
+lugar al concepto de frontera eficiente, que constituye uno de los fundamentos de la teorı́a
+moderna de carteras.
+   No obstante, aunque el modelo de media-varianza continúa siendo una referencia esen-
+cial en la literatura financiera, presenta limitaciones relevantes. En particular, resume el
+comportamiento de los activos mediante momentos de primer y segundo orden, es decir,
+medias, varianzas y covarianzas. Esta simplificación puede resultar insuficiente cuando los
+retornos financieros presentan colas pesadas, asimetrı́as, volatilidad cambiante o depen-
+dencias no lineales.
+   Estas limitaciones han motivado el desarrollo de enfoques alternativos, tanto desde la
+estadı́stica financiera tradicional como desde el aprendizaje automático. En este trabajo,
+el modelo de Markowitz se considera como referencia clásica frente a la cual comparar la
+metodologı́a basada en escenarios sintéticos generados mediante modelos profundos.
+
+
+2.2.2.     Aprendizaje automático y deep learning en gestión de carteras
+
+   El aprendizaje automático ha introducido nuevas aproximaciones para el análisis de
+datos financieros, especialmente en contextos donde las relaciones entre variables son com-
+plejas, no lineales y difı́ciles de modelar mediante técnicas paramétricas tradicionales. En
+el ámbito de la gestión de carteras, estas técnicas se han aplicado principalmente a la pre-
+dicción de precios, la estimación de retornos, la clasificación de activos y la construcción
+de señales de inversión.
+   Sin embargo, una parte importante de estos enfoques se centra en predecir directa-
+mente la evolución futura de los precios o retornos. Esta estrategia presenta dificultades
+importantes, ya que los mercados financieros son sistemas altamente ruidosos y sensibles a
+cambios de régimen. Además, una predicción puntual de precios no equivale directamente
+a una decisión de inversión, sino que requiere una capa adicional de lógica para convertir
+dicha predicción en pesos de cartera.
+
+                                                                                                   14
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+   En este contexto, el aprendizaje profundo aporta la capacidad de modelar relaciones
+no lineales y trabajar con datos de alta dimensionalidad. Las redes neuronales profundas
+permiten aprender representaciones complejas de los datos, lo que resulta especialmente re-
+levante en finanzas, donde los activos pueden presentar relaciones dinámicas, dependencias
+no lineales y comportamientos distintos en función del régimen de mercado.
+   A pesar de ello, el enfoque de este trabajo no consiste en utilizar aprendizaje profundo
+para predecir directamente precios futuros, sino en emplearlo para modelar distribuciones
+de retornos y generar escenarios sintéticos. Esta distinción es relevante, ya que desplaza
+el problema desde la predicción puntual hacia la generación de posibles trayectorias o
+escenarios de mercado sobre los que evaluar la robustez de una cartera.
+
+
+2.2.3.    Modelos generativos para series financieras
+
+   Los modelos generativos han ganado relevancia en el análisis de series financieras debido
+a su capacidad para aprender distribuciones complejas directamente a partir de los datos.
+A diferencia de los modelos clásicos, que requieren especificar de forma explı́cita una
+distribución o una estructura paramétrica, los modelos generativos permiten aproximar
+la distribución subyacente y producir nuevas muestras con propiedades similares a las
+observadas.
+   En el caso de las series financieras, esta capacidad resulta especialmente útil porque
+los retornos de los activos presentan propiedades que no siempre quedan recogidas por
+modelos gaussianos o lineales. Entre estas propiedades se encuentran las colas pesadas, la
+asimetrı́a, la dependencia temporal, el agrupamiento de volatilidad y los cambios en las
+correlaciones entre activos. Por este motivo, el modelado generativo constituye una lı́nea
+de investigación relevante para la generación de escenarios financieros sintéticos.
+   Dentro de esta familia de modelos, las Redes Generativas Adversarias, propuestas ori-
+ginalmente por (Goodfellow y cols., 2014), han sido utilizadas para sintetizar series tempo-
+rales financieras y reproducir propiedades estadı́sticas observadas en los mercados. En este
+enfoque, el generador aprende a producir muestras sintéticas, mientras que el discrimina-
+dor evalúa si dichas muestras proceden de la distribución real o de la distribución generada.
+Este procedimiento permite construir escenarios que no aparecen de forma idéntica en el
+conjunto histórico, pero que pueden resultar estadı́sticamente plausibles.
+   Los Autoencoders Variacionales también resultan relevantes en este contexto, ya que
+permiten aprender una representación latente y probabilı́stica de los datos. En el caso de
+
+                                                                                                   15
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+los retornos financieros, el espacio latente puede interpretarse como una representación
+comprimida de factores no observables que influyen en el comportamiento conjunto de los
+activos. Esta caracterı́stica justifica su uso como componente previo o complementario en
+arquitecturas hı́bridas de generación de escenarios.
+
+   A partir de estas ideas, el planteamiento inicial se inspiró en una arquitectura VAE-
+GAN. Sin embargo, el desarrollo empı́rico alcanzado implementa el VAE y genera es-
+cenarios con su decoder. La combinación adversaria se mantiene como referencia para
+interpretar el tı́tulo y como ampliación futura, no como resultado experimental.
+
+
+
+
+2.2.4.   Modelos de difusión para selección dinámica de carteras
+
+   En los últimos años, los modelos de difusión han adquirido una relevancia creciente
+dentro del modelado generativo. Estos modelos se basan en aprender un proceso inverso de
+eliminación de ruido, permitiendo generar nuevas observaciones a partir de una distribución
+inicial simple, normalmente ruido gaussiano. Su principal atractivo reside en la estabilidad
+del proceso generativo y en su capacidad para producir muestras diversas.
+
+   En el ámbito financiero, los modelos de difusión han comenzado a explorarse como
+herramientas para la generación de escenarios y la selección dinámica de carteras. En
+particular, Aghapour, Bayraktar y Yuan proponen el uso de modelos de difusión para
+abordar problemas de selección dinámica de carteras (Aghapour, Bayraktar, y Yuan, 2025).
+Este enfoque resulta relevante para el presente trabajo porque comparte la idea de utilizar
+modelos generativos para simular posibles escenarios de mercado y tomar decisiones de
+asignación de activos.
+
+   Según los resultados reportados por estos autores, los modelos de difusión pueden ofre-
+cer resultados competitivos frente a ı́ndices de referencia como el S&P 500 y frente a
+carteras construidas mediante enfoques tradicionales de Markowitz. Esta lı́nea de investi-
+gación es todavı́a reciente, pero muestra el potencial del modelado generativo para superar
+algunas de las limitaciones de los modelos clásicos, especialmente cuando se trabaja con
+mercados dinámicos, dependencia temporal y cambios en la volatilidad.
+
+   Aunque el presente trabajo no implementa modelos de difusión, su inclusión permite
+situar el VAE ejecutado y la inspiración hı́brida dentro de una tendencia más amplia de
+generación de escenarios.
+
+                                                                                                16
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+2.3.     Conclusiones
+
+   La revisión local se complementa con trabajos sobre aprendizaje profundo aplicado a
+carteras (Jiang, Xu, y Liang, 2017; Huang, Zhou, y Song, 2020; Zhang, Zohren, y Roberts,
+2020), representación latente y generación (Opitz, 2017; Voronina, Romanko, Cao, Kwon, y
+Mendoza-Arriaga, 2025), y validación cuantitativa (Lopez de Prado, 2018; López de Prado,
+2018; Rasekhschaffe, 2026). Estas referencias ayudan a situar decisiones del pipeline, pero
+no sustituyen la comparación empı́rica realizada sobre los datos del TFM.
+
+
+2.3.1.   Sı́ntesis crı́tica y hueco de investigación
+
+   La revisión anterior permite identificar una evolución clara en las técnicas aplicadas
+a la optimización de carteras. En primer lugar, la teorı́a clásica de Markowitz establece
+una formulación matemática sólida basada en el equilibrio entre rentabilidad esperada y
+riesgo. Sin embargo, su dependencia de la media, la varianza y la matriz de covarianzas
+limita su capacidad para capturar distribuciones no gaussianas, colas pesadas y relaciones
+no lineales entre activos.
+   En segundo lugar, las técnicas de aprendizaje automático y aprendizaje profundo han
+ampliado las posibilidades de análisis financiero, permitiendo modelar relaciones más com-
+plejas a partir de datos históricos. No obstante, muchos de estos enfoques se han centrado
+en la predicción puntual de precios o retornos, lo que no resuelve directamente el problema
+de la construcción de carteras robustas bajo incertidumbre.
+   En tercer lugar, los modelos generativos ofrecen una alternativa especialmente ade-
+cuada para este contexto, ya que permiten aprender distribuciones de datos y generar
+escenarios sintéticos. Esta capacidad resulta útil para analizar la robustez de una car-
+tera no solo bajo el escenario histórico observado, sino también bajo posibles escenarios
+generados que preserven propiedades estadı́sticas relevantes del mercado.
+   El hueco abordado se sitúa en la conexión entre generación de escenarios y optimización
+de carteras. La contribución empı́rica estudia un VAE aplicado a retornos del S&P 500 y
+compara la cartera resultante con Markowitz y equiponderación. La extensión adversaria
+permitirı́a investigar posteriormente si mejora la fidelidad de colas y dependencias.
+
+
+
+
+                                                                                                 17
+3. Objetivos concretos y metodologı́a de
+        trabajo
+
+
+3.1.       Objetivo general
+
+    El objetivo principal del trabajo es diseñar una metodologı́a para la optimización de
+carteras basada en la generación de escenarios sintéticos mediante técnicas de inteligencia
+artificial.
+    En concreto, la metodologı́a se orienta al análisis de retornos de 30 activos pertenecien-
+tes al S&P 500 y emplea un Autoencoder Variacional como modelo generativo ejecutado.
+El propósito es estudiar si los escenarios obtenidos desde su espacio latente pueden propor-
+cionar una base alternativa para estimar los parámetros de una cartera. Las arquitecturas
+VAE-GAN y WGAN pertenecen al marco conceptual y a la prospectiva, no al experimento
+validado.
+    Para ello, se plantea comparar los resultados obtenidos mediante la metodologı́a pro-
+puesta con carteras construidas a partir del modelo de media-varianza de Markowitz y con
+una cartera equiponderada. De este modo, se busca evaluar si el uso de modelos generativos
+puede aportar información adicional en el proceso de asignación de pesos, especialmente
+en contextos donde los retornos financieros presentan colas pesadas, asimetrı́as y depen-
+dencias no lineales.
+
+
+3.2.       Objetivos especı́ficos
+
+    A continuación, se detallan los objetivos especı́ficos que guiarán el desarrollo del tra-
+bajo:
+
+        Revisar la teorı́a moderna de carteras y el modelo de media-varianza de Markowitz
+        como base clásica de la optimización de carteras.
+
+        Analizar las limitaciones de la varianza y de la matriz de covarianzas como medidas
+        suficientes para representar el riesgo financiero.
+
+        Estudiar conceptos relevantes de la teorı́a de la información, como la entropı́a, la
+        divergencia de Kullback-Leibler y la información mutua, en relación con el análisis
+        de distribuciones de retornos.
+
+                                               18
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+       Revisar los fundamentos de los modelos generativos profundos, especialmente VAE,
+       GAN, WGAN y modelos de difusión.
+
+       Construir un pipeline de adquisición de datos financieros de activos pertenecientes
+       al S&P 500.
+
+       Preprocesar los datos financieros para su uso posterior, incluyendo el tratamiento de
+       precios ajustados, cálculo de log-retornos, limpieza de datos y normalización.
+
+       Diseñar una arquitectura VAE para obtener una representación latente de la distri-
+       bución de retornos financieros.
+
+       Situar GAN, WGAN y modelos de difusión en el estado del arte, identificando su
+       posible incorporación en futuras ampliaciones.
+
+       Evaluar la calidad de los escenarios generados mediante métricas estadı́sticas e in-
+       formacionales.
+
+       Comparar las carteras obtenidas mediante la metodologı́a propuesta con carteras
+       construidas mediante el modelo de Markowitz, una cartera equiponderada y el ı́ndice
+       S&P 500 como benchmark.
+
+
+
+3.3.      Metodologı́a del trabajo
+
+3.3.1.    Alcance y delimitación del trabajo
+
+   Este trabajo tiene un carácter académico y experimental. No pretende ofrecer una
+recomendación de inversión ni una propuesta de asignación de capital a valores concretos.
+Tampoco busca predecir de forma puntual los precios futuros de determinados activos
+financieros. Su objetivo se centra en estudiar la generación de escenarios sintéticos de
+retornos y su posible utilización dentro de un proceso de optimización de carteras.
+   El ámbito de aplicación se limita a un conjunto de activos financieros pertenecientes al
+S&P 500. La selección final de activos dependerá de la disponibilidad, calidad y completitud
+de los datos históricos, ası́ como de la capacidad de procesamiento disponible para entrenar
+los modelos propuestos.
+   Asimismo, el trabajo estará condicionado por la frecuencia temporal de los datos uti-
+lizados y por las decisiones adoptadas en el preprocesamiento, tales como el cálculo de
+
+                                                                                                 19
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+retornos, el tratamiento de valores ausentes, la normalización y la división entre conjuntos
+de entrenamiento y evaluación.
+
+   Los resultados obtenidos deberán interpretarse como evidencia experimental dentro
+del marco definido en este trabajo. En ningún caso deben entenderse como garantı́a de
+rendimiento futuro ni como recomendación financiera aplicable directamente a decisiones
+reales de inversión.
+
+
+
+
+3.3.2.    Justificación de la metodologı́a CRISP-DM
+
+
+   CRISP-DM se adopta porque proporciona una estructura iterativa que conecta la pre-
+gunta de investigación con la evidencia producida en cada etapa. En un problema financiero
+no basta con entrenar una red neuronal: las conclusiones dependen de cómo se seleccionan
+los activos, cómo se alinean las fechas, qué transformaciones se aplican y de qué manera
+se separa la información disponible de la evaluación futura. La metodologı́a obliga a hacer
+explı́citas estas decisiones y facilita volver a fases anteriores cuando el EDA o la evaluación
+revelan limitaciones.
+
+   Esta adopción sigue el modelo de proceso independiente del sector y de la tecnologı́a
+descrito por (Wirth y Hipp, 2000).
+
+   Su carácter independiente de una herramienta concreta también resulta adecuado pa-
+ra este trabajo. La adquisición se realiza con yfinance, la preparación con pandas y
+scikit-learn, el modelado con PyTorch y la optimización con SciPy; CRISP-DM permite
+describir el proceso por objetivos y evidencias, no por librerı́as. Las fases se materializan
+en scripts, CSV, figuras y un modelo guardado, de modo que la memoria puede vincular
+cada afirmación empı́rica con un artefacto verificable.
+
+   Aunque CRISP-DM suele representarse de forma secuencial, aquı́ se entiende como
+ciclo. El análisis de los escenarios, por ejemplo, puede conducir a revisar el peso de la regu-
+larización o la dimensión latente; del mismo modo, una cartera excesivamente concentrada
+puede motivar nuevas restricciones. Esta posibilidad de retroalimentación es coherente con
+el carácter experimental del TFM.
+
+                                                                                                   20
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+3.3.3.   Adaptación de CRISP-DM al presente trabajo
+
+Comprensión del problema
+
+   La primera fase delimita la decisión que se quiere apoyar. El objetivo no es adivinar
+el precio de cada acción, sino construir una distribución de posibles retornos conjuntos
+que permita estimar medias y covarianzas alternativas. El punto de comparación es la
+sensibilidad de Markowitz a dichos parámetros. Por ello se definen tres referencias: equi-
+ponderación, Markowitz con posiciones largas y Markowitz con lı́mite del 20 % por activo.
+   Esta fase también fija los criterios de éxito y de prudencia. Una estrategia se evalúa me-
+diante retorno acumulado y anualizado, volatilidad, Sharpe y máximo drawdown; ninguna
+métrica aislada basta para afirmar superioridad. Además, se establece que los pesos deben
+obtenerse sin consultar el conjunto de test y que el resultado no tiene finalidad de aseso-
+ramiento financiero. El Capı́tulo 5 traduce estas decisiones en funciones de optimización y
+un protocolo común.
+
+
+Comprensión de los datos
+
+   La segunda fase examina la cobertura y la estructura estadı́stica antes de modelar.
+El conjunto final contiene 2.766 sesiones por 30 activos entre enero de 2014 y diciem-
+bre de 2024. Se analizan valores ausentes, duplicados, estadı́sticos descriptivos, asimetrı́a,
+curtosis, volatilidad móvil y correlaciones. Los cinco CSV y siete figuras generados por
+generate eda outputs.py constituyen la evidencia reproducible de esta fase.
+   El EDA permite comprobar que la matriz final no contiene ausencias y que los retornos
+presentan valores extremos, curtosis positiva y dependencia transversal. Estos hallazgos
+justifican estudiar un modelo multivariante flexible, pero no anticipan que vaya a mejorar
+la cartera. La interpretación detallada se reserva para la Sección 5.1.
+
+
+Preparación de los datos
+
+   Los cierres ajustados se ordenan cronológicamente y se filtran con un umbral máximo de
+ausencias del 5 %. Los huecos puntuales se propagan hacia delante y después se calculan log-
+retornos. La transformación elimina la primera fila indefinida y produce una matriz fecha–
+activo alineada. Se trabaja con retornos, en lugar de precios, para reducir la dependencia
+del nivel nominal y comparar movimientos relativos.
+   La división es temporal: las primeras 2.212 observaciones forman entrenamiento y
+
+                                                                                                   21
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+las 554 finales, test. El escalador Min–Max se ajusta exclusivamente con entrenamiento
+y transforma ambos subconjuntos a [−1, 1]. Guardar el escalador permite deshacer la
+transformación de los escenarios. Este orden evita que mı́nimos, máximos o retornos del
+periodo de evaluación influyan en el entrenamiento.
+
+
+Modelado
+
+   La implementación principal es un VAE con entrada de 30 variables, dos capas ocultas
+de 64 unidades, espacio latente de dimensión ocho y salida Tanh. Se entrena con Adam
+durante 150 épocas, lotes de 64 y una pérdida formada por MSE más 0,001 veces la
+divergencia KL. La semilla 42 favorece la repetibilidad.
+   Para responder al requisito de comparación se ejecuta además un experimento ho-
+mogéneo de 120 épocas: autoencoder determinista con latente ocho, VAE base con latente
+ocho y VAE con latente cuatro. Los tres usan el mismo split, capas ocultas, tasa de apren-
+dizaje y semilla. La comparación distingue reconstrucción y calidad estadı́stica de las
+muestras; no confunde estas métricas con el rendimiento de cartera.
+
+
+Evaluación
+
+   La evaluación se organiza en tres niveles. En reconstrucción se calculan MSE y MAE
+para entrenamiento y test. En generación se comparan errores absolutos de medias y
+volatilidades, y el error medio de las matrices de correlación. Finalmente, las estrategias se
+comparan sobre los mismos retornos reales de test mediante las cinco métricas financieras
+definidas previamente.
+   La separación de niveles es necesaria porque un autoencoder puede reconstruir bien
+sin generar muestras útiles, mientras un modelo más regularizado puede perder precisión
+puntual y producir un espacio latente más muestreable. Del mismo modo, una mayor
+rentabilidad puede venir acompañada de volatilidad y caı́da superiores. La discusión del
+Capı́tulo 5 conserva estas tensiones.
+
+
+Despliegue y reproducibilidad
+
+   En este trabajo el despliegue no consiste en publicar un servicio de inversión, sino en
+dejar un pipeline repetible. Los scripts se organizan por datos, análisis, modelos, optimi-
+zación y evaluación. Las entradas y salidas se almacenan en rutas explı́citas; los resultados
+
+                                                                                                  22
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+numéricos quedan en CSV y las visualizaciones en PNG. requirements.txt documenta
+las dependencias y las semillas se fijan cuando existe aleatoriedad.
+   La trazabilidad permite reconstruir la cadena desde sp500 prices adj close.csv has-
+ta benchmark comparison.csv. También se conservan el checkpoint del VAE, el escalador,
+las reconstrucciones y los escenarios. El Capı́tulo 6 describe el orden de ejecución y las
+limitaciones para reproducir exactamente una descarga futura de un proveedor externo.
+
+   Fase CRISP-DM           Aplicación en el TFM                 Evidencia generada
+
+   Comprensión del pro-   Pregunta, benchmarks y métricas      Formulación y restriccio-
+   blema                                                         nes
+   Comprensión de los     Cobertura, calidad y EDA              Cinco CSV y siete figu-
+   datos                                                         ras
+   Preparación de datos   Retornos, corte temporal y escalado   Ficheros train/test y es-
+                                                                 calador
+   Modelado                AE, VAE y escenarios                  Modelos,     pérdidas   y
+                                                                 CSV comparativo
+   Evaluación             Calidad estadı́stica y carteras       Métricas y gráficos
+   Reproducibilidad        Encadenamiento de scripts             Repositorio y artefactos
+
+Tabla 3.1: Adaptación de CRISP-DM al desarrollo experimental del trabajo. Fuente: ela-
+boración propia.
+
+
+
+3.3.4.     Visión general y secuencia experimental
+
+   El diseño completo encadena adquisición, retornos, EDA, partición, escalado, entre-
+namiento, generación, estimación sintética, optimización y evaluación. Las decisiones de
+cartera se toman con entrenamiento histórico o escenarios derivados de él; test solo se
+utiliza al final. Este diseño ofrece una comparación fuera de muestra coherente, aunque un
+único corte no sustituye una validación walk-forward.
+   Esta sección conserva y documenta el diseño metodológico amplio considerado al inicio
+del trabajo. Es importante distinguir ese diseño de la ejecución finalmente validada: la
+componente implementada es el VAE y los escenarios se obtienen muestreando su espacio
+latente y aplicando el decoder. La integración GAN/WGAN descrita en algunos apartados
+siguientes representa la arquitectura inicialmente estudiada y una extensión futura; no se
+entrenó un generador ni un discriminador en los resultados de esta memoria. La divergencia
+KL se utiliza en la pérdida del VAE, no como objetivo del optimizador de cartera.
+
+                                                                                                23
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+3.3.5.   Diseño general del experimento
+
+   Se pretende construir un flujo completo, desde la adquisición de datos hasta la valida-
+ción de los resultados de los modelos, pasando por la generación de escenarios sintéticos.
+   En primer lugar, se realizará la adquisición de datos históricos de retornos de activos
+del S&P 500 mediante la herramienta yfinance. Empleando Python, se llevará a cabo el
+preprocesamiento de los datos para alimentar el entrenamiento del modelo VAE, con el
+objetivo de extraer una representación latente subyacente a la distribución de los retornos
+observados.
+   A continuación, el diseño original contemplaba entrenar una GAN/WGAN. Esa fase
+quedó fuera de la ejecución: el pipeline real muestrea z ∼ N (0, I) y decodifica 5.000
+observaciones con el VAE. Con esos escenarios se asignan los pesos y se comparan con
+Markowitz, Markowitz restringido y equiponderación sobre un test real común.
+
+
+3.3.6.   Adquisición de datos
+
+   Una parte fundamental del experimento propuesto es la adquisición de datos reales que
+permitan llevar a cabo un estudio relevante.
+   Empleando la herramienta yfinance, se creará un pipeline de datos para adquirir series
+históricas de los últimos 10 años de los principales activos del S&P 500.
+   Se emplearán estos datos por su relevancia. El mercado estadounidense es uno de
+los más importantes en cuanto a capitalización de mercado. Este ı́ndice agrupa a las 500
+mayores empresas de Estados Unidos por capitalización bursátil y constituye una referencia
+ampliamente utilizada en el análisis financiero. Por su diversificación y representatividad,
+se ha considerado como el mejor escenario para poner en práctica la metodologı́a planteada
+para la optimización de carteras.
+   Asimismo, se procurará establecer la trazabilidad de los datos, con el fin de asegurar
+que proceden de fuentes confiables y que el proceso de adquisición sea reproducible.
+
+
+3.3.7.   Preprocesamiento de los datos
+
+   Tras la adquisición de los datos, se llevarán a cabo las transformaciones necesarias para
+poder desarrollar los objetivos del trabajo. Este preprocesamiento permitirá adaptar las
+series históricas al formato requerido por los modelos generativos y por el proceso posterior
+de optimización.
+
+                                                                                                 24
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+    En primer lugar, se trabajará con precios ajustados, de forma que se tengan en cuenta
+eventos corporativos como dividendos o desdoblamientos de acciones. A partir de estas se-
+ries se calcularán los retornos financieros, que constituirán la entrada principal del modelo.
+Se llevará a cabo un tratamiento de valores ausentes, eliminando activos que presenten de-
+masiados nulos, alineando fechas comunes y realizando interpolación únicamente cuando
+esté justificado.
+    Para el preprocesado se aplicó normalización Min–Max al rango [−1, 1], ajustada úni-
+camente con entrenamiento. No se aplicó un recorte general de valores extremos, porque
+estos contienen información financiera relevante. Los parámetros se guardaron para des-
+normalizar los escenarios generados por el VAE.
+    Asimismo, se realizarán las transformaciones adicionales que sean necesarias para ga-
+rantizar que los datos puedan ser utilizados de forma adecuada dentro del pipeline expe-
+rimental. A priori, se pretende realizar una división temporal de los datos, separando los
+conjuntos de entrenamiento y validación.
+
+
+3.3.8.    Arquitectura VAE-GAN considerada en el diseño inicial
+
+    Una vez extraı́dos y preprocesados los datos, se elaborará una estructura en lı́nea con
+lo expuesto en los apartados previos.
+    La arquitectura propuesta para el modelo se articula en tres módulos principales:
+
+
+      Extracción de caracterı́sticas con Autoencoders Variacionales (VAEs) para la reduc-
+      ción de la dimensionalidad de forma no lineal. El VAE proyecta los datos históricos
+      hacia un espacio latente de menor dimensión. Este proceso permite reducir parte del
+      ruido, reteniendo las caracterı́sticas persistentes de los datos.
+
+      Generación adversaria considerada como extensión. Una GAN podrı́a entrenarse so-
+      bre el espacio latente, pero esta etapa no forma parte del experimento ejecutado.
+
+      Optimización de la cartera mediante el uso de medidas informacionales, como la
+      Divergencia de Kullback-Leibler, como criterio complementario al análisis clásico del
+      riesgo. De este modo, se plantea evaluar la robustez de la cartera frente a escenarios
+      generados por el modelo.
+
+
+    De manera intuitiva, el diseño hı́brido buscaba usar el VAE para estructurar el latente
+y una GAN para refinar muestras. En la implementación disponible, el primer componente
+
+                                                                                                   25
+                                                                                    Daniel Machı́n González
+                                        Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+se conserva y la generación se realiza directamente con el decoder ; la utilidad de añadir
+una GAN permanece como hipótesis futura.
+       El mercado financiero presenta una gran cantidad de variables interconectadas de for-
+mas que van más allá de la linealidad. Por ello, el VAE se utiliza para aproximar un espacio
+latente en el que se representen relaciones subyacentes entre los activos. Este planteamien-
+to resulta adecuado frente a métodos estrictamente lineales como el PCA, dado que los
+mercados financieros no presentan necesariamente una estructura lineal.
+       El espacio latente Z representa, por tanto, una codificación comprimida de la informa-
+ción relevante contenida en los datos de entrada.
+
+          Datos históricos x   Encoder qϕ (z|x)       Espacio Latente Z    Decoder pθ (x|z)
+
+
+
+
+                                     Ruido ϵ           Generador G(z, ϵ)       Escenarios Sintéticos       Cálculo KLD
+
+                                       feedback
+
+                                                       Discriminador D(x)                               Optimización Pesos w
+
+
+
+
+Figura 3.1: Arquitectura hı́brida VAE-GAN considerada inicialmente y no implementada
+de forma completa. Fuente: elaboración propia.
+                                                   Fuente: elaboración propia.
+
+
+       La Figura 3.1 representa el diseño conceptual original: VAE, generador y discriminador.
+Se incluye para mostrar la evolución del planteamiento, no como diagrama del software
+ejecutado. El pipeline validado termina en el decoder del VAE antes de pasar a la estimación
+estadı́stica y la optimización.
+
+
+3.3.9.         Generación de escenarios sintéticos
+
+       Una vez entrenado el VAE se obtiene un espacio latente Z. En la ejecución real se mues-
+trea directamente la normal estándar y se decodifica. El uso posterior de GAN/WGAN
+sobre dicho espacio es una posible ampliación y no se le atribuyen métricas en esta memo-
+ria.
+       Cada una de estas muestras sintéticas representa un escenario plausible de mercado.
+Estos escenarios no deben interpretarse como predicciones exactas del futuro, sino como
+simulaciones generadas a partir de la distribución aprendida por el modelo. De este modo,
+se amplı́a el conjunto de situaciones bajo las cuales puede evaluarse la cartera construida.
+
+                                                                                                                                26
+                                                                          Daniel Machı́n González
+                              Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+   La utilidad de estos escenarios depende de su capacidad para preservar propiedades
+estadı́sticas relevantes de los datos reales. Por ello, se evaluará si los escenarios generados
+conservan, de forma aproximada, caracterı́sticas como la media de los retornos, la volati-
+lidad, la estructura de correlaciones, la presencia de colas pesadas, posibles asimetrı́as y
+dependencias no lineales entre activos.
+   Esta evaluación resulta necesaria para evitar que la optimización posterior se base
+en escenarios artificiales que no representen adecuadamente el comportamiento observado
+en los mercados financieros. En consecuencia, la generación de escenarios sintéticos no
+constituye un fin en sı́ mismo, sino una etapa intermedia orientada a mejorar la evaluación
+y selección de carteras bajo incertidumbre.
+
+
+3.3.10.    Función de pérdida y criterios de optimización
+
+   La metodologı́a ejecutada combina dos niveles: entrenamiento variacional del VAE
+y optimización financiera sobre parámetros sintéticos. Un tercer nivel adversario estaba
+previsto en el diseño, pero no fue implementado. Esta separación evita confundir la pérdida
+de la red con la función de máximo Sharpe empleada para los pesos.
+   Siguiendo el enfoque propuesto por (Kingma y Welling, 2013), el objetivo del modelo
+VAE es maximizar la verosimilitud marginal de los datos observados. Dado un conjun-
+to de datos {x(i) }N
+                   i=1 , la verosimilitud marginal se descompone como la suma sobre las
+
+observaciones individuales:
+
+                                                              N
+                                                              X
+                           log pθ (x(1) , . . . , x(N ) ) =         log pθ (x(i) )         (3.1)
+                                                              i=1
+
+   Sin embargo, el cálculo directo de log pθ (x(i) ) resulta intratable debido a la integración
+sobre las variables latentes. Para abordar este problema, se introduce una distribución
+aproximada qϕ (z|x), lo que permite descomponer la log-verosimilitud como:
+
+                                                                
+                 log pθ (x(i) ) = DKL qϕ (z|x(i) ) ∥ pθ (z|x(i) ) + L(θ, ϕ; x(i) )         (3.2)
+
+   Dado que la divergencia de Kullback–Leibler es siempre no negativa, la función varia-
+cional constituye una cota inferior, conocida como ELBO (Evidence Lower Bound ):
+
+
+                                   log pθ (x(i) ) ≥ L(θ, ϕ; x(i) )                         (3.3)
+
+   Esta cota puede expresarse como:
+
+                                                                                                    27
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+                                                h                                    i
+                  L(θ, ϕ; x(i) ) = Eqϕ (z|x(i) ) log pθ (x(i) , z) − log qϕ (z|x(i) )     (3.4)
+
+   o, de forma equivalente, separando sus componentes principales:
+
+                                                                  h                 i
+           L(θ, ϕ; x(i) ) = −DKL qϕ (z|x(i) ) ∥ p(z) + Eqϕ (z|x(i) ) log pθ (x(i) |z)     (3.5)
+
+   Esta formulación revela dos términos fundamentales:
+
+      Un término de regularización, que fuerza la distribución latente aproximada qϕ (z|x)
+      a mantenerse cercana a la probabilidad a priori p(z).
+
+      Un término de reconstrucción, que mide la capacidad del modelo generativo para
+      reproducir los datos observados a partir de las variables latentes.
+
+   El proceso de entrenamiento consiste en maximizar esta cota inferior respecto a los
+parámetros del modelo generativo θ y los parámetros variacionales ϕ.
+   No obstante, la optimización presenta dificultades prácticas. En particular, el cálculo
+del gradiente respecto a ϕ mediante estimadores Monte Carlo directos presenta alta va-
+rianza, lo que dificulta la convergencia. Para superar esta limitación, se introduce el truco
+de reparametrización, que permite expresar la variable latente como una transformación
+determinista de una variable aleatoria auxiliar:
+
+
+                              z = µϕ (x) + σϕ (x)ϵ,       ϵ ∼ N (0, I)                    (3.6)
+
+   Esta reformulación permite trasladar la fuente de aleatoriedad fuera de la red neu-
+ronal, haciendo posible aplicar técnicas estándar de optimización basadas en gradiente
+(backpropagation) con estimadores de baja varianza.
+   Como fundamento de la ampliación futura, una componente GAN/WGAN se entre-
+narı́a mediante un criterio adversarial. En una GAN estándar se entrenarı́an simultánea-
+mente un generador G y un discriminador D. Esta formulación se conserva como marco
+metodológico teórico y no describe una ejecución realizada:
+
+
+            mı́n máx V (D, G) = Ex∼pdata [log D(x)] + Ez∼pz [log (1 − D(G(z)))]          (3.7)
+             G    D
+
+   En el caso de utilizar una WGAN, el criterio adversarial se reformula en términos de
+distancia de Wasserstein entre la distribución real y la distribución generada. Esta modi-
+ficación permite obtener una señal de entrenamiento más estable, especialmente cuando
+
+                                                                                                  28
+                                                                          Daniel Machı́n González
+                              Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+ambas distribuciones se encuentran inicialmente alejadas. Por este motivo, la variante
+WGAN resulta especialmente relevante en contextos financieros, donde la distribución de
+retornos puede presentar colas pesadas, asimetrı́as y elevada variabilidad.
+   Finalmente, los escenarios sintéticos generados se emplean como entrada para el proceso
+de optimización de carteras. A partir de dichos escenarios se estimarán magnitudes como
+el retorno esperado generado µ̂gen y la matriz de covarianzas generada Σ̂gen . Una posible
+formulación del problema de optimización es:
+
+                                                
+                                     λ
+                      máx w⊤ µ̂gen − w⊤ Σ̂gen w              s.a.   1⊤ w = 1            (3.8)
+                       w             2
+   donde w representa el vector de pesos de la cartera, µ̂gen el vector de retornos esperados
+estimado a partir de los escenarios generados, Σ̂gen la matriz de varianzas-covarianzas
+estimada a partir de dichos escenarios y λ el parámetro de aversión al riesgo.
+   Esta formulación permite conectar la generación de escenarios sintéticos con la optimi-
+zación de carteras. En lugar de estimar los parámetros únicamente a partir de la muestra
+histórica observada, se plantea utilizar la distribución generada por el modelo como base
+adicional para evaluar la robustez de distintas asignaciones de pesos.
+
+
+3.3.11.    Optimización y selección de pesos
+
+   En este apartado se describe cómo se obtiene la cartera resultante a partir de los
+escenarios sintéticos generados. Tras la generación de dichos escenarios, se procede a la
+fase de optimización y selección de pesos de la cartera.
+   A partir de los escenarios sintéticos se obtiene una matriz de retornos simulados. Em-
+pleando esta matriz, se podrán estimar magnitudes relevantes para la construcción de la
+cartera, como el retorno esperado, la matriz de covarianzas, la volatilidad y la distribución
+de pérdidas y ganancias.
+   La variable principal a optimizar es el vector de pesos:
+
+
+                                     w = (w1 , w2 , . . . , wn )                         (3.9)
+
+   donde wi representa la proporción de la cartera asignada al activo i. Para simplificar la
+selección de pesos y mantener una interpretación conservadora del problema, se impondrán
+las siguientes condiciones:
+
+      No se permiten posiciones cortas, por lo que wi ≥ 0 para todo i.
+
+                                                                                                 29
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+                                                               Pn
+      La suma de los pesos debe ser igual a 1, es decir,         i=1 wi = 1. Esto garantiza que
+
+      la cartera esté completamente invertida y no se utilice apalancamiento.
+
+
+   El criterio empleado parte de la formulación de Markowitz, pero estimada sobre los
+escenarios generados:
+
+                                                         n
+                                    λ ⊤                  X
+                  máx w⊤ µ̂gen −     w Σ̂gen w   s.a.         wi = 1,   wi ≥ 0            (3.10)
+                    w               2
+                                                         i=1
+
+   La principal diferencia con el método clásico radica en la fuente de los parámetros, no
+en la estructura general del criterio de selección de pesos. En el modelo clásico, la media y la
+matriz de covarianzas se estiman directamente a partir de los datos históricos observados.
+En la metodologı́a propuesta, en cambio, dichas magnitudes se estiman a partir de los
+escenarios sintéticos generados por el modelo.
+   De este modo, la asignación de pesos obtenida no depende exclusivamente de la muestra
+histórica original, sino también de una distribución generada que busca preservar ciertas
+propiedades estadı́sticas relevantes del mercado. La cartera resultante debe interpretarse,
+por tanto, como la asignación obtenida bajo el criterio de optimización definido y no como
+una cartera óptima en términos absolutos.
+
+
+3.3.12.    Benchmarks de comparación
+
+   Para evaluar la metodologı́a propuesta, los resultados obtenidos se compararán con
+estrategias de referencia ampliamente utilizadas en optimización de carteras.
+   En primer lugar, se comparan los resultados con el modelo de Markowitz. La diferencia
+radica en el origen de los parámetros: el modelo clásico usa entrenamiento histórico y la
+propuesta usa escenarios generados por el VAE implementado.
+   En segundo lugar, se considerará una cartera equiponderada, en la que todos los activos
+reciben el mismo peso. Esta estrategia simplifica el problema de selección de pesos y no
+requiere estimar retornos esperados ni matrices de covarianzas. Frente a ella, se evaluará
+si el empleo de una metodologı́a más compleja aporta valor adicional en términos de
+rentabilidad y riesgo.
+   Finalmente, se utilizará el ı́ndice S&P 500 como referencia de mercado. Esto permitirá
+evaluar si la cartera construida mediante la metodologı́a propuesta mejora o complementa
+el comportamiento agregado del mercado durante el periodo de evaluación.
+   En cuanto a las métricas de evaluación, se considerarán las siguientes:
+
+                                                                                                     30
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+     Retorno acumulado: se utilizará para evaluar el rendimiento total durante el periodo
+     de evaluación.
+
+     Retorno anualizado: permitirá comparar rentabilidades en términos homogéneos.
+
+     Volatilidad anualizada: servirá como medida de riesgo, evaluando la variabilidad de
+     los retornos.
+
+     Ratio de Sharpe: medirá la rentabilidad ajustada por riesgo.
+
+     Máximo drawdown: medirsá la mayor caı́da desde un máximo hasta un mı́nimo
+     posterior, evaluando el riesgo extremo.
+
+     Divergencia de Kullback-Leibler: se empleará para evaluar la distancia entre la dis-
+     tribución de retornos generada por el modelo y la distribución de retornos observada
+     en los datos históricos.
+
+   La comparación permitirá evaluar dos aspectos principales: por un lado, si los escenarios
+generados son razonables a nivel estadı́stico; por otro, si la cartera resultante es capaz de
+mejorar o complementar los enfoques clásicos de optimización de carteras.
+
+
+
+
+                                                                                                 31
+4. Marco normativo
+
+    El proyecto utiliza datos financieros públicos y modelos de inteligencia artificial con
+finalidad académica. El marco relevante comprende protección de datos, condiciones de
+uso de la fuente, propiedad intelectual, transparencia y comunicación responsable. La
+ausencia de una aplicación comercial no elimina la necesidad de documentar procedencia
+y limitaciones.
+
+
+
+4.1.      Identificación del tratamiento de datos
+
+    Los archivos contienen fechas, sı́mbolos bursátiles, precios y retornos. No se tratan nom-
+bres, identificadores, perfiles ni decisiones de personas fı́sicas identificadas o identificables.
+En consecuencia, el núcleo empı́rico no constituye un tratamiento de datos personales en
+el sentido habitual del RGPD. Esta afirmación se limita a los datasets del repositorio y no
+debe extenderse a credenciales, logs o datos de colaboradores que pudieran incorporarse
+en un despliegue futuro.
+
+
+
+4.2.      RGPD y Ley Orgánica 3/2018
+
+    El Reglamento General de Protección de Datos y la LOPDGDD establecen principios
+como minimización, limitación de finalidad y seguridad. Aunque los retornos corporativos
+utilizados no son datos personales, el proyecto adopta esos principios como buenas prácti-
+cas: solo almacena variables necesarias, separa credenciales del código y limita la finalidad
+a investigación y docencia.
+    El riesgo para derechos de personas es bajo porque no se procesan datos personales
+identificables. Se evita calificarlo como absolutamente nulo: repositorios, servicios externos
+o metadatos operativos pueden introducir información diferente si el sistema se amplı́a.
+Cualquier futura incorporación de perfiles de inversores exigirı́a una evaluación jurı́dica
+especı́fica.
+
+
+
+4.3.      Fuente financiera y propiedad intelectual
+
+    Los precios se obtienen mediante yfinance desde Yahoo Finance. La reproducibilidad
+técnica de la consulta no equivale a otorgar derechos de redistribución ilimitada. El au-
+
+                                               32
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+tor debe revisar los términos vigentes del proveedor antes de publicar datasets brutos y
+distinguir los datos de terceros de los retornos y análisis derivados.
+   El código desarrollado puede identificarse como creación propia salvo librerı́as y frag-
+mentos con licencias respectivas. El repositorio debe incluir licencia, atribuciones y referen-
+cias. Las figuras generadas a partir de datos propios se indican como elaboración propia;
+esta fórmula no elimina la obligación de reconocer la fuente de los precios.
+
+
+4.4.     Uso responsable de inteligencia artificial
+
+   Los modelos pueden producir resultados numéricamente precisos con una apariencia de
+objetividad que excede su validez. Por ello se documentan arquitectura, hiperparámetros,
+corte temporal y métricas, y se evita presentar una VAE-GAN que no fue entrenada. La
+transparencia sobre resultados negativos o limitaciones forma parte del uso responsable.
+   La selección de pesos procede de una función matemática y de parámetros estimados, no
+de una explicación causal de las empresas. La interpretabilidad es parcial: se pueden auditar
+escenarios y restricciones, pero no atribuir cada peso a una razón económica fundamental.
+Cualquier uso en decisión real requerirı́a supervisión experta y controles adicionales.
+
+
+4.5.     Carácter académico y no recomendación financiera
+
+   Las carteras se muestran para comparar métodos bajo datos históricos. No consideran
+la situación, objetivos o tolerancia al riesgo de una persona, ni costes y condiciones comple-
+tas de negociación. En consecuencia, no constituyen asesoramiento, oferta o recomendación
+financiera. La memoria debe comunicar esta limitación junto a las cifras de rentabilidad,
+evitando que un resultado retrospectivo se interprete como expectativa garantizada.
+
+
+4.6.     Reproducibilidad y transparencia
+
+   El repositorio conserva scripts y artefactos que permiten auditar la cadena de cálcu-
+lo. Se registran semillas y dependencias, y las tablas proceden de CSV. Esta trazabilidad
+favorece la revisión cientı́fica y reduce el riesgo de seleccionar únicamente resultados fa-
+vorables. Aun ası́, reproducibilidad no equivale a validez externa: otra fuente, periodo o
+mercado puede producir conclusiones distintas.
+
+
+
+
+                                                                                                  33
+5. Desarrollo especı́fico de la contribución
+
+
+5.1.     Análisis exploratorio de datos
+
+5.1.1.   Descripción del dataset
+
+   El análisis parte de precios de cierre ajustados descargados de Yahoo Finance mediante
+yfinance. El universo contiene 30 acciones incluidas en el S&P 500 y abarca desde el 3 de
+enero de 2014 hasta el 30 de diciembre de 2024 una vez calculados los retornos. La matriz
+procesada contiene 2.766 filas y 30 columnas. Cada fila representa una sesión bursátil y
+cada columna el movimiento de un activo; por tanto, una observación del modelo es un
+vector conjunto de 30 retornos, no un dato aislado por empresa.
+   La frecuencia diaria ofrece un compromiso entre número de observaciones y ruido. Una
+frecuencia mensual reducirı́a mucho el tamaño muestral, mientras datos intradı́a exigirı́an
+tratar microestructura, horarios y volúmenes fuera del alcance. El periodo incluye fases de
+volatilidad y tendencias diferentes, pero sigue siendo una única realización histórica y no
+garantiza cobertura de todos los regı́menes posibles.
+
+
+5.1.2.   Variables utilizadas
+
+   La variable original es el precio de cierre ajustado, que refleja los ajustes provistos
+por la fuente para dividendos y desdoblamientos. A partir de ella se calcula el log-retorno
+diario ri,t = log(Pi,t /Pi,t−1 ). Las variables derivadas del EDA incluyen media, desviación,
+cuantiles, extremos, asimetrı́a, curtosis, correlaciones, rendimiento acumulado y volatilidad
+móvil anualizada.
+   La fecha actúa como ı́ndice y preserva el orden temporal; no se introduce como ca-
+racterı́stica numérica del VAE. Tampoco se incorporan sectores, capitalización, volumen
+ni variables macroeconómicas, porque no forman parte de los archivos utilizados. Esta
+delimitación evita atribuir al modelo información que no recibió.
+
+
+5.1.3.   Valores perdidos y calidad de los datos
+
+   El preprocesamiento descarta activos cuya proporción de ausencias supere el 5 % y
+aplica propagación hacia delante antes de calcular retornos. Después de alinear las series y
+eliminar la primera fila indefinida, los 30 activos conservados presentan cero valores ausen-
+
+                                             34
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+tes en las 2.766 observaciones. La Figura 5.1 muestra este resultado para cada columna.
+
+
+
+
+Figura 5.1: Valores perdidos por activo en la matriz final de retornos. Fuente: elaboración
+propia a partir de los datos procesados.
+
+   La ausencia de huecos simplifica el entrenamiento por lotes, pero no implica ausencia
+de errores de proveedor ni sesgo de selección. Exigir series homogéneas favorece activos con
+cobertura completa. La fecha se conserva ordenada y los CSV no muestran filas parciales;
+además, las dimensiones se contrastan mediante eda dataset shape.csv.
+
+
+5.1.4.    Estadı́sticos descriptivos
+
+   La Tabla 5.1 resume cinco activos representativos; el detalle completo de los 30 queda
+en eda descriptive statistics.csv. Las medias diarias son pequeñas frente a las des-
+viaciones, de modo que su estimación resulta ruidosa. NVDA presenta simultáneamente la
+mayor media y volatilidad de la selección, mientras XOM registra una media menor. Los
+extremos diarios superan ampliamente una desviación tı́pica y anticipan colas relevantes.
+
+                    Activo      Media   Desv. tı́pica    Mı́nimo    Máximo
+
+                    AAPL     0,000970       0,017584    -0,137708   0,113157
+                    JPM      0,000618       0,016757    -0,162106   0,165620
+                    MSFT     0,000946       0,016689    -0,159453   0,132929
+                    NVDA     0,002136       0,029352    -0,207712   0,260877
+                    XOM      0,000189       0,016983    -0,130391   0,119442
+
+Tabla 5.1: Selección de estadı́sticos descriptivos de log-retornos diarios. Fuente: elaboración
+propia a partir de eda descriptive statistics.csv.
+
+
+   Estas diferencias importan para Markowitz porque la media y la covarianza determi-
+
+                                                                                                    35
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+nan la solución. También importan para el VAE: el escalado impide que los activos de
+mayor amplitud dominen automáticamente la pérdida, mientras la transformación inversa
+devuelve las muestras a sus unidades financieras.
+
+
+5.1.5.   Distribución de los retornos
+
+   La Figura 5.2 agrega los retornos y evidencia una concentración acusada alrededor de
+cero junto con colas más largas que las de una aproximación normal simple. La asimetrı́a
+no tiene el mismo signo en todos los activos: AAPL registra −0,212, MSFT −0,175 y
+NVDA 0,225. La curtosis es positiva y elevada: 5,72 en AAPL, 8,18 en MSFT y 13,78 en
+JPM. Estos valores confirman que los episodios extremos no son marginales en la muestra.
+
+
+
+
+Figura 5.2: Distribución agregada de los log-retornos diarios. Fuente: elaboración propia a
+partir de los datos procesados.
+
+
+   La distribución agregada debe leerse con cautela porque mezcla activos con escalas
+distintas. No obstante, junto con los estadı́sticos por columna muestra por qué MSE de re-
+construcción no basta para evaluar escenarios: un modelo puede aproximar la zona central
+y suavizar las colas, reduciendo el error medio pero infravalorando eventos de riesgo.
+
+
+5.1.6.   Evolución temporal
+
+   La Figura 5.3 representa rendimientos acumulados de una muestra. Las trayectorias
+se separan de forma notable y alternan fases de crecimiento, corrección y recuperación.
+Esto subraya que la media del periodo completo oculta heterogeneidad temporal y que
+
+                                                                                                36
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+una estrategia evaluada en el tramo final puede beneficiarse de un régimen concreto.
+
+
+
+
+Figura 5.3: Evolución de los rendimientos acumulados en una muestra de activos. Fuente:
+elaboración propia.
+
+
+   El experimento respeta este orden: no aleatoriza filas antes del corte train/test. La de-
+cisión evita una fuga especialmente grave en series financieras, aunque no elimina cambios
+de régimen entre ambos subconjuntos.
+
+
+5.1.7.   Análisis de volatilidad
+
+   La volatilidad móvil anualizada de la Figura 5.4 cambia con el tiempo y presenta
+agrupamientos. Periodos tranquilos alternan con incrementos simultáneos en varios activos.
+La ventana móvil suaviza el ruido diario y permite observar persistencia, pero no se utiliza
+como entrada del VAE: sirve como diagnóstico de no estacionariedad.
+   Para Markowitz, la variación implica que una covarianza estimada sobre todo el entre-
+namiento puede no describir el test. Para el VAE, significa que una distribución latente
+global mezcla regı́menes. Una extensión condicionada o entrenada con ventanas móviles
+podrı́a abordar esta limitación.
+
+
+5.1.8.   Análisis de correlaciones
+
+   La matriz de la Figura 5.5 muestra dependencia positiva general, con intensidad des-
+igual. Las correlaciones más altas registradas son MA–V (0,886), BAC–JPM (0,885),
+KO–PEP (0,730) y GOOGL–MSFT (0,703). Estos pares son coherentes con exposiciones
+
+                                                                                                37
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+
+Figura 5.4: Volatilidad móvil anualizada en una muestra de activos. Fuente: elaboración
+propia.
+
+
+económicas compartidas, aunque el trabajo no utiliza etiquetas sectoriales y no atribuye
+causalidad.
+   Preservar la correlación es esencial: si los escenarios rompen dependencias, la covarianza
+sintética puede exagerar la diversificación. Por ello la comparación multmodelo incorpora
+error medio absoluto de correlación y la evaluación VAE incluye matrices reales y sintéticas.
+
+
+5.1.9.    Conclusiones del análisis exploratorio
+
+   El EDA confirma una matriz completa y suficientemente amplia para un experimento
+multivariante, pero también exhibe colas, extremos, volatilidad cambiante y correlaciones
+relevantes. Estas propiedades justifican explorar un VAE porque no impone directamente
+normalidad multivariante en el espacio observado. Sin embargo, no garantizan que las
+muestras latentes preserven todos los hechos estilizados.
+   La consecuencia metodológica es doble. Primero, deben separarse reconstrucción y
+calidad generativa. Segundo, la utilidad final debe medirse fuera de muestra y compararse
+con referencias simples. El análisis exploratorio establece ası́ las preguntas que guı́an las
+secciones posteriores, sin presentar todavı́a una conclusión sobre la estrategia de cartera.
+   En este capı́tulo se describe el desarrollo técnico de la contribución propuesta. En
+particular, se expone el diseño e implementación de un pipeline experimental orientado
+a generar escenarios sintéticos de retornos financieros y utilizarlos posteriormente como
+entrada para un proceso de optimización de carteras. El objetivo no es sustituir los modelos
+
+                                                                                                   38
+                                                                       Daniel Machı́n González
+                           Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+
+Figura 5.5: Matriz de correlaciones de los retornos. Fuente: elaboración propia a partir de
+los datos procesados.
+
+
+
+
+                                                                                               39
+                                                                          Daniel Machı́n González
+                              Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+clásicos de optimización, sino analizar si la incorporación de escenarios generados mediante
+modelos de aprendizaje profundo puede aportar información adicional respecto al uso
+exclusivo de datos históricos.
+
+
+
+5.2.     Diseño del pipeline experimental
+
+   La fase de optimización se apoya en los fundamentos de la teorı́a moderna de carteras
+introducida por (Markowitz, 1952). Por tanto, la innovación principal del trabajo no se
+sitúa en la sustitución del marco media-varianza, sino en la etapa previa de generación de
+escenarios. En lugar de estimar únicamente medias y covarianzas a partir de los retornos
+históricos observados, se introduce un modelo generativo capaz de aprender una repre-
+sentación latente de dichos retornos y producir escenarios sintéticos que posteriormente
+alimentan la optimización.
+   Con este propósito, se ha diseñado un pipeline experimental modular y reproducible.
+El flujo parte de la adquisición de precios históricos diarios para un subconjunto de activos
+del S&P 500 durante el periodo 2014–2024. A partir de estos precios ajustados se calculan
+retornos logarı́tmicos, se realiza una división temporal entre datos de entrenamiento y
+datos de test, y se aplican transformaciones de escalado necesarias para el entrenamiento
+del modelo generativo.
+   En una primera fase, se implementan varios modelos de referencia con los que com-
+parar la propuesta: una cartera equiponderada, una cartera de Markowitz clásica y una
+variante de Markowitz con restricción de peso máximo por activo. Esta última restricción
+se introduce para evitar concentraciones excesivas y favorecer una mayor diversificación
+de la cartera.
+   Posteriormente, se entrena un Autoencoder Variacional sobre los retornos escalados de
+entrenamiento. El modelo aprende una representación latente de la distribución histórica
+de retornos y permite generar nuevos escenarios mediante muestreo en dicho espacio latente
+y posterior decodificación. Estos escenarios sintéticos se transforman de nuevo a la escala
+original de retornos y se utilizan para estimar medias y covarianzas sintéticas.
+   Finalmente, se optimiza una cartera a partir de los escenarios generados y se evalúa
+su rendimiento sobre el conjunto de test real. Esta evaluación fuera de muestra permite
+comparar la estrategia propuesta frente a los benchmarks clásicos utilizando métricas
+homogéneas, como retorno acumulado, retorno anualizado, volatilidad anualizada, ratio
+
+                                                                                                  40
+                                                                           Daniel Machı́n González
+                               Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+de Sharpe y máximo drawdown.
+
+
+
+5.3.       Selección del universo de activos
+
+      Dado el alcance del trabajo, se ha seleccionado un subconjunto inicial de 30 activos
+pertenecientes al S&P 500. Esta decisión experimental permite trabajar con un universo
+de inversión suficientemente amplio para observar efectos de diversificación, pero acotado
+en términos de dimensionalidad y coste computacional. De este modo, la primera im-
+plementación del pipeline se plantea como una aproximación controlada y reproducible,
+susceptible de ampliarse en trabajos posteriores a un universo de activos más extenso.
+      La utilización completa del conjunto de activos del S&P 500 incrementarı́a de forma
+significativa la dimensionalidad del problema, el coste de entrenamiento de los modelos
+generativos y la complejidad de la estimación de matrices de covarianza. Por ello, se ha
+optado por un subconjunto representativo de compañı́as lı́quidas y ampliamente negocia-
+das. Esta decisión es coherente con otros trabajos aplicados de aprendizaje automático en
+optimización de carteras, donde el universo de activos suele acotarse para hacer viable la
+evaluación experimental (Zhang y cols., 2020).
+
+
+
+5.4.       Adquisición de datos financieros
+
+      El subconjunto de activos seleccionado está compuesto por 30 compañı́as pertenecientes
+al S&P 500: AAPL, MSFT, AMZN, GOOGL, META, NVDA, JPM, V, PG, UNH, HD,
+MA, DIS, BAC, XOM, KO, PEP, CSCO, PFE, MRK, WMT, ADBE, NFLX, CRM, INTC,
+T, VZ, CMCSA, NKE y ORCL.
+      Para obtener los datos de precios ajustados diarios correspondientes al periodo 2014–
+2024 se ha utilizado la librerı́a yfinance, que permite descargar información financiera
+histórica desde Yahoo Finance. En concreto, se emplean precios ajustados de cierre (Ad-
+justed Close), ya que incorporan el efecto de eventos corporativos como dividendos y
+desdoblamientos de acciones, proporcionando una base más adecuada para el cálculo de
+retornos.
+      La adquisición se implementa mediante download data.py, disponible en el repositorio
+del proyecto1 . El script define universo, intervalo y salida. El resultado se almacena como
+CSV de precios ajustados, entrada de la preparación.
+  1
+      Repositorio del proyecto: https://github.com/dmaching/tfm.
+
+
+                                                                                                 41
+                                                                          Daniel Machı́n González
+                              Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+5.5.     Construcción del conjunto de retornos
+
+   Para comparar activos financieros, el modelo no trabaja directamente con los precios,
+ya que estos no son comparables entre sı́ en términos absolutos. Un activo puede cotizar a
+cientos de dólares y otro a unas pocas unidades monetarias, sin que esa diferencia implique
+necesariamente mayor rentabilidad o menor riesgo. Por este motivo, el análisis se realiza
+sobre retornos, que permiten medir la variación relativa del precio de cada activo entre
+dos instantes consecutivos.
+   En este trabajo se emplean retornos logarı́tmicos diarios, definidos como:
+
+                                                            
+                                                       Pt
+                                       rt = log                                         (5.1)
+                                                      Pt−1
+   donde Pt representa el precio ajustado de cierre del activo en el dı́a t, y Pt−1 el precio
+ajustado de cierre del dı́a anterior. El uso de precios ajustados permite incorporar el
+efecto de eventos corporativos como dividendos o desdoblamientos de acciones, evitando
+que dichos eventos distorsionen el cálculo de los retornos.
+   Los retornos logarı́tmicos presentan varias ventajas en este contexto. En primer lugar,
+expresan los cambios de precio en una escala relativa, lo que permite comparar activos con
+niveles de precio diferentes. En segundo lugar, tienen una interpretación conveniente desde
+el punto de vista temporal, ya que son aditivos en el tiempo. Además, constituyen una
+transformación habitual en el análisis de series financieras, puesto que permiten trabajar
+con variaciones de precio en lugar de precios absolutos.
+   La construcción del conjunto de retornos se implementa mediante preprocess.py. Este
+script carga los precios, ordena las observaciones, filtra activos por ausencias y calcula
+log-retornos. Ante valores no disponibles, propaga hacia delante antes del cálculo para
+mantener la alineación temporal.
+   Una vez calculados los retornos, el conjunto se divide temporalmente en datos de
+entrenamiento y datos de test. Esta división se realiza respetando el orden cronológico de
+las observaciones, de modo que la información futura no intervenga en el entrenamiento de
+los modelos. En concreto, el 80 % inicial de las observaciones se utiliza como conjunto de
+entrenamiento, mientras que el 20 % final se reserva para la evaluación fuera de muestra.
+   El conjunto de entrenamiento se emplea para estimar los parámetros de los modelos
+de referencia y para entrenar el Autoencoder Variacional. El conjunto de test se reserva
+exclusivamente para evaluar el rendimiento final de las carteras construidas. Esta separa-
+
+                                                                                                42
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+ción resulta especialmente relevante en problemas financieros, ya que permite analizar si
+las estrategias obtenidas mantienen su comportamiento sobre datos no utilizados durante
+la fase de entrenamiento u optimización.
+   Adicionalmente, para el entrenamiento del VAE se genera una versión escalada de los
+retornos mediante normalización Min-Max en el intervalo ([-1,1]). Este escalado se ajusta
+únicamente sobre el conjunto de entrenamiento y posteriormente se aplica al conjunto
+de test. De este modo, se evita introducir información del periodo de evaluación en la
+fase de entrenamiento. La versión escalada se utiliza como entrada del modelo generativo,
+mientras que las métricas financieras y la optimización de carteras se calculan sobre los
+retornos en su escala original.
+   Como resultado de este proceso, se obtiene una matriz de retornos diarios formada
+por 2766 observaciones y 30 activos. La división temporal genera 2212 observaciones para
+entrenamiento y 554 observaciones para test. Los resultados se almacenan en los archi-
+vos returns.csv, returns train.csv, returns test.csv, returns train scaled.csv
+y returns test scaled.csv. Asimismo, los parámetros del escalado se conservan en el
+archivo minmax scaler.pkl, lo que permite aplicar posteriormente la transformación in-
+versa a los escenarios sintéticos generados.
+
+
+
+5.6.     Implementación de modelos de referencia
+
+   Para evaluar la cartera construida mediante la metodologı́a propuesta, se han imple-
+mentado varias estrategias de referencia que permiten comparar los resultados obtenidos.
+La inclusión de estos modelos resulta necesaria para determinar si la generación de esce-
+narios sintéticos aporta alguna mejora respecto a métodos más simples o respecto a una
+optimización basada exclusivamente en los retornos históricos. Esta forma de evaluación
+es habitual en los trabajos de aprendizaje automático aplicado a la gestión de carteras,
+en los que el modelo propuesto se compara con diferentes algoritmos base bajo un mismo
+marco experimental (Zhang y cols., 2020).
+   Markowitz divide el proceso de selección de una cartera en dos etapas. La primera
+consiste en formar expectativas sobre el comportamiento futuro de los activos, mientras que
+la segunda utiliza dichas expectativas para elegir la composición de la cartera (Markowitz,
+1952). El valor principal de este planteamiento se encuentra en rechazar la maximización
+del retorno esperado como único criterio de selección. El riesgo asociado a la cartera pasa
+
+                                                                                                43
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+a ocupar un papel fundamental en la toma de decisiones, por lo que el objetivo no consiste
+únicamente en buscar la combinación con mayor retorno esperado, sino en considerar
+conjuntamente su rentabilidad y su exposición al riesgo.
+
+   El retorno esperado de una cartera puede expresarse como la suma ponderada de los
+retornos esperados de los activos que la componen:
+
+
+                                                n
+                                                X
+                                         µp =         wi µ i ,                              (5.2)
+                                                i=1
+
+
+
+   donde wi representa el peso asignado al activo i, µi su retorno esperado y n el número
+total de activos. Sin embargo, el riesgo de la cartera no depende únicamente de la varianza
+individual de cada activo. También intervienen las covarianzas entre los diferentes retornos,
+que reflejan en qué medida los activos tienden a variar conjuntamente. La varianza de la
+cartera se expresa como:
+
+
+
+
+                                         σp2 = wT Σw,                                       (5.3)
+
+
+   donde w es el vector de pesos y Σ la matriz de covarianzas. Por tanto, la diversificación
+no depende exclusivamente del número de activos incluidos, sino también de la relación
+existente entre ellos (Markowitz, 1952).
+
+   Como se ha expuesto a lo largo del trabajo, la metodologı́a propuesta no pretende
+sustituir el marco clásico de selección de carteras ni desarrollar una nueva función de opti-
+mización. Su aportación se sitúa en la etapa anterior a la optimización: el aprendizaje de
+una representación latente de los retornos históricos y la generación de escenarios sintéticos
+a partir de dicha representación. Estos escenarios se utilizan posteriormente para estimar
+medias y covarianzas alternativas, manteniendo una fase final de optimización financiera
+interpretable.
+
+   Para establecer una comparación progresiva, se han implementado tres modelos de refe-
+rencia: una cartera equiponderada, una cartera de Markowitz sin lı́mite máximo especı́fico
+por activo y una cartera de Markowitz restringida. Todas las estrategias se construyen uti-
+lizando únicamente la información disponible en el conjunto de entrenamiento y se evalúan
+posteriormente sobre el mismo conjunto de test.
+
+                                                                                                     44
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+5.6.1.    Cartera equiponderada
+
+   La primera estrategia de referencia es una cartera equiponderada, en la que el capital
+se distribuye por igual entre todos los activos disponibles. El peso de cada activo se calcula
+como:
+
+
+                                                  1
+                                          wi =      .                                    (5.4)
+                                                  n
+   Dado que el universo considerado está formado por 30 activos, cada uno recibe inicial-
+mente un peso aproximado del 3,33 %. Esta estrategia se implementa mediante el script
+src/optimization/equal weight.py.
+   La cartera equiponderada no requiere estimar retornos esperados ni matrices de co-
+varianzas. Su inclusión proporciona una referencia sencilla, transparente y con un riesgo
+reducido de sobreajuste. Además, permite comprobar si la complejidad adicional introdu-
+cida por los modelos de optimización y por la generación de escenarios se traduce en una
+mejora observable sobre los datos de test.
+
+
+5.6.2.    Cartera de Markowitz clásica
+
+   La segunda estrategia implementada se basa en la optimización media-varianza pro-
+puesta por Markowitz. Para construirla se utilizan los retornos del conjunto de entre-
+namiento, a partir de los cuales se estiman el vector de retornos medios y la matriz de
+covarianzas histórica.
+   Los pesos de la cartera actúan como variables de decisión del problema. Como restric-
+ciones básicas, se exige que todo el capital quede invertido y que no existan posiciones
+cortas:
+
+                                         n
+                                         X
+                                               wi = 1,                                   (5.5)
+                                         i=1
+
+
+
+                                        wi ≥ 0     ∀i.                                   (5.6)
+
+   Estas condiciones definen una cartera long-only, en la que ningún activo puede recibir
+un peso negativo. La formulación mediante una función objetivo y un conjunto de restric-
+ciones permite representar el problema de selección de carteras dentro del marco general
+de la optimización matemática (Boyd y Vandenberghe, 2004).
+
+                                                                                                 45
+                                                                       Daniel Machı́n González
+                           Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+   En la implementación realizada, la función objetivo busca una combinación de activos
+con una relación favorable entre retorno esperado y volatilidad. La estrategia se encuentra
+desarrollada en el script src/optimization/markowitz.py. Una vez obtenidos los pesos
+mediante los datos de entrenamiento, estos se mantienen constantes y se aplican a los
+retornos del conjunto de test para evaluar el comportamiento fuera de muestra.
+   La solución obtenida presenta una concentración elevada en un número reducido de
+activos. En particular, el activo UNH recibe un peso cercano al 48,89 %, seguido por NVDA,
+AAPL y MSFT. Este resultado muestra una de las dificultades prácticas de la optimización
+media-varianza: pequeñas diferencias en las estimaciones de medias y covarianzas pueden
+producir asignaciones muy concentradas.
+
+
+5.6.3.   Cartera de Markowitz restringida
+
+   Con el objetivo de reducir la concentración observada en la solución anterior, se ha
+implementado una segunda variante de Markowitz que incorpora un lı́mite máximo del
+(20 %) por activo. En este caso, las restricciones sobre los pesos quedan definidas como:
+
+
+                                    0 ≤ wi ≤ 0,20        ∀i,                             (5.7)
+
+   manteniendo igualmente la condición de inversión completa:
+
+                                        n
+                                        X
+                                               wi = 1.                                   (5.8)
+                                         i=1
+
+   La incorporación de lı́mites inferiores y superiores sobre las variables de decisión per-
+mite adaptar la solución matemática a condiciones de inversión concretas (Boyd y Van-
+denberghe, 2004). En este trabajo, el lı́mite máximo se introduce para evitar que un único
+activo domine el comportamiento global de la cartera y para favorecer una distribución
+menos concentrada del capital.
+   Esta variante se implementa en markowitz constrained.py. El lı́mite de una quinta
+parte del capital por activo no garantiza por sı́ mismo una diversificación completa, ya
+que una cartera puede concentrarse en cinco activos situados en el máximo. Sin embargo,
+impide las asignaciones extremas de la variante sin lı́mite y establece un marco común
+para compararla con la cartera sintética.
+   En la solución obtenida, UNH y NVDA alcanzan el lı́mite del 20 %, mientras que
+AAPL, MSFT, MRK y PEP reciben también pesos relevantes. La distribución resultante
+
+                                                                                                 46
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+es menos concentrada que la de Markowitz sin lı́mite máximo.
+
+
+5.6.4.   Evaluación común de las estrategias
+
+   Las tres estrategias se evalúan sobre el mismo conjunto de test y utilizando las mismas
+métricas financieras. En particular, se calculan el retorno acumulado, el retorno anualizado,
+la volatilidad anualizada, el ratio de Sharpe y el máximo drawdown. La utilización de un
+procedimiento común permite que las diferencias observadas se atribuyan a la construcción
+de las carteras y no a cambios en el periodo de evaluación o en las métricas empleadas.
+   Los resultados obtenidos muestran que la cartera equiponderada alcanza un retorno
+acumulado del 64,93 %, con un ratio de Sharpe de 1,88 y un máximo drawdown del -7,96 %.
+La cartera de Markowitz clásica obtiene un retorno acumulado del 95,60 %, un ratio de
+Sharpe de 1,89 y un máximo drawdown del -12,78 %. Por su parte, la variante restringida
+alcanza un retorno acumulado del 101,38 %, un ratio de Sharpe de 2,20 y un máximo
+drawdown del -11,26 %.
+   En el periodo de test analizado, la cartera restringida presenta un mejor equilibrio entre
+rentabilidad y riesgo que la solución de Markowitz sin lı́mite máximo. No obstante, estos
+resultados deben interpretarse dentro del periodo temporal estudiado y no implican que
+una estrategia sea universalmente superior. Su función principal en este trabajo es estable-
+cer referencias homogéneas frente a las que evaluar posteriormente la cartera optimizada
+mediante escenarios generados por el VAE.
+
+
+
+5.7.     Implementación del Autoencoder Variacional
+
+   El Autoencoder Variacional V AE, ∗V ariationalAutoencoder∗ es un modelo generativo
+basado en variables latentes continuas que permite aprender una representación compri-
+mida y estructurada de los datos. En el contexto de este trabajo, se asume que los vectores
+de retornos diarios normalizados de los treinta activos seleccionados pueden explicarse a
+través de una distribución latente de menor dimensionalidad que captura factores subya-
+centes comunes del mercado.
+   De forma operativa, el modelo no genera directamente una variable latente determinis-
+ta, sino que el encoder aprende a parametrizar una distribución probabilı́stica condicional.
+En particular, dado un vector de entrada x, el encoder produce dos vectores: la media
+µ(x) y el logaritmo de la varianza log σ 2 (x). Estos parámetros definen una distribución
+
+                                                                                                 47
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+gaussiana multivariante diagonal de la forma:
+
+
+                                 qϕ (z|x) = N (µ(x), σ 2 (x)I)
+
+   A partir de esta distribución no se selecciona directamente un valor determinista, sino
+que se realiza un muestreo estocástico del espacio latente. Este muestreo se implementa
+mediante el truco de reparametrización, que permite mantener la diferenciabilidad del
+modelo:
+
+
+                              z = µ(x) + σ(x) · ϵ,   ϵ ∼ N (0, I)
+
+   El decoder toma como entrada este vector latente z y genera una reconstrucción x̂ del
+vector original de retornos. En este caso, la salida del modelo tiene la misma dimensiona-
+lidad que la entrada (30 activos), por lo que el decoder actúa como una transformación
+inversa del espacio latente hacia el espacio original de observaciones financieras.
+   El objetivo del entrenamiento es que la reconstrucción sea lo más fiel posible a la
+entrada original, al mismo tiempo que el espacio latente mantiene una estructura regular.
+Para ello, el modelo se entrena maximizando la Evidence Lower Bound (ELBO), que en
+la práctica se implementa como la minimización de una función de pérdida compuesta por
+dos términos:
+
+      un término de reconstrucción, medido mediante error cuadrático medio (MSE) entre
+      x y x̂,
+
+      un término de regularización basado en la divergencia de Kullback-Leibler entre la
+      distribución latente aprendida y una distribución normal estándar.
+
+   En este trabajo, la función de pérdida se define como:
+
+
+                                      L = Lrec + βLKL
+
+   donde el parámetro β = 0,001 controla el peso de la regularización del espacio latente.
+   El encoder está compuesto por una red neuronal feedforward con una capa oculta
+de 64 neuronas, mientras que el espacio latente tiene dimensión 8. El decoder simétrico
+reconstruye el vector de retornos a partir de esta representación comprimida.
+   El modelo se entrena durante 150 épocas utilizando el optimizador Adam. La función de
+pérdida se calcula sobre los retornos escalados en el intervalo [−1, 1], utilizando únicamente
+
+                                                                                                   48
+                                                                          Daniel Machı́n González
+                              Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+el conjunto de entrenamiento para evitar fuga de información. El aprendizaje converge de
+forma estable, observándose una reducción progresiva tanto del error de reconstrucción
+como del término de regularización KL.
+   En términos empı́ricos, el modelo alcanza una pérdida total en torno a 0.0095 al fi-
+nal del entrenamiento, con un error de reconstrucción en torno a 0.0077 en el conjunto
+de entrenamiento y aproximadamente 0.0105 en test, lo que indica una capacidad de ge-
+neralización razonable del modelo. Asimismo, el error medio absoluto de reconstrucción
+se sitúa en torno a 0.060 en train y 0.069 en test, lo que confirma que el modelo pre-
+serva adecuadamente la estructura estadı́stica de los retornos financieros sin sobreajustar
+significativamente los datos de entrenamiento.
+
+
+
+5.8.     Generación de escenarios sintéticos
+
+   Una vez entrenado el Autoencoder Variacional, el siguiente paso del pipeline consiste
+en la generación de escenarios sintéticos de retornos financieros. Estos escenarios se cons-
+truyen a partir del espacio latente aprendido por el modelo, el cual representa una versión
+comprimida y regularizada de la distribución de retornos observada en los datos históricos.
+   El proceso de generación se basa en el muestreo de la distribución latente estándar
+utilizada como prior, es decir:
+
+
+                                          z ∼ N (0, I)                                   (5.9)
+
+   A partir de estas muestras aleatorias del espacio latente, el decoder del modelo genera
+observaciones sintéticas en el espacio original de los datos. En este caso, cada muestra
+generada corresponde a un vector de retornos de dimensión 30, asociado al conjunto de
+activos considerados en el estudio.
+   Este procedimiento permite obtener múltiples trayectorias sintéticas de retornos que
+preservan, en cierta medida, las dependencias aprendidas durante el entrenamiento del
+modelo. De este modo, no se generan simples perturbaciones de los datos históricos, sino
+nuevas realizaciones coherentes con la estructura estadı́stica capturada por el VAE.
+   Los escenarios sintéticos generados se almacenan en forma de matriz, donde cada fila
+representa un escenario de retornos diarios y cada columna corresponde a uno de los activos
+del universo de inversión.
+   Posteriormente, estos escenarios se utilizan para estimar estadı́sticas agregadas, como
+
+                                                                                                 49
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+el vector de retornos esperados y la matriz de covarianzas sintética, que serán empleadas
+en la etapa de optimización de carteras.
+
+
+
+5.9.     Optimización de cartera a partir de escenarios sintéti-
+         cos
+
+   A partir de los escenarios generados mediante el Autoencoder Variacional, se procede
+a la construcción de una cartera optimizada utilizando la misma formulación de media-
+varianza empleada en los modelos de referencia.
+   En este caso, la diferencia fundamental radica en que los parámetros de entrada del
+problema de optimización no se estiman directamente a partir de los retornos históricos,
+sino a partir de los escenarios sintéticos generados por el modelo.
+   De este modo, se obtienen un vector de retornos esperados sintético y una matriz de
+covarianzas sintética, definidos como:
+
+                                                    T
+                                                 1 X synt
+                                     µsynt =        rt                               (5.10)
+                                                 T
+                                                   t=1
+
+
+
+                                     Σsynt = Cov(rsynt )                             (5.11)
+
+   donde rtsynt representa los retornos generados por el modelo en cada instante temporal.
+   El problema de optimización mantiene las mismas restricciones que en el caso de Mar-
+kowitz restringido:
+
+                                           n
+                                           X
+                                                 wi = 1                              (5.12)
+                                           i=1
+
+
+
+                                          0 ≤ wi ≤ 0,20                              (5.13)
+
+   La optimización se realiza utilizando exclusivamente la información sintética generada
+por el modelo, evitando el uso directo de los datos históricos en esta fase. Esto permite
+evaluar si la estructura aprendida por el VAE es capaz de capturar información relevante
+para la construcción de carteras eficientes.
+   Una vez obtenidos los pesos óptimos, estos se aplican al conjunto de test real, lo
+que permite evaluar el rendimiento fuera de muestra bajo condiciones de mercado no
+observadas durante el proceso de generación de escenarios.
+
+                                                                                               50
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+   Este enfoque permite comparar de manera directa la utilidad de los escenarios sintéticos
+frente a los métodos clásicos de estimación basados en datos históricos.
+
+
+
+5.10.      Sı́ntesis del pipeline experimental
+
+   El pipeline completo propuesto en este trabajo integra tres etapas principales: la pre-
+paración de datos, la generación de escenarios sintéticos y la optimización de carteras.
+   En primer lugar, se parte de precios ajustados diarios de activos financieros, a partir
+de los cuales se calculan retornos logarı́tmicos. Estos retornos se dividen en conjuntos de
+entrenamiento y test respetando el orden temporal de los datos.
+   En segundo lugar, se entrena un Autoencoder Variacional sobre los retornos escalados
+del conjunto de entrenamiento. Este modelo aprende una representación latente de la
+distribución de retornos y permite generar nuevos escenarios mediante muestreo en el
+espacio latente.
+   Finalmente, estos escenarios sintéticos se utilizan para estimar parámetros estadı́sticos
+que alimentan un proceso de optimización de carteras basado en teorı́a media-varianza.
+La cartera resultante se evalúa sobre datos reales no observados durante el entrenamiento.
+   Este diseño experimental permite analizar si la incorporación de modelos generativos
+mejora la calidad de las decisiones de inversión frente a enfoques clásicos basados exclusi-
+vamente en datos históricos.
+
+
+
+5.11.      Entrenamiento y comparación de modelos
+
+5.11.1.    Modelos candidatos
+
+   Para separar la comparación de redes de la comparación de carteras se implementaron
+tres candidatos. El primero es un autoencoder determinista (AE) con espacio latente de
+dimensión ocho. Su codificador produce un único vector y se entrena solo con MSE. Para
+generar escenarios se aproxima la distribución empı́rica de los códigos de entrenamiento
+mediante su media y covarianza, se muestrea en ese espacio y se decodifica.
+   El segundo es el VAE base con dimensión latente ocho y β = 0,001. El tercero mantiene
+arquitectura y regularización, pero reduce el latente a cuatro dimensiones. Esta variante
+permite estudiar si una compresión más intensa mejora la regularidad generativa o pier-
+de información. No se incluye una GAN: requerirı́a definir y validar un entrenamiento
+
+                                                                                                 51
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+adversario diferente, y sus resultados no pueden inferirse de los VAE.
+
+
+5.11.2.     Configuración experimental
+
+   Los tres modelos utilizan los mismos retornos escalados, las primeras 2.212 filas como
+entrenamiento y las 554 finales como test. Se fijan semilla 42, 120 épocas, lotes de 64, Adam
+con tasa 10−3 y dos capas ocultas de 64 unidades. Cada candidato genera 5.000 escenarios.
+La ejecución en CPU usa compare autoencoders.py y guarda un CSV comparativo.
+   Esta comparación adicional no reemplaza el VAE principal de 150 épocas utilizado
+para construir la cartera publicada. Su finalidad es responder de forma controlada a la
+elección de familia y dimensión latente. Mantener ambos experimentos diferenciados evita
+reescribir retrospectivamente los resultados financieros con un modelo distinto.
+
+
+5.11.3.     Métricas de comparación
+
+   La reconstrucción se mide mediante MSE y MAE en train y test. Para las 5.000 mues-
+tras se calculan tres discrepancias respecto al entrenamiento: error absoluto medio de las
+medias por activo, error absoluto medio de las desviaciones y error absoluto medio en-
+tre matrices de correlación. Todas las métricas se calculan en escala normalizada para
+garantizar comparabilidad entre modelos.
+   Estas medidas no forman una clasificación única. MSE y MAE premian la recupera-
+ción de observaciones, mientras los errores estadı́sticos evalúan el conjunto generado. Un
+AE puede reconstruir con precisión y carecer de un prior simple; el VAE sacrifica ajuste
+puntual para regularizar el latente. El criterio final debe considerar el propósito de generar
+escenarios, no solo el mı́nimo error de test.
+
+
+5.11.4.     Resultados de entrenamiento
+
+   La Tabla 5.2 recoge la ejecución real. El AE obtiene los menores errores de recons-
+trucción y el menor error de volatilidad y correlación con el procedimiento empı́rico de
+muestreo. El VAE base obtiene el menor error de medias sintéticas, pero presenta mayor
+discrepancia de volatilidad. Reducir el latente de ocho a cuatro empeora ligeramente test
+MSE, test MAE, medias y correlaciones, aunque su error de volatilidad es algo menor que
+el VAE-8.
+   La comparación revela una limitación relevante del VAE ejecutado: su prior normal
+facilita el muestreo, pero las muestras suavizan la dispersión y alteran correlaciones en
+
+                                                                                                  52
+                                                                           Daniel Machı́n González
+                               Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+          Modelo    MSE tr.   MSE te.    MAE tr.    MAE te.    Err. media   Err. vol.   Err. corr.
+
+          AE-8     0,003607   0,006308   0,041745   0,052878    0,006636    0,009668    0,220834
+          VAE-8    0,007815   0,010425   0,060368   0,068347    0,003852    0,048714    0,411596
+          VAE-4    0,007902   0,010561   0,060884   0,069296    0,004708    0,046912    0,418329
+
+
+Tabla 5.2: Comparación reproducible de autoencoders en escala normalizada. Fuente: ela-
+boración propia a partir de autoencoder model comparison.csv.
+
+
+mayor medida que el AE con aproximación empı́rica del latente. A su vez, el AE no
+ofrece el mismo modelo probabilı́stico explı́cito y su muestreo gaussiano posterior es una
+decisión añadida. Por tanto, los números describen compromisos diferentes y no justifican
+proclamar un ganador universal.
+
+
+5.11.5.        Selección del modelo final
+
+   Se mantiene el VAE-8 como modelo principal por tres razones: es el modelo que originó
+los 5.000 escenarios y los resultados financieros auditados; ofrece menor error de medias que
+los otros candidatos; y dispone de un mecanismo probabilı́stico explı́cito para muestrear
+z ∼ N (0, I). La variante de cuatro dimensiones no aporta una mejora global que justifique
+sustituirlo.
+   La ventaja reconstructiva del AE sugiere, no obstante, que futuras evaluaciones de-
+berı́an construir también una cartera con sus escenarios y repetir ambos modelos con
+varias semillas. La selección del VAE es coherente con el objetivo y la trazabilidad del
+experimento, pero queda condicionada por la limitada búsqueda de hiperparámetros y no
+equivale a demostrar que sea la mejor arquitectura posible.
+
+
+
+5.12.       Resultados experimentales
+
+   Esta sección reúne los resultados empı́ricos de las estrategias de cartera. Todas las
+series se evaluaron sobre las mismas 554 sesiones del conjunto de test y las métricas
+fueron calculadas por src/evaluation/metrics.py. Los valores sin formato se conservan
+en benchmark comparison.csv; esta trazabilidad evita transcribir resultados desde una
+figura o redondearlos de forma diferente según la estrategia.
+   El contraste no enfrenta una ≪cartera neuronal≫ con carteras clásicas. En todos los
+casos los pesos producen una combinación lineal de activos. La diferencia es la fuente de
+los parámetros: equiponderación no estima parámetros; Markowitz usa el entrenamiento
+
+                                                                                                     53
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+histórico; la variante restringida añade lı́mites; y VAE Synthetic Markowitz estima media
+y covarianza sobre 5.000 escenarios decodificados.
+
+
+5.12.1.    Métricas de evaluación
+
+   El retorno acumulado se calcula componiendo los retornos diarios y expresa el creci-
+miento total durante el test. El retorno anualizado convierte ese crecimiento a una tasa
+comparable bajo 252 sesiones por año. La volatilidad anualizada es la desviación diaria
+                √
+multiplicada por 252. El ratio de Sharpe divide el retorno anualizado por la volatilidad
+con tipo libre de riesgo cero, siguiendo la medida de rendimiento ajustado por riesgo in-
+troducida por (Sharpe, 1966). Finalmente, el máximo drawdown mide la peor caı́da desde
+un máximo acumulado hasta el mı́nimo posterior.
+   Estas métricas son complementarias. El retorno ignora el camino seguido; la volatilidad
+penaliza tanto movimientos negativos como positivos; Sharpe resume una relación media-
+riesgo, pero es sensible a la anualización y a distribuciones no normales; y el drawdown
+depende de la secuencia concreta. No se utiliza ninguna de ellas como prueba aislada de
+validez financiera.
+
+
+5.12.2.    Resultados empı́ricos
+
+   La Tabla 5.3 reproduce los cinco campos disponibles para las cuatro estrategias. A
+diferencia de la versión preliminar, se incorpora la volatilidad anualizada y el retorno
+anualizado de la equiponderada, evitando celdas sin explicación.
+
+    Estrategia              Acumulado    Anualizado   Volatilidad   Sharpe   Máx. caı́da
+
+    Equiponderada              64,93 %      25,56 %      13,58 %      1,88       -7,96 %
+    Markowitz                  95,60 %      35,69 %      18,86 %      1,89      -12,78 %
+    Markowitz restringido     101,38 %      37,50 %      17,01 %      2,20      -11,26 %
+    VAE sintético            242,32 %      75,02 %      25,08 %      2,99      -13,96 %
+
+Tabla 5.3: Comparación de estrategias de inversión fuera de muestra. Fuente: elaboración
+propia a partir de benchmark comparison.csv.
+
+
+   La Figura 5.6 permite observar el recorrido temporal que queda oculto en el retorno
+final. Las curvas no deben interpretarse como una simulación con rebalanceos: los pesos
+se fijan antes del test y permanecen constantes.
+
+                                                                                              54
+                                                                         Daniel Machı́n González
+                             Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+
+Figura 5.6: Evolución acumulada de las estrategias durante el periodo de test. Fuente:
+elaboración propia a partir de los retornos generados por el pipeline.
+
+
+5.12.3.    Lectura por estrategia
+
+   La equiponderada es el resultado más conservador de la tabla. Obtiene el menor retorno,
+pero también la menor volatilidad y el drawdown menos profundo. Su Sharpe de 1,88 queda
+muy próximo al 1,89 de Markowitz clásico. Esto recuerda que una regla simple puede ser
+competitiva cuando la incertidumbre de estimación es elevada.
+
+   Markowitz clásico eleva el retorno anualizado hasta 35,69 %, pero su volatilidad sube
+a 18,86 % y la caı́da máxima a -12,78 %. La mejora casi nula de Sharpe respecto a equi-
+ponderación indica que el retorno adicional viene acompañado de riesgo proporcional. La
+concentración observada en sus pesos es coherente con la conocida sensibilidad de las
+soluciones media-varianza.
+
+   La restricción del 20 % produce un compromiso más favorable en este test: aumenta
+el retorno frente a Markowitz, reduce volatilidad y drawdown, y eleva Sharpe a 2,20. Este
+resultado no implica que el lı́mite del 20 % sea óptimo, pero muestra que una restricción
+interpretable puede actuar como regularización de la cartera.
+
+   La estrategia VAE alcanza los mayores retorno y Sharpe. Simultáneamente presenta
+la mayor volatilidad y la caı́da más profunda. Su perfil es, por tanto, más agresivo. La
+diferencia no puede atribuirse simplemente a ≪inteligencia artificial≫: surge de medias
+
+                                                                                              55
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+y covarianzas estimadas sobre escenarios que asignan pesos distintos y pueden favorecer
+activos con buen comportamiento posterior.
+
+
+5.12.4.    Por qué el resultado VAE puede ser elevado
+
+   Existen varias explicaciones compatibles. En primer lugar, el test cubre un periodo con-
+creto y algunos activos seleccionados experimentaron fuertes revalorizaciones. Una cartera
+concentrada en ellos amplifica el retorno. En segundo lugar, el VAE suaviza volatilida-
+des en parte de sus muestras, como muestra vae synthetic summary.csv; una covarianza
+sintética reducida puede hacer atractivos ciertos pesos. En tercer lugar, pequeños errores
+en medias diarias se amplifican al anualizar y optimizar Sharpe.
+   También existe selección experimental: la memoria presenta una configuración princi-
+pal, no una distribución de resultados sobre numerosas semillas y ventanas. Aunque el test
+no se usó para entrenar el VAE ni calcular pesos, haber analizado el mismo periodo duran-
+te el desarrollo puede generar decisiones indirectamente adaptadas a él. La comparación
+multmodelo mejora la transparencia, pero no reemplaza una validación anidada.
+
+
+5.12.5.    Relación con la calidad generativa
+
+   La cartera VAE obtiene buen Sharpe aun cuando la comparación de modelos detecta
+errores apreciables de volatilidad y correlación sintéticas. No hay contradicción matemáti-
+ca: la utilidad para una cartera depende de cómo esas diferencias alteren el óptimo y del
+comportamiento posterior de los activos. Sin embargo, sı́ existe una advertencia: un buen
+resultado financiero en un único test no prueba que la distribución generada sea fiel.
+   Por esta razón se mantienen separados tres planos: reconstrucción, similitud estadı́stica
+y rendimiento. El VAE base logra el menor error de medias sintéticas entre los tres modelos
+comparados, pero el AE reproduce mejor volatilidades y correlaciones con el procedimiento
+ensayado. Una ampliación deberı́a construir carteras desde ambos y repetir el proceso en
+múltiples ventanas.
+
+
+5.12.6.    Evaluación comparativa y validez
+
+   Bajo el periodo analizado, los resultados sugieren que modificar la estimación de
+parámetros mediante escenarios puede producir asignaciones con mejores métricas de ren-
+tabilidad y Sharpe. También confirman el valor práctico de restricciones de concentración.
+
+                                                                                                  56
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+La evidencia no permite afirmar que el VAE supere en general a Markowitz o equiponde-
+ración, ni que prediga el mercado.
+   No se modelan comisiones, horquillas, impuestos ni impacto de mercado. Tampoco
+hay rebalanceo, por lo que no se evalúa rotación. El tipo libre de riesgo se fija en cero y
+las métricas no incluyen VaR o CVaR. Finalmente, un solo test carece de la diversidad
+de una validación walk-forward. Estas condiciones hacen que la tabla deba interpretarse
+como resultado académico reproducible, no como expectativa de inversión.
+
+
+5.12.7.    Sı́ntesis de resultados
+
+   La equiponderación minimiza riesgo observado; Markowitz aumenta retorno sin mejorar
+apenas Sharpe; la restricción del 20 % mejora el equilibrio; y la estimación VAE produce
+el mayor retorno y Sharpe con mayor riesgo. El hallazgo central no es una garantı́a de
+rentabilidad, sino que la fuente de escenarios altera materialmente los parámetros, los
+pesos y el resultado fuera de muestra. Esa sensibilidad justifica profundizar en validación
+temporal, estabilidad y calidad de colas antes de cualquier uso práctico.
+
+
+
+
+                                                                                                57
+6. Código fuente y datos analizados
+
+
+6.1.     Código fuente
+
+   El código se organiza de manera modular para separar responsabilidades y hacer visible
+la procedencia de cada resultado. La carpeta src/data contiene adquisición y preparación;
+src/analysis, el EDA; src/models, las arquitecturas y el muestreo; src/optimization,
+las estrategias; y src/evaluation, las métricas y visualizaciones. Esta estructura evita
+concentrar decisiones heterogéneas en un único cuaderno y facilita ejecutar de nuevo una
+fase sin repetir las anteriores.
+
+
+6.1.1.    Herramientas y tecnologı́as
+
+   A continuación, se describen las principales herramientas y tecnologı́as empleadas en el
+desarrollo del presente trabajo de investigación. Se detallan los lenguajes de programación,
+las librerı́as y frameworks utilizados, ası́ como los recursos computacionales necesarios.
+   En primer lugar, se destaca el uso de LaTeX para la redacción del presente docu-
+mento, dado que permite estructurar adecuadamente la memoria, gestionar referencias
+bibliográficas y representar expresiones matemáticas de forma precisa.
+   Para la adquisición de datos se ha empleado la herramienta yfinance, que permite
+acceder a series históricas de precios de activos financieros y construir el conjunto de datos
+necesario para el desarrollo experimental del trabajo.
+   Python es el lenguaje utilizado para el análisis y la implementación. La manipulación
+y transformación se realizó con pandas y NumPy; el escalado, con scikit-learn; el VAE y
+los autoencoders, con PyTorch; la optimización SLSQP, con SciPy; y la visualización, con
+matplotlib. TensorFlow no forma parte de la ejecución documentada.
+   Para el control de versiones se ha empleado Git, utilizando la plataforma GitHub para
+el almacenamiento remoto del código, la documentación asociada y el seguimiento de los
+cambios realizados durante el desarrollo del trabajo.
+
+
+6.1.2.    Scripts principales
+
+   La Tabla 6.1 resume los archivos que intervienen en el flujo. Los nombres corresponden
+a rutas reales del repositorio.
+
+                                              58
+                                                                           Daniel Machı́n González
+                               Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+   Archivo                                 Función
+
+   download data.py                        Descarga cierres ajustados de 30 sı́mbolos.
+   preprocess.py                           Calcula retornos, corte temporal y escalado.
+   generate eda outputs.py                 Genera cinco CSV y siete figuras EDA.
+   vae.py                                  Define, entrena y evalúa el VAE principal.
+   generate vae scenarios.py               Muestrea, decodifica y desnormaliza escenarios.
+   compare autoencoders.py                 Compara AE, VAE-8 y VAE-4.
+   optimization/                           Contiene las cuatro estrategias.
+   evaluation/                             Calcula métricas y figuras comparativas.
+
+
+       Tabla 6.1: Principales archivos de código fuente. Fuente: elaboración propia.
+
+
+
+6.1.3.       Flujo de ejecución
+
+
+   La reproducción comienza con la descarga y continúa con preprocess.py. Después
+puede ejecutarse el EDA, que solo lee returns.csv. El VAE lee los ficheros escalados,
+guarda models/vae.pt, reconstrucciones, historial y métricas. El generador carga el mo-
+delo y el escalador, crea 5.000 filas y devuelve la escala financiera.
+
+   Las estrategias históricas leen entrenamiento y test. La estrategia sintética lee los es-
+cenarios para optimizar y el test para evaluar. Por último, compare benchmarks.py reúne
+los CSV de métricas. El experimento multmodelo adicional es independiente del artefac-
+to principal y escribe autoencoder model comparison.csv; de este modo no sobrescribe
+resultados publicados.
+
+
+
+
+6.1.4.       Dependencias y entorno
+
+
+   requirements.txt fija las versiones de NumPy, pandas, scikit-learn, SciPy, PyTorch,
+Matplotlib, joblib y yfinance, entre otras dependencias. PyTorch implementa las redes
+y diferenciación; SciPy resuelve SLSQP; scikit-learn ajusta Min–Max; joblib conserva el
+escalador; y pandas mantiene ı́ndices y CSV.
+
+   La semilla 42 se fija en NumPy y PyTorch. Esto reduce variabilidad, aunque la re-
+producibilidad bit a bit puede depender de versión, hardware y operaciones internas. En
+la comparación adicional se utilizó PyTorch 2.13.0 en CPU. Conviene registrar también
+sistema operativo y versión de Python en una entrega definitiva.
+
+                                                                                                 59
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+6.1.5.   Artefactos y trazabilidad
+
+   Cada etapa materializa resultados: CSV brutos y procesados, escalador, checkpoint,
+reconstrucciones, escenarios, pesos, retornos, métricas y figuras. Esta decisión permite
+revisar una cifra sin reentrenar. El repositorio se referencia en (Machı́n González, 2026);
+antes de entregar debe verificarse que la URL bibliográfica sea la definitiva y que los
+permisos permitan la revisión académica.
+
+
+
+6.2.     Datos analizados
+
+6.2.1.   Datos brutos y procesados
+
+   data/raw/sp500 prices adj close.csv contiene 2.767 fechas de precios ajustados.
+La transformación produce returns.csv, con 2.766 fechas y 30 activos. Los conjuntos
+returns train.csv y returns test.csv contienen 2.212 y 554 observaciones. Sus ver-
+siones escaladas son entradas del modelo y el objeto minmax scaler.pkl conserva los
+parámetros aprendidos solo con train.
+
+
+
+6.2.2.   Datos generados
+
+   vae synthetic returns scaled.csv y vae synthetic returns.csv contienen 5.000
+escenarios por 30 columnas antes y después de desnormalizar. No poseen fecha porque no
+representan una trayectoria cronológica especı́fica: cada fila es una realización conjunta
+empleada para estimar una distribución transversal diaria.
+
+   Las reconstrucciones permiten calcular MSE y MAE. El resumen sintético contras-
+ta momentos por activo; el archivo de evaluación y las figuras comparan distribuciones,
+volatilidades y correlaciones. El CSV multmodelo registra siete métricas por configuración.
+
+
+
+6.2.3.   Pesos, retornos y métricas
+
+   Para cada estrategia se conservan pesos y retornos diarios. Los archivos con sufijo
+metrics.csv almacenan cinco métricas homogéneas y benchmark comparison.csv las
+reúne. Esta separación permite comprobar que la tabla de la memoria no contiene números
+calculados manualmente.
+
+                                                                                                60
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+6.2.4.   Figuras y productos del EDA
+
+   Los cinco CSV EDA documentan dimensiones, ausencias, estadı́sticos descriptivos,
+asimetrı́a, curtosis y pares correlacionados. Las siete figuras se encuentran en la carpeta
+EDA de LaTeX. El Capı́tulo 5 utiliza una selección de cinco para evitar redundancia; el
+resto permanece disponible para auditorı́a.
+
+
+6.2.5.   Limitaciones de los datos
+
+   Los archivos dependen de la cobertura y correcciones de Yahoo Finance. El universo
+no reproduce la ponderación completa del S&P 500 ni corrige sesgo de supervivencia.
+Tampoco contiene costes, volumen, liquidez, sectores o variables macroeconómicas. Estas
+ausencias limitan las interpretaciones que pueden extraerse y explican por qué el repositorio
+se presenta como experimento académico.
+
+
+
+
+                                                                                                 61
+7. Conclusiones
+
+
+7.1.     Cumplimiento de objetivos
+
+   El objetivo general consistı́a en diseñar y evaluar una metodologı́a para generar esce-
+narios sintéticos de retornos y utilizarlos en una optimización de carteras. Este objetivo
+se ha materializado en un pipeline que comienza con precios ajustados, construye una
+matriz de 2.766 log-retornos, entrena un VAE, genera 5.000 escenarios, estima parámetros
+y evalúa pesos sobre 554 observaciones posteriores. La comparación con tres referencias
+permite situar el resultado frente a reglas simples e históricas.
+   Los objetivos teóricos se abordaron mediante la revisión de Markowitz, riesgo, hechos
+estilizados, teorı́a de la información y modelos generativos. El análisis distingue la función
+de la divergencia KL en el VAE de la función de máximo Sharpe de la cartera. También di-
+ferencia el estado del arte GAN/WGAN de la implementación real, una precisión necesaria
+para que el alcance sea defendible.
+   Los objetivos relacionados con datos se cumplieron mediante adquisición reproducible,
+tratamiento de ausencias, retornos, EDA y partición temporal. La matriz final no contiene
+nulos y las figuras documentan colas, volatilidad variable y correlaciones. La preparación
+ajusta el escalador solo con entrenamiento, reduciendo fuga de información.
+   En modelado, además del VAE principal, se ejecutó una comparación real con AE de-
+terminista y VAE de latente reducido. Esta ampliación responde a la necesidad de justificar
+el modelo y muestra que reconstrucción y generación son problemas relacionados, pero no
+equivalentes. La evaluación financiera completa el ciclo utilizando métricas comunes.
+
+
+7.2.     Principales resultados obtenidos
+
+   El VAE principal obtuvo MSE 0,00777 en entrenamiento y 0,01049 en test; el MAE
+pasó de 0,06022 a 0,06857. La brecha es moderada, pero confirma que la capacidad de
+generalización no es perfecta. Los resúmenes sintéticos muestran que parte de la volatilidad
+se suaviza, un aspecto crı́tico cuando las muestras se usan para estimar riesgo.
+   En la comparación de 120 épocas, el AE logró test MSE 0,006308 frente a 0,010425
+del VAE-8 y 0,010561 del VAE-4. También presentó menores errores de volatilidad y
+correlación bajo el esquema empı́rico de muestreo. El VAE-8, en cambio, obtuvo el menor
+error de medias sintéticas (0,003852) y ofrece un prior explı́cito. Reducir el latente a cuatro
+
+                                               62
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+dimensiones no mejoró el conjunto de métricas.
+   La cartera VAE alcanzó retorno acumulado 242,32 %, retorno anualizado 75,02 %, vola-
+tilidad 25,08 %, Sharpe 2,99 y máximo drawdown -13,96 %. En ese mismo test, Markowitz
+restringido obtuvo 101,38 %, 17,01 % de volatilidad y Sharpe 2,20; la equiponderada pre-
+sentó la menor volatilidad y caı́da. El VAE ofrece, por tanto, la mayor rentabilidad ajustada
+por volatilidad de la tabla, pero también el mayor riesgo absoluto.
+
+
+
+7.3.     Valoración final de la metodologı́a
+
+   CRISP-DM resultó útil para conectar decisiones que podrı́an haberse presentado de
+manera fragmentada. La comprensión del problema fijó benchmarks y cautelas; la com-
+prensión de datos produjo EDA verificable; la preparación evitó mezclar futuro y pasado;
+el modelado conservó configuraciones; y la evaluación empleó un test común. La reprodu-
+cibilidad se apoya en scripts, semillas y artefactos intermedios.
+   La separación temporal es una fortaleza frente a una evaluación sobre entrenamiento.
+No obstante, un único corte sigue siendo débil para mercados no estacionarios. La selección
+del modelo y de restricciones deberı́a realizarse dentro de ventanas anteriores, reservando
+múltiples periodos para evaluación. La metodologı́a actual debe entenderse como primera
+prueba controlada.
+   La comparación multmodelo añade una conclusión metodológica: escoger por recons-
+trucción habrı́a favorecido al AE, mientras el propósito generativo favorece valorar regula-
+ridad y momentos. Ninguna métrica resume por sı́ sola la idoneidad. En futuros trabajos
+conviene definir un criterio compuesto antes de observar el resultado financiero.
+
+
+
+7.4.     Aportaciones del trabajo
+
+   La primera aportación es un pipeline integral y auditable que conecta generación y
+optimización sin ocultar la capa clásica final. La segunda es un conjunto de productos
+reproducibles: EDA, modelos, escenarios, pesos y métricas. La tercera es una lectura crı́tica
+que evita presentar GAN/WGAN como ejecutadas y sitúa KL en su función correcta.
+   La cuarta aportación es empı́rica: bajo un mismo test, la fuente sintética modifica
+sustancialmente la cartera y produce métricas diferentes a la estimación histórica. Este
+hallazgo demuestra sensibilidad al procedimiento de estimación, no superioridad universal.
+
+                                                                                                 63
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+La quinta es la comparación AE/VAE, que identifica oportunidades concretas para mejorar
+la preservación de volatilidades y correlaciones.
+
+
+7.5.     Conclusión general
+
+   Los resultados sugieren que un VAE puede utilizarse de forma técnicamente viable
+para generar escenarios multivariantes y alimentar una optimización interpretable. En el
+periodo analizado, la cartera resultante obtiene métricas favorables de retorno y Sharpe.
+Sin embargo, la magnitud del resultado, la mayor volatilidad y las discrepancias estadı́sticas
+de las muestras exigen cautela.
+   No puede afirmarse que el modelo prediga el mercado, garantice rendimientos o sustitu-
+ya una validación financiera completa. El valor del TFM reside en demostrar y documentar
+el encadenamiento experimental, comparar alternativas y hacer visibles sus supuestos. La
+contribución constituye una base sólida para ampliar ventanas, modelos y restricciones,
+pero no una recomendación de inversión.
+
+
+
+
+                                                                                                 64
+8. Limitaciones y prospectiva
+
+
+8.1.      Limitaciones
+
+8.1.1.    Universo y periodo
+
+    El universo contiene 30 acciones y no las aproximadamente 500 del ı́ndice. Aunque
+ofrece variedad y viabilidad computacional, no reproduce su composición ni ponderación.
+La selección exige cobertura completa y puede introducir sesgo de supervivencia. El pe-
+riodo 2014–2024 incluye distintos episodios, pero es una sola década de un solo mercado y
+moneda.
+
+
+8.1.2.    Fuente de datos
+
+    Yahoo Finance facilita precios ajustados y reproducibilidad práctica, pero es un provee-
+dor externo que puede corregir históricos, cambiar su interfaz o aplicar ajustes distintos.
+Una descarga futura no está garantizada como idéntica. No se contrastó cada precio con
+una fuente institucional y no se incluyen volumen, liquidez ni fundamentales.
+
+
+8.1.3.    No estacionariedad y validación temporal
+
+    Los mercados cambian de régimen. Medias, volatilidades y correlaciones estimadas en
+entrenamiento pueden no persistir. El trabajo utiliza un único corte 80/20 y no realiza
+walk-forward. Por ello las métricas pueden estar condicionadas por un tramo favorable y
+no describen estabilidad a lo largo de múltiples ventanas.
+
+
+8.1.4.    Modelos generativos
+
+    El VAE principal representa una configuración concreta. La comparación AE/VAE se
+ejecutó con una variante adicional y mejora la evidencia, pero sigue siendo limitada: una
+semilla, dos dimensiones latentes y un valor de β. El VAE suaviza volatilidades y altera
+correlaciones en las muestras. No se realizaron pruebas especı́ficas de colas o cobertura de
+crisis.
+    GAN, WGAN y la arquitectura hı́brida del tı́tulo no fueron implementadas. Se mantie-
+nen en teorı́a y prospectiva. Esta diferencia entre inspiración y ejecución debe conservarse
+
+                                             65
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+explı́cita. Tampoco se evaluaron difusión, flujos normalizantes o modelos temporales con-
+dicionados.
+
+
+
+8.1.5.   Optimización y condiciones de mercado
+
+   Markowitz es sensible a pequeñas variaciones de medias y covarianzas. La restricción
+long-only y el máximo 20 % contienen algunas soluciones, pero son decisiones académicas y
+no representan todos los mandatos. Los pesos permanecen fijos: no hay rebalanceo, costes,
+horquillas, impuestos, impacto de mercado o restricciones de rotación.
+
+   El tipo libre de riesgo se fija en cero. La evaluación incluye volatilidad, Sharpe y
+drawdown, pero no VaR, CVaR, Sortino ni análisis de concentración completo. La cartera
+VAE con mayor retorno también tiene mayor volatilidad; una función de utilidad diferente
+podrı́a seleccionar otros pesos.
+
+
+
+8.1.6.   Alcance de las conclusiones
+
+   El resultado es académico y retrospectivo. No constituye recomendación financiera,
+asesoramiento personalizado ni garantı́a. La ausencia de datos personales no elimina obli-
+gaciones sobre propiedad intelectual, términos del proveedor, transparencia y comunicación
+responsable.
+
+
+
+
+8.2.     Trabajo futuro
+
+8.2.1.   Comparación y robustez de modelos
+
+   La comparación AE/VAE deberı́a repetirse con varias semillas, dimensiones y valores
+de β, incorporando intervalos de variabilidad. Conviene construir carteras desde los esce-
+narios de cada candidato para analizar si la fidelidad estadı́stica se traduce en estabilidad
+de pesos. También serı́a útil evaluar pérdidas que ponderen colas o correlación.
+
+   Una implementación real de WGAN permitirı́a contrastar el diseño hı́brido inicial.
+Su protocolo deberı́a definir generador, crı́tico, regularización, estabilidad y criterios de
+parada antes de observar el test. Los modelos de difusión y flujos normalizantes constituyen
+alternativas para aproximar distribuciones complejas sin atribuirles ventajas a priori.
+
+                                                                                                 66
+                                                                        Daniel Machı́n González
+                            Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+8.2.2.   Validación temporal y operación
+
+   La prioridad empı́rica es una evaluación walk-forward : entrenar en una ventana, selec-
+cionar hiperparámetros en validación anterior, invertir en el tramo siguiente y avanzar el
+origen. Esto producirı́a varias observaciones de rendimiento fuera de muestra. Sobre ese
+marco podrı́an añadirse rebalanceo mensual o trimestral, costes, rotación y liquidez.
+
+
+8.2.3.   Ampliación financiera
+
+   El universo puede ampliarse a más componentes, ı́ndices internacionales, bonos o ETF,
+controlando divisas y sesgo de supervivencia. Métodos como HRP y Black–Litterman
+aportarı́an benchmarks que responden de otra forma al error de covarianza. Optimizar
+CVaR o incorporar lı́mites de riesgo permitirı́a estudiar colas explı́citamente.
+
+
+8.2.4.   Variables condicionantes y herramienta reproducible
+
+   Variables macroeconómicas, volatilidad de mercado o estados de régimen podrı́an con-
+dicionar la distribución generativa. Esta ampliación exige sincronizar frecuencias y evitar
+información futura. Finalmente, un panel reproducible podrı́a mostrar escenarios, pesos,
+sensibilidad y trazabilidad, siempre acompañado de advertencias y sin presentar los resul-
+tados como recomendación.
+
+
+
+
+                                                                                                67
+                                            Daniel Machı́n González
+Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+
+                                                                 68
+Referencias bibliográficas
+
+
+Aghapour, A., Bayraktar, E., y Yuan, F. (2025). Solving dynamic portfolio selection
+     problems via score-based diffusion models. arXiv preprint arXiv:2507.09916 .
+Arjovsky, M., Chintala, S., y Bottou, L. (2017). Wasserstein gan. arXiv preprint ar-
+     Xiv:1701.07875 .
+Boyd, S., y Vandenberghe, L. (2004). Convex optimization. Cambridge: Cambridge
+     University Press. Descargado de https://web.stanford.edu/~boyd/cvxbook/
+Cover, T. M., y Thomas, J. A. (2006). Elements of information theory (2nd ed.). John
+     Wiley & Sons.
+Goodfellow, I., Pouget-Abadie, J., Mirza, M., Xu, B., Warde-Farley, D., Ozair, S., . . .
+     Bengio, Y. (2014). Generative adversarial nets. En Advances in neural information
+     processing systems (Vol. 27).
+Huang, G., Zhou, X., y Song, Q. (2020). Deep reinforcement learning for portfolio ma-
+     nagement. arXiv preprint arXiv:2012.13773 . Descargado de https://arxiv.org/
+     abs/2012.13773
+Jiang, Z., Xu, D., y Liang, J. (2017). A deep reinforcement learning framework for the
+     stock portfolio management. arXiv preprint arXiv:1706.10059 .
+Kingma, D. P., y Welling, M. (2013). Auto-encoding variational bayes. arXiv preprint
+     arXiv:1312.6114 .
+Lopez de Prado, M. (2018). Advances in financial machine learning. John Wiley & Sons.
+López de Prado, M. (2018). Advances in financial machine learning: Chapter 1. SSRN.
+Machı́n González, D. (2026). Repositorio del trabajo fin de máster: Generación de esce-
+     narios sintéticos para optimización de carteras del s&p 500. https://github.com/
+     dmaching/tfm.
+Markowitz, H. (1952). Portfolio selection. The Journal of Finance, 7 (1), 77–91.
+Opitz, T. (2017). Latent gaussian modeling and inla: A review with focus on space-time
+     applications. Journal de la Société Française de Statistique, 158 (3), 52–85.
+Rasekhschaffe, K. C.     (2026).   Generative ai for stock selection.    arXiv preprint ar-
+     Xiv:2602.00196 .
+Salimans, T., Goodfellow, I., Zaremba, W., Cheung, V., Radford, A., y Chen,
+     X.    (2016).      Improved techniques for training gans.        En D. Lee, M. Su-
+     giyama, U. Luxburg, I. Guyon, y R. Garnett (Eds.), Advances in neural
+
+                                             69
+                                                                       Daniel Machı́n González
+                           Máster Universitario en Análisis y Visualización de Datos Masivos
+
+
+
+     information processing systems (Vol. 29).          Curran Associates, Inc.        Des-
+     cargado de https://proceedings.neurips.cc/paper files/paper/2016/file/
+     8a3363abe792db2d8761d6403605aeb7-Paper.pdf
+Sharpe, W. F. (1966). Mutual fund performance. The Journal of Business, 39 (1), 119–138.
+     doi: 10.1086/294846
+Takahashi, S., Chen, Y., y Tanaka-Ishii, K. (2019). Modeling financial time series with ge-
+     nerative adversarial networks. Physica A: Statistical Mechanics and its Applications,
+     527 , 121261.
+Voronina, A., Romanko, O., Cao, R., Kwon, R. H., y Mendoza-Arriaga, R. (2025). Ge-
+     nerative ai-enhanced sector-based investment portfolio construction. arXiv preprint
+     arXiv:2512.24526 .
+Wirth, R., y Hipp, J. (2000). CRISP-DM: Towards a standard process model for data mi-
+     ning. En Proceedings of the 4th international conference on the practical applications
+     of knowledge discovery and data mining (Vol. 1, pp. 29–39). Manchester.
+Zhang, Z., Zohren, S., y Roberts, S. (2020). Deep learning for portfolio optimization. arXiv
+     preprint arXiv:2005.13665 . Descargado de https://arxiv.org/abs/2005.13665
+
+
+
+
+                                                                                               70
+

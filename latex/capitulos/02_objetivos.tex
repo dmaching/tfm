@@ -41,6 +41,8 @@ Los resultados obtenidos deberán interpretarse como evidencia experimental dent
 \subsection{Justificación de la metodología CRISP-DM}
 CRISP-DM se adopta porque proporciona una estructura iterativa que conecta la pregunta de investigación con la evidencia producida en cada etapa. En un problema financiero no basta con entrenar una red neuronal: las conclusiones dependen de cómo se seleccionan los activos, cómo se alinean las fechas, qué transformaciones se aplican y de qué manera se separa la información disponible de la evaluación futura. La metodología obliga a hacer explícitas estas decisiones y facilita volver a fases anteriores cuando el EDA o la evaluación revelan limitaciones.
 
+Esta adopción sigue el modelo de proceso independiente del sector y de la tecnología descrito por \cite{wirth2000crispdm}.
+
 Su carácter independiente de una herramienta concreta también resulta adecuado para este trabajo. La adquisición se realiza con \texttt{yfinance}, la preparación con pandas y scikit-learn, el modelado con PyTorch y la optimización con SciPy; CRISP-DM permite describir el proceso por objetivos y evidencias, no por librerías. Las fases se materializan en scripts, CSV, figuras y un modelo guardado, de modo que la memoria puede vincular cada afirmación empírica con un artefacto verificable.
 
 Aunque CRISP-DM suele representarse de forma secuencial, aquí se entiende como ciclo. El análisis de los escenarios, por ejemplo, puede conducir a revisar el peso de la regularización o la dimensión latente; del mismo modo, una cartera excesivamente concentrada puede motivar nuevas restricciones. Esta posibilidad de retroalimentación es coherente con el carácter experimental del TFM.
@@ -48,7 +50,7 @@ Aunque CRISP-DM suele representarse de forma secuencial, aquí se entiende como 
 \subsection{Adaptación de CRISP-DM al presente trabajo}
 
 \subsubsection{Comprensión del problema}
-La primera fase delimita la decisión que se quiere apoyar. El objetivo no es adivinar el precio de cada acción, sino construir una distribución de posibles retornos conjuntos que permita estimar medias y covarianzas alternativas. El punto de comparación es la sensibilidad de Markowitz a dichos parámetros. Por ello se definen tres referencias: equiponderación, Markowitz con posiciones largas y Markowitz con límite del 20\,\% por activo.
+La primera fase delimita la decisión que se quiere apoyar. El objetivo no es adivinar el precio de cada acción, sino construir una distribución de posibles retornos conjuntos que permita estimar medias y covarianzas alternativas. El punto de comparación es la sensibilidad de Markowitz a dichos parámetros. Por ello se definen tres referencias: equiponderación, Markowitz con posiciones largas y Markowitz con límite del 20~\% por activo.
 
 Esta fase también fija los criterios de éxito y de prudencia. Una estrategia se evalúa mediante retorno acumulado y anualizado, volatilidad, Sharpe y máximo \textit{drawdown}; ninguna métrica aislada basta para afirmar superioridad. Además, se establece que los pesos deben obtenerse sin consultar el conjunto de test y que el resultado no tiene finalidad de asesoramiento financiero. El Capítulo 5 traduce estas decisiones en funciones de optimización y un protocolo común.
 
@@ -58,7 +60,7 @@ La segunda fase examina la cobertura y la estructura estadística antes de model
 El EDA permite comprobar que la matriz final no contiene ausencias y que los retornos presentan valores extremos, curtosis positiva y dependencia transversal. Estos hallazgos justifican estudiar un modelo multivariante flexible, pero no anticipan que vaya a mejorar la cartera. La interpretación detallada se reserva para la Sección 5.1.
 
 \subsubsection{Preparación de los datos}
-Los cierres ajustados se ordenan cronológicamente y se filtran con un umbral máximo de ausencias del 5\,\%. Los huecos puntuales se propagan hacia delante y después se calculan log-retornos. La transformación elimina la primera fila indefinida y produce una matriz fecha--activo alineada. Se trabaja con retornos, en lugar de precios, para reducir la dependencia del nivel nominal y comparar movimientos relativos.
+Los cierres ajustados se ordenan cronológicamente y se filtran con un umbral máximo de ausencias del 5~\%. Los huecos puntuales se propagan hacia delante y después se calculan log-retornos. La transformación elimina la primera fila indefinida y produce una matriz fecha--activo alineada. Se trabaja con retornos, en lugar de precios, para reducir la dependencia del nivel nominal y comparar movimientos relativos.
 
 La división es temporal: las primeras 2.212 observaciones forman entrenamiento y las 554 finales, test. El escalador Min--Max se ajusta exclusivamente con entrenamiento y transforma ambos subconjuntos a $[-1,1]$. Guardar el escalador permite deshacer la transformación de los escenarios. Este orden evita que mínimos, máximos o retornos del periodo de evaluación influyan en el entrenamiento.
 
@@ -96,7 +98,7 @@ Reproducibilidad & Encadenamiento de scripts & Repositorio y artefactos \\
 \label{tab:crisp_dm_tfm}
 \end{table}
 
-\subsection{Diseño general del experimento}
+\subsection{Visión general y secuencia experimental}
 El diseño completo encadena adquisición, retornos, EDA, partición, escalado, entrenamiento, generación, estimación sintética, optimización y evaluación. Las decisiones de cartera se toman con entrenamiento histórico o escenarios derivados de él; test solo se utiliza al final. Este diseño ofrece una comparación fuera de muestra coherente, aunque un único corte no sustituye una validación \textit{walk-forward}.
 
 \input{capitulos/05_metodologia}

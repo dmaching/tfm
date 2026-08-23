@@ -13,7 +13,7 @@ La variable original es el precio de cierre ajustado, que refleja los ajustes pr
 La fecha actúa como índice y preserva el orden temporal; no se introduce como característica numérica del VAE. Tampoco se incorporan sectores, capitalización, volumen ni variables macroeconómicas, porque no forman parte de los archivos utilizados. Esta delimitación evita atribuir al modelo información que no recibió.
 
 \subsection{Valores perdidos y calidad de los datos}
-El preprocesamiento descarta activos cuya proporción de ausencias supere el 5\,\% y aplica propagación hacia delante antes de calcular retornos. Después de alinear las series y eliminar la primera fila indefinida, los 30 activos conservados presentan cero valores ausentes en las 2.766 observaciones. La Figura~\ref{fig:eda_missing_values} muestra este resultado para cada columna.
+El preprocesamiento descarta activos cuya proporción de ausencias supere el 5~\% y aplica propagación hacia delante antes de calcular retornos. Después de alinear las series y eliminar la primera fila indefinida, los 30 activos conservados presentan cero valores ausentes en las 2.766 observaciones. La Figura~\ref{fig:eda_missing_values} muestra este resultado para cada columna.
 
 \begin{figure}[htbp]
 \centering
@@ -145,7 +145,7 @@ Los retornos logarítmicos presentan varias ventajas en este contexto. En primer
 
 La construcción del conjunto de retornos se implementa mediante \texttt{preprocess.py}. Este script carga los precios, ordena las observaciones, filtra activos por ausencias y calcula log-retornos. Ante valores no disponibles, propaga hacia delante antes del cálculo para mantener la alineación temporal.
 
-Una vez calculados los retornos, el conjunto se divide temporalmente en datos de entrenamiento y datos de test. Esta división se realiza respetando el orden cronológico de las observaciones, de modo que la información futura no intervenga en el entrenamiento de los modelos. En concreto, el 80,% inicial de las observaciones se utiliza como conjunto de entrenamiento, mientras que el 20,% final se reserva para la evaluación fuera de muestra.
+Una vez calculados los retornos, el conjunto se divide temporalmente en datos de entrenamiento y datos de test. Esta división se realiza respetando el orden cronológico de las observaciones, de modo que la información futura no intervenga en el entrenamiento de los modelos. En concreto, el 80~\% inicial de las observaciones se utiliza como conjunto de entrenamiento, mientras que el 20~\% final se reserva para la evaluación fuera de muestra.
 
 El conjunto de entrenamiento se emplea para estimar los parámetros de los modelos de referencia y para entrenar el Autoencoder Variacional. El conjunto de test se reserva exclusivamente para evaluar el rendimiento final de las carteras construidas. Esta separación resulta especialmente relevante en problemas financieros, ya que permite analizar si las estrategias obtenidas mantienen su comportamiento sobre datos no utilizados durante la fase de entrenamiento u optimización.
 
@@ -185,7 +185,7 @@ La primera estrategia de referencia es una cartera equiponderada, en la que el c
 w_i = \frac{1}{n}.
 \end{equation}
 
-Dado que el universo considerado está formado por 30 activos, cada uno recibe inicialmente un peso aproximado del (3{,}33,%). Esta estrategia se implementa mediante el script \texttt{src/optimization/equal_weight.py}.
+Dado que el universo considerado está formado por 30 activos, cada uno recibe inicialmente un peso aproximado del 3,33~\%. Esta estrategia se implementa mediante el script \texttt{src/optimization/equal\_weight.py}.
 
 La cartera equiponderada no requiere estimar retornos esperados ni matrices de covarianzas. Su inclusión proporciona una referencia sencilla, transparente y con un riesgo reducido de sobreajuste. Además, permite comprobar si la complejidad adicional introducida por los modelos de optimización y por la generación de escenarios se traduce en una mejora observable sobre los datos de test.
 
@@ -207,11 +207,11 @@ Estas condiciones definen una cartera \textit{long-only}, en la que ningún acti
 
 En la implementación realizada, la función objetivo busca una combinación de activos con una relación favorable entre retorno esperado y volatilidad. La estrategia se encuentra desarrollada en el script \texttt{src/optimization/markowitz.py}. Una vez obtenidos los pesos mediante los datos de entrenamiento, estos se mantienen constantes y se aplican a los retornos del conjunto de test para evaluar el comportamiento fuera de muestra.
 
-La solución obtenida presenta una concentración elevada en un número reducido de activos. En particular, el activo UNH recibe un peso cercano al (48{,}89,%), seguido por NVDA, AAPL y MSFT. Este resultado muestra una de las dificultades prácticas de la optimización media-varianza: pequeñas diferencias en las estimaciones de medias y covarianzas pueden producir asignaciones muy concentradas.
+La solución obtenida presenta una concentración elevada en un número reducido de activos. En particular, el activo UNH recibe un peso cercano al 48,89~\%, seguido por NVDA, AAPL y MSFT. Este resultado muestra una de las dificultades prácticas de la optimización media-varianza: pequeñas diferencias en las estimaciones de medias y covarianzas pueden producir asignaciones muy concentradas.
 
 \subsection{Cartera de Markowitz restringida}
 
-Con el objetivo de reducir la concentración observada en la solución anterior, se ha implementado una segunda variante de Markowitz que incorpora un límite máximo del (20,%) por activo. En este caso, las restricciones sobre los pesos quedan definidas como:
+Con el objetivo de reducir la concentración observada en la solución anterior, se ha implementado una segunda variante de Markowitz que incorpora un límite máximo del (20~\%) por activo. En este caso, las restricciones sobre los pesos quedan definidas como:
 
 \begin{equation}
 0 \leq w_i \leq 0.20 \quad \forall i,
@@ -227,13 +227,13 @@ La incorporación de límites inferiores y superiores sobre las variables de dec
 
 Esta variante se implementa en \texttt{markowitz\_constrained.py}. El límite de una quinta parte del capital por activo no garantiza por sí mismo una diversificación completa, ya que una cartera puede concentrarse en cinco activos situados en el máximo. Sin embargo, impide las asignaciones extremas de la variante sin límite y establece un marco común para compararla con la cartera sintética.
 
-En la solución obtenida, UNH y NVDA alcanzan el límite del \(20,\%\), mientras que AAPL, MSFT, MRK y PEP reciben también pesos relevantes. La distribución resultante es menos concentrada que la de Markowitz sin límite máximo.
+En la solución obtenida, UNH y NVDA alcanzan el límite del 20~\%, mientras que AAPL, MSFT, MRK y PEP reciben también pesos relevantes. La distribución resultante es menos concentrada que la de Markowitz sin límite máximo.
 
 \subsection{Evaluación común de las estrategias}
 
 Las tres estrategias se evalúan sobre el mismo conjunto de test y utilizando las mismas métricas financieras. En particular, se calculan el retorno acumulado, el retorno anualizado, la volatilidad anualizada, el ratio de Sharpe y el máximo \textit{drawdown}. La utilización de un procedimiento común permite que las diferencias observadas se atribuyan a la construcción de las carteras y no a cambios en el periodo de evaluación o en las métricas empleadas.
 
-Los resultados obtenidos muestran que la cartera equiponderada alcanza un retorno acumulado del \(64{,}93,\%\), con un ratio de Sharpe de \(1{,}88\) y un máximo \textit{drawdown} del \(-7{,}96,\%\). La cartera de Markowitz clásica obtiene un retorno acumulado del \(95{,}60,\%\), un ratio de Sharpe de \(1{,}89\) y un máximo \textit{drawdown} del \(-12{,}78,\%\). Por su parte, la variante restringida alcanza un retorno acumulado del \(101{,}38,\%\), un ratio de Sharpe de \(2{,}20\) y un máximo \textit{drawdown} del \(-11{,}26,\%\).
+Los resultados obtenidos muestran que la cartera equiponderada alcanza un retorno acumulado del 64,93~\%, con un ratio de Sharpe de \(1{,}88\) y un máximo \textit{drawdown} del -7,96~\%. La cartera de Markowitz clásica obtiene un retorno acumulado del 95,60~\%, un ratio de Sharpe de \(1{,}89\) y un máximo \textit{drawdown} del -12,78~\%. Por su parte, la variante restringida alcanza un retorno acumulado del 101,38~\%, un ratio de Sharpe de \(2{,}20\) y un máximo \textit{drawdown} del -11,26~\%.
 
 En el periodo de test analizado, la cartera restringida presenta un mejor equilibrio entre rentabilidad y riesgo que la solución de Markowitz sin límite máximo. No obstante, estos resultados deben interpretarse dentro del periodo temporal estudiado y no implican que una estrategia sea universalmente superior. Su función principal en este trabajo es establecer referencias homogéneas frente a las que evaluar posteriormente la cartera optimizada mediante escenarios generados por el VAE.
 
