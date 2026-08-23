@@ -9,7 +9,7 @@ Los objetivos teóricos se abordaron mediante la revisión de Markowitz, riesgo,
 
 Los objetivos relacionados con datos se cumplieron mediante adquisición reproducible, tratamiento de ausencias, retornos, EDA y partición temporal. La matriz final no contiene nulos y las figuras documentan colas, volatilidad variable y correlaciones. La preparación ajusta el escalador solo con entrenamiento, reduciendo fuga de información.
 
-En modelado, además del VAE principal, se ejecutó una comparación real con AE determinista y VAE de latente reducido. Esta ampliación responde a la necesidad de justificar el modelo y muestra que reconstrucción y generación son problemas relacionados, pero no equivalentes. La evaluación financiera completa el ciclo utilizando métricas comunes.
+En modelado, además del VAE principal, se ejecutó una comparación real con AE determinista y VAE de latente reducido bajo tres semillas. Esta ampliación responde a la necesidad de justificar el modelo y muestra que reconstrucción y generación son problemas relacionados, pero no equivalentes. La evaluación financiera completa el ciclo utilizando métricas comunes.
 
 \section{Principales resultados obtenidos}
 
@@ -34,6 +34,8 @@ La primera aportación es un pipeline integral y auditable que conecta generaci�
 La cuarta aportación es empírica: bajo un mismo test, la fuente sintética modifica sustancialmente la cartera y produce métricas diferentes a la estimación histórica. Este hallazgo demuestra sensibilidad al procedimiento de estimación, no superioridad universal. La quinta es la comparación AE/VAE, que identifica oportunidades concretas para mejorar la preservación de volatilidades y correlaciones.
 
 \section{Conclusión general}
+
+La principal aportación del trabajo no reside en demostrar que un VAE sea universalmente superior a los métodos clásicos, sino en documentar un procedimiento reproducible que permite conectar modelos generativos, generación de escenarios y optimización interpretable de carteras bajo un protocolo evaluable.
 
 Los resultados sugieren que un VAE puede utilizarse de forma técnicamente viable para generar escenarios multivariantes y alimentar una optimización interpretable. En el periodo analizado, la cartera resultante obtiene métricas favorables de retorno y Sharpe. Sin embargo, la magnitud del resultado, la mayor volatilidad y las discrepancias estadísticas de las muestras exigen cautela.
 

@@ -5,7 +5,7 @@
 
 El objetivo principal del trabajo es diseñar una metodología para la optimización de carteras basada en la generación de escenarios sintéticos mediante técnicas de inteligencia artificial.
 
-En concreto, la metodología se orienta al análisis de retornos de 30 activos pertenecientes al S\&P 500 y emplea un Autoencoder Variacional como modelo generativo ejecutado. El propósito es estudiar si los escenarios obtenidos desde su espacio latente pueden proporcionar una base alternativa para estimar los parámetros de una cartera. Las arquitecturas VAE-GAN y WGAN pertenecen al marco conceptual y a la prospectiva, no al experimento validado.
+En concreto, la metodología se orienta al análisis de retornos de 30 activos pertenecientes al S\&P 500 y emplea un Autoencoder Variacional como modelo generativo ejecutado. El propósito es estudiar si los escenarios obtenidos desde su espacio latente pueden proporcionar una base alternativa para estimar los parámetros de una cartera. Las arquitecturas GAN/WGAN pertenecen al marco conceptual y a la prospectiva, no al experimento validado.
 
 Para ello, se plantea comparar los resultados obtenidos mediante la metodología propuesta con carteras construidas a partir del modelo de media-varianza de Markowitz y con una cartera equiponderada. De este modo, se busca evaluar si el uso de modelos generativos puede aportar información adicional en el proceso de asignación de pesos, especialmente en contextos donde los retornos financieros presentan colas pesadas, asimetrías y dependencias no lineales.
 
@@ -96,6 +96,30 @@ Reproducibilidad & Encadenamiento de scripts & Repositorio y artefactos \\
 \end{tabular}
 \caption{Adaptación de CRISP-DM al desarrollo experimental del trabajo. Fuente: elaboración propia.}
 \label{tab:crisp_dm_tfm}
+\end{table}
+
+\subsection{Síntesis de garantías metodológicas}
+
+La correspondencia de la Tabla~\ref{tab:garantias_metodologicas} permite localizar cada garantía en la memoria y en los artefactos generados. Su finalidad es hacer explícita la cadena de evidencia, no sustituir el desarrollo detallado de los capítulos posteriores.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{p{0.28\textwidth}p{0.34\textwidth}p{0.25\textwidth}}
+\toprule
+Elemento evaluado & Evidencia en la memoria & Capítulo o artefacto \\
+\midrule
+Estructura metodológica & Adaptación de CRISP-DM & Capítulo 3 \\
+Comprensión de datos & Ausencias, distribuciones, volatilidad y correlaciones & Sección 5.1 \\
+Modelado generativo & Entrenamiento VAE y escenarios & Secciones 5.7--5.8 \\
+Comparación de modelos & AE-8, VAE-8 y VAE-4 con tres semillas & Sección 5.11 \\
+Evaluación financiera & Equiponderación y variantes de Markowitz & Sección 5.12 \\
+Reproducibilidad & Scripts, CSV, métricas y figuras & Capítulo 6 \\
+Limitaciones & Costes, validación temporal, universo y robustez & Capítulo 8 \\
+\bottomrule
+\end{tabular}
+\caption{Correspondencia entre elementos metodológicos, evidencias y localización en la memoria. Fuente: elaboración propia.}
+\label{tab:garantias_metodologicas}
 \end{table}
 
 \subsection{Visión general y secuencia experimental}

@@ -35,13 +35,13 @@ Archivo & Función \\
 
 La reproducción comienza con la descarga y continúa con \texttt{preprocess.py}. Después puede ejecutarse el EDA, que solo lee \texttt{returns.csv}. El VAE lee los ficheros escalados, guarda \texttt{models/vae.pt}, reconstrucciones, historial y métricas. El generador carga el modelo y el escalador, crea 5.000 filas y devuelve la escala financiera.
 
-Las estrategias históricas leen entrenamiento y test. La estrategia sintética lee los escenarios para optimizar y el test para evaluar. Por último, \texttt{compare\_benchmarks.py} reúne los CSV de métricas. El experimento multmodelo adicional es independiente del artefacto principal y escribe \texttt{autoencoder\_model\_comparison.csv}; de este modo no sobrescribe resultados publicados.
+Las estrategias históricas leen entrenamiento y test. La estrategia sintética lee los escenarios para optimizar y el test para evaluar. Por último, \texttt{compare\_benchmarks.py} reúne los CSV de métricas. El experimento multmodelo adicional es independiente del artefacto principal: conserva la ejecución base en \texttt{autoencoder\_model\_comparison.csv} y escribe las nueve ejecuciones y su resumen en \texttt{autoencoder\_model\_comparison\_multiseed.csv} y \texttt{autoencoder\_model\_comparison\_multiseed\_summary.csv}.
 
 \subsection{Dependencias y entorno}
 
 \texttt{requirements.txt} fija las versiones de NumPy, pandas, scikit-learn, SciPy, PyTorch, Matplotlib, joblib y yfinance, entre otras dependencias. PyTorch implementa las redes y diferenciación; SciPy resuelve SLSQP; scikit-learn ajusta Min--Max; joblib conserva el escalador; y pandas mantiene índices y CSV.
 
-La semilla 42 se fija en NumPy y PyTorch. Esto reduce variabilidad, aunque la reproducibilidad bit a bit puede depender de versión, hardware y operaciones internas. En la comparación adicional se utilizó PyTorch 2.13.0 en CPU. Conviene registrar también sistema operativo y versión de Python en una entrega definitiva.
+Las semillas 42, 123 y 2026 se fijan en NumPy y PyTorch para la comparación adicional. Esto permite medir variabilidad, aunque la reproducibilidad bit a bit puede depender de versión, hardware y operaciones internas. En la comparación adicional se utilizó PyTorch 2.13.0 en CPU. Conviene registrar también sistema operativo y versión de Python en una entrega definitiva.
 
 \subsection{Artefactos y trazabilidad}
 

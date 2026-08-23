@@ -144,8 +144,7 @@ Para permitir el entrenamiento mediante retropropagación, se emplea el truco de
 
 \begin{equation}
 z = \mu + \sigma \odot \epsilon,
-\quad
-\epsilon \sim \mathcal{N}(0,I)
+\qquad \epsilon \sim \mathcal{N}(0,I)
 \end{equation}
 
 Desde una perspectiva financiera, esta estructura puede interpretarse como una forma de obtener una representación latente de los retornos, reduciendo la dimensionalidad del problema y tratando de capturar factores no observables que influyen en el comportamiento conjunto de los activos.
@@ -219,6 +218,6 @@ Los modelos de difusión constituyen una familia reciente de modelos generativos
 
 En términos generales, el proceso se divide en dos fases. En la fase directa, los datos se degradan progresivamente mediante la adición de ruido. En la fase inversa, una red neuronal aprende a revertir ese proceso, generando nuevas observaciones a partir de ruido inicial. Esta formulación permite obtener muestras diversas y estables, lo que ha hecho que los modelos de difusión se hayan convertido en una línea destacada dentro del modelado generativo.
 
-Aplicados al ámbito financiero, estos modelos pueden utilizarse para generar trayectorias sintéticas. En este trabajo se incluyen por su relevancia reciente, mientras la arquitectura experimental se limita al VAE. La referencia VAE-GAN corresponde a la inspiración conceptual y no a un modelo adversario entrenado.
+Aplicados al ámbito financiero, estos modelos pueden utilizarse para generar trayectorias sintéticas. En este trabajo se incluyen por su relevancia reciente, mientras la arquitectura experimental se limita al VAE. La combinación VAE-GAN se consideró durante el diseño inicial, pero no corresponde a un modelo adversario entrenado.
 
 \input{capitulos/04_estado_arte}

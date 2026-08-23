@@ -32,7 +32,7 @@ Dentro de esta familia de modelos, las Redes Generativas Adversarias, propuestas
 
 Los Autoencoders Variacionales también resultan relevantes en este contexto, ya que permiten aprender una representación latente y probabilística de los datos. En el caso de los retornos financieros, el espacio latente puede interpretarse como una representación comprimida de factores no observables que influyen en el comportamiento conjunto de los activos. Esta característica justifica su uso como componente previo o complementario en arquitecturas híbridas de generación de escenarios.
 
-A partir de estas ideas, el planteamiento inicial se inspiró en una arquitectura VAE-GAN. Sin embargo, el desarrollo empírico alcanzado implementa el VAE y genera escenarios con su \textit{decoder}. La combinación adversaria se mantiene como referencia para interpretar el título y como ampliación futura, no como resultado experimental.
+A partir de estas ideas, el planteamiento inicial consideró una arquitectura VAE-GAN. Sin embargo, el desarrollo empírico alcanzado implementa el VAE y genera escenarios con su \textit{decoder}. La combinación adversaria se mantiene como ampliación futura, no como resultado experimental.
 
 \subsection{Modelos de difusión para selección dinámica de carteras}
 
@@ -57,3 +57,5 @@ En segundo lugar, las técnicas de aprendizaje automático y aprendizaje profund
 En tercer lugar, los modelos generativos ofrecen una alternativa especialmente adecuada para este contexto, ya que permiten aprender distribuciones de datos y generar escenarios sintéticos. Esta capacidad resulta útil para analizar la robustez de una cartera no solo bajo el escenario histórico observado, sino también bajo posibles escenarios generados que preserven propiedades estadísticas relevantes del mercado.
 
 El hueco abordado se sitúa en la conexión entre generación de escenarios y optimización de carteras. La contribución empírica estudia un VAE aplicado a retornos del S\&P 500 y compara la cartera resultante con Markowitz y equiponderación. La extensión adversaria permitiría investigar posteriormente si mejora la fidelidad de colas y dependencias.
+
+En síntesis, Markowitz conserva valor por su formulación interpretable, mientras su dificultad práctica reside en estimar medias y covarianzas estables. Las colas, la volatilidad cambiante y las dependencias observadas motivan aproximar una distribución más rica. El hueco específico de este trabajo consiste, por tanto, en evaluar si escenarios obtenidos con un VAE pueden alimentar una optimización clásica dentro de un pipeline reproducible y sometido a evaluación fuera de muestra.

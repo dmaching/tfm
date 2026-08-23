@@ -168,7 +168,7 @@ El retorno esperado de una cartera puede expresarse como la suma ponderada de lo
 donde \(w_i\) representa el peso asignado al activo \(i\), \(\mu_i\) su retorno esperado y \(n\) el número total de activos. Sin embargo, el riesgo de la cartera no depende únicamente de la varianza individual de cada activo. También intervienen las covarianzas entre los diferentes retornos, que reflejan en qué medida los activos tienden a variar conjuntamente. La varianza de la cartera se expresa como:
 
 \begin{equation}
-\sigma_p^2 = \mathbf{w}^{T}\boldsymbol{\Sigma}\mathbf{w},
+\sigma_p^2 = \mathbf{w}^{\top}\boldsymbol{\Sigma}\mathbf{w},
 \end{equation}
 
 donde \(\mathbf{w}\) es el vector de pesos y \(\boldsymbol{\Sigma}\) la matriz de covarianzas. Por tanto, la diversificación no depende exclusivamente del número de activos incluidos, sino también de la relación existente entre ellos \cite{markowitz1952}.
@@ -240,7 +240,7 @@ En el periodo de test analizado, la cartera restringida presenta un mejor equili
 
 \section{Implementación del Autoencoder Variacional}
 
-El Autoencoder Variacional \(VAE, *Variational Autoencoder*\) es un modelo generativo basado en variables latentes continuas que permite aprender una representación comprimida y estructurada de los datos. En el contexto de este trabajo, se asume que los vectores de retornos diarios normalizados de los treinta activos seleccionados pueden explicarse a través de una distribución latente de menor dimensionalidad que captura factores subyacentes comunes del mercado.
+El Autoencoder Variacional (VAE, \textit{Variational Autoencoder}) es un modelo generativo basado en variables latentes continuas que permite aprender una representación comprimida y estructurada de los datos. En el contexto de este trabajo, se asume que los vectores de retornos diarios normalizados de los treinta activos seleccionados pueden explicarse a través de una distribución latente de menor dimensionalidad que captura factores subyacentes comunes del mercado.
 
 De forma operativa, el modelo no genera directamente una variable latente determinista, sino que el encoder aprende a parametrizar una distribución probabilística condicional. En particular, dado un vector de entrada \(x\), el encoder produce dos vectores: la media \(\mu(x)\) y el logaritmo de la varianza \(\log \sigma^2(x)\). Estos parámetros definen una distribución gaussiana multivariante diagonal de la forma:
 
@@ -251,7 +251,8 @@ q_\phi(z|x) = \mathcal{N}(\mu(x), \sigma^2(x) I)
 A partir de esta distribución no se selecciona directamente un valor determinista, sino que se realiza un muestreo estocástico del espacio latente. Este muestreo se implementa mediante el truco de reparametrización, que permite mantener la diferenciabilidad del modelo:
 
 \[
-z = \mu(x) + \sigma(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+z = \mu(x) + \sigma(x) \odot \epsilon,
+\qquad \epsilon \sim \mathcal{N}(0,I)
 \]
 
 El decoder toma como entrada este vector latente \(z\) y genera una reconstrucción \(\hat{x}\) del vector original de retornos. En este caso, la salida del modelo tiene la misma dimensionalidad que la entrada (30 activos), por lo que el decoder actúa como una transformación inversa del espacio latente hacia el espacio original de observaciones financieras.
@@ -350,7 +351,7 @@ Para separar la comparación de redes de la comparación de carteras se implemen
 El segundo es el VAE base con dimensión latente ocho y $\beta=0{,}001$. El tercero mantiene arquitectura y regularización, pero reduce el latente a cuatro dimensiones. Esta variante permite estudiar si una compresión más intensa mejora la regularidad generativa o pierde información. No se incluye una GAN: requeriría definir y validar un entrenamiento adversario diferente, y sus resultados no pueden inferirse de los VAE.
 
 \subsection{Configuración experimental}
-Los tres modelos utilizan los mismos retornos escalados, las primeras 2.212 filas como entrenamiento y las 554 finales como test. Se fijan semilla 42, 120 épocas, lotes de 64, Adam con tasa $10^{-3}$ y dos capas ocultas de 64 unidades. Cada candidato genera 5.000 escenarios. La ejecución en CPU usa \texttt{compare\_autoencoders.py} y guarda un CSV comparativo.
+Los tres modelos utilizan los mismos retornos escalados, las primeras 2.212 filas como entrenamiento y las 554 finales como test. La ejecución base fija la semilla 42, 120 épocas, lotes de 64, Adam con tasa $10^{-3}$ y dos capas ocultas de 64 unidades. Cada candidato genera 5.000 escenarios. La ejecución en CPU usa \texttt{compare\_autoencoders.py} y guarda un CSV comparativo. Para estimar la sensibilidad a la inicialización, el mismo protocolo se repite además con las semillas 123 y 2026, sin alterar el corte temporal ni consultar resultados financieros durante la selección.
 
 Esta comparación adicional no reemplaza el VAE principal de 150 épocas utilizado para construir la cartera publicada. Su finalidad es responder de forma controlada a la elección de familia y dimensión latente. Mantener ambos experimentos diferenciados evita reescribir retrospectivamente los resultados financieros con un modelo distinto.
 
@@ -380,9 +381,31 @@ VAE-4 & 0,007902 & 0,010561 & 0,060884 & 0,069296 & 0,004708 & 0,046912 & 0,4183
 
 La comparación revela una limitación relevante del VAE ejecutado: su prior normal facilita el muestreo, pero las muestras suavizan la dispersión y alteran correlaciones en mayor medida que el AE con aproximación empírica del latente. A su vez, el AE no ofrece el mismo modelo probabilístico explícito y su muestreo gaussiano posterior es una decisión añadida. Por tanto, los números describen compromisos diferentes y no justifican proclamar un ganador universal.
 
+\subsection{Robustez de la comparación ante múltiples semillas}
+
+La Tabla~\ref{tab:comparacion_autoencoders_multisemilla} resume las tres ejecuciones. Las desviaciones de MSE y MAE son reducidas, por lo que el orden reconstructivo resulta estable: AE-8 mantiene menor error de test. En generación, AE-8 conserva menor error medio de volatilidad y correlación, mientras VAE-8 obtiene el menor error medio de medias sintéticas. La variabilidad entre semillas no invierte estas conclusiones, aunque tres repeticiones siguen siendo una muestra limitada.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabular}{lrrrrrr}
+\toprule
+Modelo & MSE test & DT & Err. media & Err. vol. & Err. corr. & $n$ \\
+\midrule
+AE-8  & 0,006221 & 0,000106 & 0,005618 & 0,009862 & 0,217524 & 3 \\
+VAE-8 & 0,010455 & 0,000040 & 0,003990 & 0,046628 & 0,417923 & 3 \\
+VAE-4 & 0,010502 & 0,000084 & 0,005713 & 0,045759 & 0,415345 & 3 \\
+\bottomrule
+\end{tabular}
+\caption{Resumen multisemilla: medias y desviación típica del MSE de test en escala normalizada. Fuente: elaboración propia a partir de tres ejecuciones de \texttt{compare\_autoencoders.py}.}
+\label{tab:comparacion_autoencoders_multisemilla}
+\end{table}
+
+Esta comprobación mejora la robustez de la comparación de arquitecturas, pero no sustituye una validación financiera \textit{walk-forward}: las semillas miden variación del entrenamiento bajo el mismo periodo, no estabilidad de la cartera ante cambios de régimen.
+
 \subsection{Selección del modelo final}
 Se mantiene el VAE-8 como modelo principal por tres razones: es el modelo que originó los 5.000 escenarios y los resultados financieros auditados; ofrece menor error de medias que los otros candidatos; y dispone de un mecanismo probabilístico explícito para muestrear $z\sim\mathcal{N}(0,I)$. La variante de cuatro dimensiones no aporta una mejora global que justifique sustituirlo.
 
-La ventaja reconstructiva del AE sugiere, no obstante, que futuras evaluaciones deberían construir también una cartera con sus escenarios y repetir ambos modelos con varias semillas. La selección del VAE es coherente con el objetivo y la trazabilidad del experimento, pero queda condicionada por la limitada búsqueda de hiperparámetros y no equivale a demostrar que sea la mejor arquitectura posible.
+La ventaja reconstructiva del AE sugiere, no obstante, que futuras evaluaciones deberían construir también una cartera con sus escenarios y ampliar el número de semillas, dimensiones y valores de $\beta$. La selección del VAE es coherente con el objetivo y la trazabilidad del experimento, pero queda condicionada por la limitada búsqueda de hiperparámetros y no equivale a demostrar que sea la mejor arquitectura posible.
 
 \input{capitulos/08_resultados}

@@ -17,9 +17,9 @@ Los mercados cambian de régimen. Medias, volatilidades y correlaciones estimada
 
 \subsection{Modelos generativos}
 
-El VAE principal representa una configuración concreta. La comparación AE/VAE se ejecutó con una variante adicional y mejora la evidencia, pero sigue siendo limitada: una semilla, dos dimensiones latentes y un valor de $\beta$. El VAE suaviza volatilidades y altera correlaciones en las muestras. No se realizaron pruebas específicas de colas o cobertura de crisis.
+El VAE principal representa una configuración concreta. La comparación AE/VAE se repitió con tres semillas y una variante adicional, lo que mejora la evidencia, pero sigue siendo limitada: dos dimensiones latentes, un valor de $\beta$ y un único corte temporal. El VAE suaviza volatilidades y altera correlaciones en las muestras. No se realizaron pruebas específicas de colas o cobertura de crisis.
 
-GAN, WGAN y la arquitectura híbrida del título no fueron implementadas. Se mantienen en teoría y prospectiva. Esta diferencia entre inspiración y ejecución debe conservarse explícita. Tampoco se evaluaron difusión, flujos normalizantes o modelos temporales condicionados.
+GAN, WGAN y la arquitectura híbrida considerada inicialmente no fueron implementadas. Se mantienen en teoría y prospectiva. Esta diferencia entre diseño inicial y ejecución debe conservarse explícita. Tampoco se evaluaron difusión, flujos normalizantes o modelos temporales condicionados.
 
 \subsection{Optimización y condiciones de mercado}
 
@@ -35,7 +35,7 @@ El resultado es académico y retrospectivo. No constituye recomendación financi
 
 \subsection{Comparación y robustez de modelos}
 
-La comparación AE/VAE debería repetirse con varias semillas, dimensiones y valores de $\beta$, incorporando intervalos de variabilidad. Conviene construir carteras desde los escenarios de cada candidato para analizar si la fidelidad estadística se traduce en estabilidad de pesos. También sería útil evaluar pérdidas que ponderen colas o correlación.
+La comparación AE/VAE debería ampliarse a más semillas, dimensiones y valores de $\beta$, incorporando intervalos de variabilidad más estables. Conviene construir carteras desde los escenarios de cada candidato para analizar si la fidelidad estadística se traduce en estabilidad de pesos. También sería útil evaluar pérdidas que ponderen colas o correlación.
 
 Una implementación real de WGAN permitiría contrastar el diseño híbrido inicial. Su protocolo debería definir generador, crítico, regularización, estabilidad y criterios de parada antes de observar el test. Los modelos de difusión y flujos normalizantes constituyen alternativas para aproximar distribuciones complejas sin atribuirles ventajas a priori.
 
