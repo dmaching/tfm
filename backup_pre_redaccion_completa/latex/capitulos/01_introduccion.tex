@@ -24,16 +24,12 @@ La elección de esta arquitectura, como se exponía previamente, no busca predec
 
 El presente Trabajo de Fin de Máster propone una metodología híbrida que integra el modelado generativo y la teoría de la información. El núcleo de la investigación se divide en cuatro fases:
 
-Conviene delimitar desde el inicio el alcance alcanzado. Aunque el título y el marco conceptual se inspiran en arquitecturas generativas híbridas, el desarrollo experimental validado se centra en el Autoencoder Variacional. GAN y WGAN se revisan por su relevancia teórica y se mantienen como ampliación futura, pero no se presentan como modelos entrenados. Asimismo, la divergencia de Kullback--Leibler interviene en la regularización del espacio latente del VAE y no como función objetivo de la cartera. El trabajo no pretende predecir precios puntuales: genera vectores plausibles de retornos y evalúa los pesos resultantes sobre observaciones posteriores no utilizadas en el entrenamiento.
-
 \begin{enumerate}
 \item Extracción de datos de series históricas del S\&P 500. Se propone la creación de un pipeline de datos que permita la implementación de la arquitectura propuesta.
 \item Uso de \textbf{Autoencoders Variacionales (VAEs)} para la reducción de dimensionalidad no lineal.
-\item Generación de escenarios sintéticos mediante muestreo en el espacio latente y decodificación con el VAE entrenado.
-\item Estimación de medias y covarianzas sintéticas y optimización de máximo Sharpe, seguida de evaluación fuera de muestra.
+\item Desarrollo de una \textbf{Red Generativa Adversaria (GAN)} para sintetizar escenarios de mercado realistas.
+\item Optimización de la cartera mediante la \textbf{Divergencia de Kullback-Leibler} como métrica de riesgo informativo.
 \end{enumerate}
-
-La contribución posee carácter académico. Las cifras obtenidas permiten comparar métodos bajo un protocolo común, pero no constituyen recomendación financiera ni garantía de rendimiento. Esta cautela resulta particularmente importante porque el experimento utiliza un único universo, un único corte temporal y pesos estáticos sin costes de transacción.
 
 \section{Estructura del trabajo}
 

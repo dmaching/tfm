@@ -1,4 +1,4 @@
-Esta sección conserva y documenta el diseño metodológico amplio considerado al inicio del trabajo. Es importante distinguir ese diseño de la ejecución finalmente validada: la componente implementada es el VAE y los escenarios se obtienen muestreando su espacio latente y aplicando el \textit{decoder}. La integración GAN/WGAN descrita en algunos apartados siguientes representa la arquitectura inicialmente estudiada y una extensión futura; no se entrenó un generador ni un discriminador en los resultados de esta memoria. La divergencia KL se utiliza en la pérdida del VAE, no como objetivo del optimizador de cartera.
+En este capítulo se presenta la metodología de trabajo seguida para la realización del presente trabajo de investigación. Se detalla el diseño experimental y la lógica de construcción de la arquitectura híbrida VAE-GAN. Asimismo, se describe el proceso de adquisición y preprocesamiento de datos, la formalización matemática de las funciones de pérdida y el protocolo de validación para la selección de carteras.
 
 \subsection{Diseño general del experimento}
 
@@ -6,7 +6,7 @@ Se pretende construir un flujo completo, desde la adquisición de datos hasta la
 
 En primer lugar, se realizará la adquisición de datos históricos de retornos de activos del S\&P 500 mediante la herramienta \textit{yfinance}. Empleando Python, se llevará a cabo el preprocesamiento de los datos para alimentar el entrenamiento del modelo VAE, con el objetivo de extraer una representación latente subyacente a la distribución de los retornos observados.
 
-A continuación, el diseño original contemplaba entrenar una GAN/WGAN. Esa fase quedó fuera de la ejecución: el pipeline real muestrea $z\sim\mathcal{N}(0,I)$ y decodifica 5.000 observaciones con el VAE. Con esos escenarios se asignan los pesos y se comparan con Markowitz, Markowitz restringido y equiponderación sobre un test real común.
+A continuación, se entrenará el modelo GAN/WGAN a partir de los resultados previamente obtenidos, con el objetivo de generar escenarios sintéticos. Basándose en los escenarios generados, se asignarán los pesos orientados a optimizar la cartera. Finalmente, se compararán los resultados obtenidos con la cartera construida mediante el modelo de Markowitz, una cartera equiponderada y el índice S\&P 500 como referencia de mercado.
 
 \subsection{Adquisición de datos}
 
@@ -24,11 +24,11 @@ Tras la adquisición de los datos, se llevarán a cabo las transformaciones nece
 
 En primer lugar, se trabajará con precios ajustados, de forma que se tengan en cuenta eventos corporativos como dividendos o desdoblamientos de acciones. A partir de estas series se calcularán los retornos financieros, que constituirán la entrada principal del modelo. Se llevará a cabo un tratamiento de valores ausentes, eliminando activos que presenten demasiados nulos, alineando fechas comunes y realizando interpolación únicamente cuando esté justificado.
 
-Para el preprocesado se aplicó normalización Min--Max al rango $[-1,1]$, ajustada únicamente con entrenamiento. No se aplicó un recorte general de valores extremos, porque estos contienen información financiera relevante. Los parámetros se guardaron para desnormalizar los escenarios generados por el VAE.
+Para el preprocesado, se aplicará una normalización Min-Max tras un tratamiento de valores atípicos (\textit{outliers}). Este escalado al rango $[0,1]$ resulta relevante para asegurar la estabilidad numérica de las funciones de activación de las redes neuronales y reducir el riesgo de inestabilidad durante el entrenamiento del VAE y la GAN. Se guardarán los parámetros de normalización para poder desnormalizar los datos cuando sea necesario.
 
 Asimismo, se realizarán las transformaciones adicionales que sean necesarias para garantizar que los datos puedan ser utilizados de forma adecuada dentro del pipeline experimental. A priori, se pretende realizar una división temporal de los datos, separando los conjuntos de entrenamiento y validación.
 
-\subsection{Arquitectura VAE-GAN considerada en el diseño inicial}
+\subsection{Arquitectura VAE-GAN propuesta}
 
 Una vez extraídos y preprocesados los datos, se elaborará una estructura en línea con lo expuesto en los apartados previos.
 
@@ -37,12 +37,12 @@ La arquitectura propuesta para el modelo se articula en tres módulos principale
 \begin{itemize}
 \item Extracción de características con Autoencoders Variacionales (VAEs) para la reducción de la dimensionalidad de forma no lineal. El VAE proyecta los datos históricos hacia un espacio latente de menor dimensión. Este proceso permite reducir parte del ruido, reteniendo las características persistentes de los datos.
 
-\item Generación adversaria considerada como extensión. Una GAN podría entrenarse sobre el espacio latente, pero esta etapa no forma parte del experimento ejecutado.
+\item Generación de escenarios mediante Redes Generativas Adversarias (GANs). La GAN entrena sobre el espacio latente y sintetiza vectores de retornos orientados a preservar dependencias no lineales y momentos estadísticos de orden superior.
 
 \item Optimización de la cartera mediante el uso de medidas informacionales, como la Divergencia de Kullback-Leibler, como criterio complementario al análisis clásico del riesgo. De este modo, se plantea evaluar la robustez de la cartera frente a escenarios generados por el modelo.
 \end{itemize}
 
-De manera intuitiva, el diseño híbrido buscaba usar el VAE para estructurar el latente y una GAN para refinar muestras. En la implementación disponible, el primer componente se conserva y la generación se realiza directamente con el \textit{decoder}; la utilidad de añadir una GAN permanece como hipótesis futura.
+De manera intuitiva, el modelo emplea el VAE para obtener una representación latente de los datos, incorporando información sobre relaciones no lineales entre los activos. A partir de dicho espacio latente, la GAN sintetiza escenarios de mercado que permiten analizar la robustez de distintas asignaciones de cartera.
 
 El mercado financiero presenta una gran cantidad de variables interconectadas de formas que van más allá de la linealidad. Por ello, el VAE se utiliza para aproximar un espacio latente en el que se representen relaciones subyacentes entre los activos. Este planteamiento resulta adecuado frente a métodos estrictamente lineales como el PCA, dado que los mercados financieros no presentan necesariamente una estructura lineal.
 
@@ -93,16 +93,16 @@ arrow/.style={->, >=Stealth, thick}
 \end{tikzpicture}
 }
 \shorthandon{>}
-\caption{Arquitectura híbrida VAE-GAN considerada inicialmente y no implementada de forma completa. Fuente: elaboración propia.}
+\caption{Arquitectura híbrida VAE-GAN para la generación y optimización de carteras.}
 \label{fig:arquitectura_vae_gan}
 \par\small Fuente: elaboración propia.
 \end{figure}
 
-La Figura~\ref{fig:arquitectura_vae_gan} representa el diseño conceptual original: VAE, generador y discriminador. Se incluye para mostrar la evolución del planteamiento, no como diagrama del software ejecutado. El pipeline validado termina en el \textit{decoder} del VAE antes de pasar a la estimación estadística y la optimización.
+El VAE toma datos históricos de retornos reales para obtener variables latentes asociadas a los mismos, modelando relaciones subyacentes entre distintos activos. El Generador recibe este espacio latente y, trabajando junto con el Discriminador, introduce variaciones mediante ruido aleatorio. Con este modelo, se busca crear escenarios sintéticos suficientemente similares a los retornos históricos para que resulten útiles en el proceso de optimización. Esto permite realizar la optimización final sobre un conjunto ampliado de escenarios probables, generando un conjunto de pesos para la cartera resultante.
 
 \subsection{Generación de escenarios sintéticos}
 
-Una vez entrenado el VAE se obtiene un espacio latente $Z$. En la ejecución real se muestrea directamente la normal estándar y se decodifica. El uso posterior de GAN/WGAN sobre dicho espacio es una posible ampliación y no se le atribuyen métricas en esta memoria.
+Una vez entrenado el VAE, se obtiene un espacio latente $Z$ que resume parte de la información relevante contenida en los retornos históricos. Para la generación de nuevas muestras, la GAN/WGAN utiliza este espacio latente junto con ruido aleatorio, con el objetivo de producir nuevos vectores de retornos sintéticos para los activos considerados.
 
 Cada una de estas muestras sintéticas representa un escenario plausible de mercado. Estos escenarios no deben interpretarse como predicciones exactas del futuro, sino como simulaciones generadas a partir de la distribución aprendida por el modelo. De este modo, se amplía el conjunto de situaciones bajo las cuales puede evaluarse la cartera construida.
 
@@ -112,7 +112,7 @@ Esta evaluación resulta necesaria para evitar que la optimización posterior se
 
 \subsection{Función de pérdida y criterios de optimización}
 
-La metodología ejecutada combina dos niveles: entrenamiento variacional del VAE y optimización financiera sobre parámetros sintéticos. Un tercer nivel adversario estaba previsto en el diseño, pero no fue implementado. Esta separación evita confundir la pérdida de la red con la función de máximo Sharpe empleada para los pesos.
+La metodología propuesta combina tres niveles de optimización. En primer lugar, el VAE se entrena mediante una función de pérdida variacional, cuyo objetivo es obtener una representación latente estructurada de los datos. En segundo lugar, la GAN/WGAN se entrena mediante un criterio adversarial, con el objetivo de generar escenarios sintéticos estadísticamente próximos a los retornos reales. Finalmente, los escenarios generados se utilizan como base para la optimización de los pesos de la cartera.
 
 Siguiendo el enfoque propuesto por \cite{kingma2013auto}, el objetivo del modelo VAE es maximizar la verosimilitud marginal de los datos observados. Dado un conjunto de datos $\{x^{(i)}\}_{i=1}^{N}$, la verosimilitud marginal se descompone como la suma sobre las observaciones individuales:
 
@@ -137,7 +137,7 @@ p_{\theta}(z|x^{(i)})
 \mathcal{L}(\theta,\phi;x^{(i)})
 \end{equation}
 
-Dado que la divergencia de Kullback--Leibler es siempre no negativa, la función variacional constituye una cota inferior, conocida como ELBO (\textit{Evidence Lower Bound}):
+Dado que la divergencia de Kullback-Leibler es siempre no negativa, el término $\mathcal{L}(\theta,\phi;x^{(i)})$ constituye una cota inferior variacional, conocida como ELBO (\textit{Evidence Lower Bound}):
 
 \begin{equation}
 \log p_{\theta}(x^{(i)})
@@ -199,7 +199,7 @@ z
 
 Esta reformulación permite trasladar la fuente de aleatoriedad fuera de la red neuronal, haciendo posible aplicar técnicas estándar de optimización basadas en gradiente (\textit{backpropagation}) con estimadores de baja varianza.
 
-Como fundamento de la ampliación futura, una componente GAN/WGAN se entrenaría mediante un criterio adversarial. En una GAN estándar se entrenarían simultáneamente un generador $G$ y un discriminador $D$. Esta formulación se conserva como marco metodológico teórico y no describe una ejecución realizada:
+Una vez obtenido el espacio latente, la componente GAN/WGAN se entrena mediante un criterio adversarial. En el caso de una GAN estándar, el objetivo consiste en entrenar simultáneamente un generador $G$ y un discriminador $D$. El generador trata de producir muestras sintéticas que sean difíciles de distinguir de los datos reales, mientras que el discriminador aprende a clasificar correctamente muestras reales y generadas. Este juego adversarial puede expresarse como:
 
 \begin{equation}
 \min_{G}\max_{D} V(D,G)
@@ -280,7 +280,7 @@ De este modo, la asignación de pesos obtenida no depende exclusivamente de la m
 
 Para evaluar la metodología propuesta, los resultados obtenidos se compararán con estrategias de referencia ampliamente utilizadas en optimización de carteras.
 
-En primer lugar, se comparan los resultados con el modelo de Markowitz. La diferencia radica en el origen de los parámetros: el modelo clásico usa entrenamiento histórico y la propuesta usa escenarios generados por el VAE implementado.
+En primer lugar, se compararán los resultados con los obtenidos mediante el modelo clásico de media-varianza de Markowitz. Como se ha indicado previamente, la principal diferencia entre ambos enfoques radica en el origen de los datos que alimentan el proceso de optimización de pesos. Mientras que el modelo clásico estima la media y la matriz de covarianzas a partir de los datos históricos observados, la metodología propuesta emplea escenarios sintéticos generados por la arquitectura VAE-GAN.
 
 En segundo lugar, se considerará una cartera equiponderada, en la que todos los activos reciben el mismo peso. Esta estrategia simplifica el problema de selección de pesos y no requiere estimar retornos esperados ni matrices de covarianzas. Frente a ella, se evaluará si el empleo de una metodología más compleja aporta valor adicional en términos de rentabilidad y riesgo.
 

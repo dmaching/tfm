@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper,spanish]{book}
+\usepackage{estilo_unir-1}
+\usepackage{apacite}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning}
+\usepackage{float}
+
+\setlength{\headheight}{26pt}
+
+% Enlaces sin marcos ni colores y terminología española para tablas.
+\hypersetup{hidelinks}
+\addto\captionsspanish{%
+  \renewcommand{\tablename}{Tabla}%
+  \renewcommand{\listtablename}{Índice de tablas}%
+}
+
+% --- METADATOS ---
+\title{Generación de Escenarios Sintéticos\\para \mbox{Optimización} de Carteras del S\&P 500\\mediante Arquitecturas VAE-GAN}
+\titulacion{Máster Universitario en Análisis y Visualización de Datos Masivos}
+\author{Daniel Machín González}
+\director{Jesús Cigales Canga}
+\date{\spanishdate{\year}{\month}{\day}}
+\nombreciudad{ San Bartolomé} % O tu ciudad
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+\tableofcontents
+\listoffigures
+\listoftables
+
+% Aquí puedes crear archivos para el resumen si quieres, o dejarlos aquí
+\chapter{Resumen}
+Tu resumen en español...
+\chapter{Abstract}
+Your abstract in English...
+
+\mainmatter
+% --- LLAMADA A LOS CAPÍTULOS ---
+% Importante: No pongas la extensión .tex dentro del include
+\include{capitulos/01_introduccion}
+\include{capitulos/03_marco_teorico}
+\include{capitulos/02_objetivos}
+\include{capitulos/10_marco_normativo}
+\include{capitulos/06_desarrollo}
+\include{capitulos/07_codigo}
+\include{capitulos/11_conclusiones}
+\include{capitulos/12_limitaciones}
+
+\backmatter
+\bibliographystyle{apacite}
+% TODO: Ampliar esta sección con referencias académicas adicionales hasta alcanzar al menos 20 referencias relevantes en formato APA.
+% TODO: Revisar todas las figuras, tablas y fuentes en formato APA.
+\renewcommand{\bibname}{Referencias bibliográficas}
+\bibliography{bibliografia}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

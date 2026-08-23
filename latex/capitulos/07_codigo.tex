@@ -2,6 +2,71 @@
 
 \section{Código fuente}
 
+El código se organiza de manera modular para separar responsabilidades y hacer visible la procedencia de cada resultado. La carpeta \texttt{src/data} contiene adquisición y preparación; \texttt{src/analysis}, el EDA; \texttt{src/models}, las arquitecturas y el muestreo; \texttt{src/optimization}, las estrategias; y \texttt{src/evaluation}, las métricas y visualizaciones. Esta estructura evita concentrar decisiones heterogéneas en un único cuaderno y facilita ejecutar de nuevo una fase sin repetir las anteriores.
+
 \input{capitulos/09_herramientas}
 
+\subsection{Scripts principales}
+
+La Tabla~\ref{tab:codigo_fuente} resume los archivos que intervienen en el flujo. Los nombres corresponden a rutas reales del repositorio.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabular}{p{0.38\textwidth}p{0.52\textwidth}}
+\toprule
+Archivo & Función \\
+\midrule
+\texttt{download\_data.py} & Descarga cierres ajustados de 30 símbolos. \\
+\texttt{preprocess.py} & Calcula retornos, corte temporal y escalado. \\
+\texttt{generate\_eda\_outputs.py} & Genera cinco CSV y siete figuras EDA. \\
+\texttt{vae.py} & Define, entrena y evalúa el VAE principal. \\
+\texttt{generate\_vae\_scenarios.py} & Muestrea, decodifica y desnormaliza escenarios. \\
+\texttt{compare\_autoencoders.py} & Compara AE, VAE-8 y VAE-4. \\
+\texttt{optimization/} & Contiene las cuatro estrategias. \\
+\texttt{evaluation/} & Calcula métricas y figuras comparativas. \\
+\bottomrule
+\end{tabular}
+\caption{Principales archivos de código fuente. Fuente: elaboración propia.}
+\label{tab:codigo_fuente}
+\end{table}
+
+\subsection{Flujo de ejecución}
+
+La reproducción comienza con la descarga y continúa con \texttt{preprocess.py}. Después puede ejecutarse el EDA, que solo lee \texttt{returns.csv}. El VAE lee los ficheros escalados, guarda \texttt{models/vae.pt}, reconstrucciones, historial y métricas. El generador carga el modelo y el escalador, crea 5.000 filas y devuelve la escala financiera.
+
+Las estrategias históricas leen entrenamiento y test. La estrategia sintética lee los escenarios para optimizar y el test para evaluar. Por último, \texttt{compare\_benchmarks.py} reúne los CSV de métricas. El experimento multmodelo adicional es independiente del artefacto principal y escribe \texttt{autoencoder\_model\_comparison.csv}; de este modo no sobrescribe resultados publicados.
+
+\subsection{Dependencias y entorno}
+
+\texttt{requirements.txt} fija las versiones de NumPy, pandas, scikit-learn, SciPy, PyTorch, Matplotlib, joblib y yfinance, entre otras dependencias. PyTorch implementa las redes y diferenciación; SciPy resuelve SLSQP; scikit-learn ajusta Min--Max; joblib conserva el escalador; y pandas mantiene índices y CSV.
+
+La semilla 42 se fija en NumPy y PyTorch. Esto reduce variabilidad, aunque la reproducibilidad bit a bit puede depender de versión, hardware y operaciones internas. En la comparación adicional se utilizó PyTorch 2.13.0 en CPU. Conviene registrar también sistema operativo y versión de Python en una entrega definitiva.
+
+\subsection{Artefactos y trazabilidad}
+
+Cada etapa materializa resultados: CSV brutos y procesados, escalador, checkpoint, reconstrucciones, escenarios, pesos, retornos, métricas y figuras. Esta decisión permite revisar una cifra sin reentrenar. El repositorio se referencia en \cite{machin2026repositorio}; antes de entregar debe verificarse que la URL bibliográfica sea la definitiva y que los permisos permitan la revisión académica.
+
 \section{Datos analizados}
+
+\subsection{Datos brutos y procesados}
+
+\texttt{data/raw/sp500\_prices\_adj\_close.csv} contiene 2.767 fechas de precios ajustados. La transformación produce \texttt{returns.csv}, con 2.766 fechas y 30 activos. Los conjuntos \texttt{returns\_train.csv} y \texttt{returns\_test.csv} contienen 2.212 y 554 observaciones. Sus versiones escaladas son entradas del modelo y el objeto \texttt{minmax\_scaler.pkl} conserva los parámetros aprendidos solo con train.
+
+\subsection{Datos generados}
+
+\texttt{vae\_synthetic\_returns\_scaled.csv} y \texttt{vae\_synthetic\_returns.csv} contienen 5.000 escenarios por 30 columnas antes y después de desnormalizar. No poseen fecha porque no representan una trayectoria cronológica específica: cada fila es una realización conjunta empleada para estimar una distribución transversal diaria.
+
+Las reconstrucciones permiten calcular MSE y MAE. El resumen sintético contrasta momentos por activo; el archivo de evaluación y las figuras comparan distribuciones, volatilidades y correlaciones. El CSV multmodelo registra siete métricas por configuración.
+
+\subsection{Pesos, retornos y métricas}
+
+Para cada estrategia se conservan pesos y retornos diarios. Los archivos con sufijo \texttt{metrics.csv} almacenan cinco métricas homogéneas y \texttt{benchmark\_comparison.csv} las reúne. Esta separación permite comprobar que la tabla de la memoria no contiene números calculados manualmente.
+
+\subsection{Figuras y productos del EDA}
+
+Los cinco CSV EDA documentan dimensiones, ausencias, estadísticos descriptivos, asimetría, curtosis y pares correlacionados. Las siete figuras se encuentran en la carpeta EDA de LaTeX. El Capítulo 5 utiliza una selección de cinco para evitar redundancia; el resto permanece disponible para auditoría.
+
+\subsection{Limitaciones de los datos}
+
+Los archivos dependen de la cobertura y correcciones de Yahoo Finance. El universo no reproduce la ponderación completa del S\&P 500 ni corrige sesgo de supervivencia. Tampoco contiene costes, volumen, liquidez, sectores o variables macroeconómicas. Estas ausencias limitan las interpretaciones que pueden extraerse y explican por qué el repositorio se presenta como experimento académico.

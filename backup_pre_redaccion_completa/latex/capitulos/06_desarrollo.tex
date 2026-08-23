@@ -3,102 +3,31 @@
 \section{Análisis exploratorio de datos}
 
 \subsection{Descripción del dataset}
-El análisis parte de precios de cierre ajustados descargados de Yahoo Finance mediante \texttt{yfinance}. El universo contiene 30 acciones incluidas en el S\&P 500 y abarca desde el 3 de enero de 2014 hasta el 30 de diciembre de 2024 una vez calculados los retornos. La matriz procesada contiene 2.766 filas y 30 columnas. Cada fila representa una sesión bursátil y cada columna el movimiento de un activo; por tanto, una observación del modelo es un vector conjunto de 30 retornos, no un dato aislado por empresa.
-
-La frecuencia diaria ofrece un compromiso entre número de observaciones y ruido. Una frecuencia mensual reduciría mucho el tamaño muestral, mientras datos intradía exigirían tratar microestructura, horarios y volúmenes fuera del alcance. El periodo incluye fases de volatilidad y tendencias diferentes, pero sigue siendo una única realización histórica y no garantiza cobertura de todos los regímenes posibles.
+% TODO: Documentar origen, periodo temporal, frecuencia, dimensiones y unidad de observación del dataset real.
 
 \subsection{Variables utilizadas}
-La variable original es el precio de cierre ajustado, que refleja los ajustes provistos por la fuente para dividendos y desdoblamientos. A partir de ella se calcula el log-retorno diario $r_{i,t}=\log(P_{i,t}/P_{i,t-1})$. Las variables derivadas del EDA incluyen media, desviación, cuantiles, extremos, asimetría, curtosis, correlaciones, rendimiento acumulado y volatilidad móvil anualizada.
-
-La fecha actúa como índice y preserva el orden temporal; no se introduce como característica numérica del VAE. Tampoco se incorporan sectores, capitalización, volumen ni variables macroeconómicas, porque no forman parte de los archivos utilizados. Esta delimitación evita atribuir al modelo información que no recibió.
+% TODO: Identificar las variables originales y derivadas empleadas en el análisis.
 
 \subsection{Valores perdidos y calidad de los datos}
-El preprocesamiento descarta activos cuya proporción de ausencias supere el 5\,\% y aplica propagación hacia delante antes de calcular retornos. Después de alinear las series y eliminar la primera fila indefinida, los 30 activos conservados presentan cero valores ausentes en las 2.766 observaciones. La Figura~\ref{fig:eda_missing_values} muestra este resultado para cada columna.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figuras/eda/missing_values_by_asset.png}
-\caption{Valores perdidos por activo en la matriz final de retornos. Fuente: elaboración propia a partir de los datos procesados.}
-\label{fig:eda_missing_values}
-\end{figure}
-
-La ausencia de huecos simplifica el entrenamiento por lotes, pero no implica ausencia de errores de proveedor ni sesgo de selección. Exigir series homogéneas favorece activos con cobertura completa. La fecha se conserva ordenada y los CSV no muestran filas parciales; además, las dimensiones se contrastan mediante \texttt{eda\_dataset\_shape.csv}.
+% TODO: Cuantificar valores ausentes, duplicados y criterios de calidad sin alterar los datos originales.
 
 \subsection{Estadísticos descriptivos}
-La Tabla~\ref{tab:eda_descriptivos} resume cinco activos representativos; el detalle completo de los 30 queda en \texttt{eda\_descriptive\_statistics.csv}. Las medias diarias son pequeñas frente a las desviaciones, de modo que su estimación resulta ruidosa. NVDA presenta simultáneamente la mayor media y volatilidad de la selección, mientras XOM registra una media menor. Los extremos diarios superan ampliamente una desviación típica y anticipan colas relevantes.
-
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{lrrrr}
-\toprule
-Activo & Media & Desv. típica & Mínimo & Máximo \\
-\midrule
-AAPL & 0,000970 & 0,017584 & -0,137708 & 0,113157 \\
-JPM  & 0,000618 & 0,016757 & -0,162106 & 0,165620 \\
-MSFT & 0,000946 & 0,016689 & -0,159453 & 0,132929 \\
-NVDA & 0,002136 & 0,029352 & -0,207712 & 0,260877 \\
-XOM  & 0,000189 & 0,016983 & -0,130391 & 0,119442 \\
-\bottomrule
-\end{tabular}
-\caption{Selección de estadísticos descriptivos de log-retornos diarios. Fuente: elaboración propia a partir de \texttt{eda\_descriptive\_statistics.csv}.}
-\label{tab:eda_descriptivos}
-\end{table}
-
-Estas diferencias importan para Markowitz porque la media y la covarianza determinan la solución. También importan para el VAE: el escalado impide que los activos de mayor amplitud dominen automáticamente la pérdida, mientras la transformación inversa devuelve las muestras a sus unidades financieras.
+% TODO: Incorporar y comentar los estadísticos descriptivos calculados sobre los datos procesados.
 
 \subsection{Distribución de los retornos}
-La Figura~\ref{fig:eda_returns_distribution} agrega los retornos y evidencia una concentración acusada alrededor de cero junto con colas más largas que las de una aproximación normal simple. La asimetría no tiene el mismo signo en todos los activos: AAPL registra $-0{,}212$, MSFT $-0{,}175$ y NVDA $0{,}225$. La curtosis es positiva y elevada: 5,72 en AAPL, 8,18 en MSFT y 13,78 en JPM. Estos valores confirman que los episodios extremos no son marginales en la muestra.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figuras/eda/returns_distribution.png}
-\caption{Distribución agregada de los log-retornos diarios. Fuente: elaboración propia a partir de los datos procesados.}
-\label{fig:eda_returns_distribution}
-\end{figure}
-
-La distribución agregada debe leerse con cautela porque mezcla activos con escalas distintas. No obstante, junto con los estadísticos por columna muestra por qué MSE de reconstrucción no basta para evaluar escenarios: un modelo puede aproximar la zona central y suavizar las colas, reduciendo el error medio pero infravalorando eventos de riesgo.
+% TODO: Analizar forma, asimetría, curtosis y posibles valores extremos de los retornos.
 
 \subsection{Evolución temporal}
-La Figura~\ref{fig:eda_cumulative_returns} representa rendimientos acumulados de una muestra. Las trayectorias se separan de forma notable y alternan fases de crecimiento, corrección y recuperación. Esto subraya que la media del periodo completo oculta heterogeneidad temporal y que una estrategia evaluada en el tramo final puede beneficiarse de un régimen concreto.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figuras/eda/cumulative_returns_sample.png}
-\caption{Evolución de los rendimientos acumulados en una muestra de activos. Fuente: elaboración propia.}
-\label{fig:eda_cumulative_returns}
-\end{figure}
-
-El experimento respeta este orden: no aleatoriza filas antes del corte train/test. La decisión evita una fuga especialmente grave en series financieras, aunque no elimina cambios de régimen entre ambos subconjuntos.
+% TODO: Examinar la evolución temporal de retornos y rendimientos acumulados en una muestra representativa.
 
 \subsection{Análisis de volatilidad}
-La volatilidad móvil anualizada de la Figura~\ref{fig:eda_rolling_volatility} cambia con el tiempo y presenta agrupamientos. Periodos tranquilos alternan con incrementos simultáneos en varios activos. La ventana móvil suaviza el ruido diario y permite observar persistencia, pero no se utiliza como entrada del VAE: sirve como diagnóstico de no estacionariedad.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figuras/eda/rolling_volatility_sample.png}
-\caption{Volatilidad móvil anualizada en una muestra de activos. Fuente: elaboración propia.}
-\label{fig:eda_rolling_volatility}
-\end{figure}
-
-Para Markowitz, la variación implica que una covarianza estimada sobre todo el entrenamiento puede no describir el test. Para el VAE, significa que una distribución latente global mezcla regímenes. Una extensión condicionada o entrenada con ventanas móviles podría abordar esta limitación.
+% TODO: Analizar la volatilidad histórica y móvil con una ventana temporal justificada.
 
 \subsection{Análisis de correlaciones}
-La matriz de la Figura~\ref{fig:eda_correlation_heatmap} muestra dependencia positiva general, con intensidad desigual. Las correlaciones más altas registradas son MA--V ($0{,}886$), BAC--JPM ($0{,}885$), KO--PEP ($0{,}730$) y GOOGL--MSFT ($0{,}703$). Estos pares son coherentes con exposiciones económicas compartidas, aunque el trabajo no utiliza etiquetas sectoriales y no atribuye causalidad.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.88\textwidth]{figuras/eda/correlation_heatmap.png}
-\caption{Matriz de correlaciones de los retornos. Fuente: elaboración propia a partir de los datos procesados.}
-\label{fig:eda_correlation_heatmap}
-\end{figure}
-
-Preservar la correlación es esencial: si los escenarios rompen dependencias, la covarianza sintética puede exagerar la diversificación. Por ello la comparación multmodelo incorpora error medio absoluto de correlación y la evaluación VAE incluye matrices reales y sintéticas.
+% TODO: Analizar la matriz de correlaciones y las relaciones más intensas entre activos.
 
 \subsection{Conclusiones del análisis exploratorio}
-El EDA confirma una matriz completa y suficientemente amplia para un experimento multivariante, pero también exhibe colas, extremos, volatilidad cambiante y correlaciones relevantes. Estas propiedades justifican explorar un VAE porque no impone directamente normalidad multivariante en el espacio observado. Sin embargo, no garantizan que las muestras latentes preserven todos los hechos estilizados.
-
-La consecuencia metodológica es doble. Primero, deben separarse reconstrucción y calidad generativa. Segundo, la utilidad final debe medirse fuera de muestra y compararse con referencias simples. El análisis exploratorio establece así las preguntas que guían las secciones posteriores, sin presentar todavía una conclusión sobre la estrategia de cartera.
+% TODO: Redactar las conclusiones del EDA a partir de resultados reales, sin anticipar resultados del modelado.
 
 En este capítulo se describe el desarrollo técnico de la contribución propuesta. En particular, se expone el diseño e implementación de un pipeline experimental orientado a generar escenarios sintéticos de retornos financieros y utilizarlos posteriormente como entrada para un proceso de optimización de carteras. El objetivo no es sustituir los modelos clásicos de optimización, sino analizar si la incorporación de escenarios generados mediante modelos de aprendizaje profundo puede aportar información adicional respecto al uso exclusivo de datos históricos.
 
@@ -126,7 +55,7 @@ El subconjunto de activos seleccionado está compuesto por 30 compañías perten
 
 Para obtener los datos de precios ajustados diarios correspondientes al periodo 2014--2024 se ha utilizado la librería \texttt{yfinance}, que permite descargar información financiera histórica desde Yahoo Finance. En concreto, se emplean precios ajustados de cierre (\textit{Adjusted Close}), ya que incorporan el efecto de eventos corporativos como dividendos y desdoblamientos de acciones, proporcionando una base más adecuada para el cálculo de retornos.
 
-La adquisición se implementa mediante \texttt{download\_data.py}, disponible en el repositorio del proyecto\footnote{Repositorio del proyecto: \url{https://github.com/dmaching/tfm}.}. El script define universo, intervalo y salida. El resultado se almacena como CSV de precios ajustados, entrada de la preparación.
+La adquisición de datos se implementa mediante el script \texttt{src/data/download\_data.py}, disponible en el repositorio del proyecto\footnote{Repositorio del proyecto: \url{https://github.com/dmaching/tfm}.}. Este script define el universo de activos, el intervalo temporal de análisis y la ruta de salida de los datos descargados. El resultado del proceso se almacena en el archivo \texttt{data/raw/sp500\_prices\_adj\_close.csv}, que constituye la entrada principal para la fase posterior de preprocesamiento.
 
 \section{Construcción del conjunto de retornos}
 
@@ -143,7 +72,7 @@ donde \(P_t\) representa el precio ajustado de cierre del activo en el día \(t\
 
 Los retornos logarítmicos presentan varias ventajas en este contexto. En primer lugar, expresan los cambios de precio en una escala relativa, lo que permite comparar activos con niveles de precio diferentes. En segundo lugar, tienen una interpretación conveniente desde el punto de vista temporal, ya que son aditivos en el tiempo. Además, constituyen una transformación habitual en el análisis de series financieras, puesto que permiten trabajar con variaciones de precio en lugar de precios absolutos.
 
-La construcción del conjunto de retornos se implementa mediante \texttt{preprocess.py}. Este script carga los precios, ordena las observaciones, filtra activos por ausencias y calcula log-retornos. Ante valores no disponibles, propaga hacia delante antes del cálculo para mantener la alineación temporal.
+La construcción del conjunto de retornos se implementa mediante el script \texttt{src/data/preprocess.py}. Este script carga los precios ajustados previamente descargados, ordena las observaciones temporalmente, aplica un filtrado de activos en función del porcentaje de valores ausentes y calcula los retornos logarítmicos diarios. En caso de valores no disponibles, se aplica una propagación hacia delante de los precios disponibles antes del cálculo de los retornos, evitando así discontinuidades innecesarias en la serie temporal.
 
 Una vez calculados los retornos, el conjunto se divide temporalmente en datos de entrenamiento y datos de test. Esta división se realiza respetando el orden cronológico de las observaciones, de modo que la información futura no intervenga en el entrenamiento de los modelos. En concreto, el 80,% inicial de las observaciones se utiliza como conjunto de entrenamiento, mientras que el 20,% final se reserva para la evaluación fuera de muestra.
 
@@ -225,7 +154,7 @@ manteniendo igualmente la condición de inversión completa:
 
 La incorporación de límites inferiores y superiores sobre las variables de decisión permite adaptar la solución matemática a condiciones de inversión concretas \cite{boyd2004convex}. En este trabajo, el límite máximo se introduce para evitar que un único activo domine el comportamiento global de la cartera y para favorecer una distribución menos concentrada del capital.
 
-Esta variante se implementa en \texttt{markowitz\_constrained.py}. El límite de una quinta parte del capital por activo no garantiza por sí mismo una diversificación completa, ya que una cartera puede concentrarse en cinco activos situados en el máximo. Sin embargo, impide las asignaciones extremas de la variante sin límite y establece un marco común para compararla con la cartera sintética.
+Esta variante se implementa mediante el script \texttt{src/optimization/markowitz\_constrained.py}. El límite del \(20, \%\) no garantiza por sí mismo una diversificación completa, ya que una cartera puede seguir concentrándose en cinco activos situados en el máximo permitido. Sin embargo, impide las asignaciones extremas observadas en la variante sin esta restricción y establece un marco común para compararla posteriormente con la cartera optimizada a partir de escenarios sintéticos.
 
 En la solución obtenida, UNH y NVDA alcanzan el límite del \(20,\%\), mientras que AAPL, MSFT, MRK y PEP reciben también pesos relevantes. La distribución resultante es menos concentrada que la de Markowitz sin límite máximo.
 
@@ -345,44 +274,19 @@ Este diseño experimental permite analizar si la incorporación de modelos gener
 \section{Entrenamiento y comparación de modelos}
 
 \subsection{Modelos candidatos}
-Para separar la comparación de redes de la comparación de carteras se implementaron tres candidatos. El primero es un autoencoder determinista (AE) con espacio latente de dimensión ocho. Su codificador produce un único vector y se entrena solo con MSE. Para generar escenarios se aproxima la distribución empírica de los códigos de entrenamiento mediante su media y covarianza, se muestrea en ese espacio y se decodifica.
-
-El segundo es el VAE base con dimensión latente ocho y $\beta=0{,}001$. El tercero mantiene arquitectura y regularización, pero reduce el latente a cuatro dimensiones. Esta variante permite estudiar si una compresión más intensa mejora la regularidad generativa o pierde información. No se incluye una GAN: requeriría definir y validar un entrenamiento adversario diferente, y sus resultados no pueden inferirse de los VAE.
+% TODO: Comparar al menos tres modelos o variantes ya implementados en el proyecto.
+% Modelos/estrategias detectados en el código: cartera equiponderada, Markowitz, Markowitz restringido y Markowitz con escenarios sintéticos VAE.
 
 \subsection{Configuración experimental}
-Los tres modelos utilizan los mismos retornos escalados, las primeras 2.212 filas como entrenamiento y las 554 finales como test. Se fijan semilla 42, 120 épocas, lotes de 64, Adam con tasa $10^{-3}$ y dos capas ocultas de 64 unidades. Cada candidato genera 5.000 escenarios. La ejecución en CPU usa \texttt{compare\_autoencoders.py} y guarda un CSV comparativo.
-
-Esta comparación adicional no reemplaza el VAE principal de 150 épocas utilizado para construir la cartera publicada. Su finalidad es responder de forma controlada a la elección de familia y dimensión latente. Mantener ambos experimentos diferenciados evita reescribir retrospectivamente los resultados financieros con un modelo distinto.
+% TODO: Documentar partición temporal, hiperparámetros, semillas, recursos y protocolo común de entrenamiento.
 
 \subsection{Métricas de comparación}
-La reconstrucción se mide mediante MSE y MAE en train y test. Para las 5.000 muestras se calculan tres discrepancias respecto al entrenamiento: error absoluto medio de las medias por activo, error absoluto medio de las desviaciones y error absoluto medio entre matrices de correlación. Todas las métricas se calculan en escala normalizada para garantizar comparabilidad entre modelos.
-
-Estas medidas no forman una clasificación única. MSE y MAE premian la recuperación de observaciones, mientras los errores estadísticos evalúan el conjunto generado. Un AE puede reconstruir con precisión y carecer de un prior simple; el VAE sacrifica ajuste puntual para regularizar el latente. El criterio final debe considerar el propósito de generar escenarios, no solo el mínimo error de test.
+% TODO: Definir métricas homogéneas para calidad generativa, reconstrucción y rendimiento financiero.
 
 \subsection{Resultados de entrenamiento}
-La Tabla~\ref{tab:comparacion_autoencoders} recoge la ejecución real. El AE obtiene los menores errores de reconstrucción y el menor error de volatilidad y correlación con el procedimiento empírico de muestreo. El VAE base obtiene el menor error de medias sintéticas, pero presenta mayor discrepancia de volatilidad. Reducir el latente de ocho a cuatro empeora ligeramente test MSE, test MAE, medias y correlaciones, aunque su error de volatilidad es algo menor que el VAE-8.
-
-\begin{table}[htbp]
-\centering
-\scriptsize
-\begin{tabular}{lrrrrrrr}
-\toprule
-Modelo & MSE tr. & MSE te. & MAE tr. & MAE te. & Err. media & Err. vol. & Err. corr. \\
-\midrule
-AE-8 & 0,003607 & 0,006308 & 0,041745 & 0,052878 & 0,006636 & 0,009668 & 0,220834 \\
-VAE-8 & 0,007815 & 0,010425 & 0,060368 & 0,068347 & 0,003852 & 0,048714 & 0,411596 \\
-VAE-4 & 0,007902 & 0,010561 & 0,060884 & 0,069296 & 0,004708 & 0,046912 & 0,418329 \\
-\bottomrule
-\end{tabular}
-\caption{Comparación reproducible de autoencoders en escala normalizada. Fuente: elaboración propia a partir de \texttt{autoencoder\_model\_comparison.csv}.}
-\label{tab:comparacion_autoencoders}
-\end{table}
-
-La comparación revela una limitación relevante del VAE ejecutado: su prior normal facilita el muestreo, pero las muestras suavizan la dispersión y alteran correlaciones en mayor medida que el AE con aproximación empírica del latente. A su vez, el AE no ofrece el mismo modelo probabilístico explícito y su muestreo gaussiano posterior es una decisión añadida. Por tanto, los números describen compromisos diferentes y no justifican proclamar un ganador universal.
+% TODO: Incorporar curvas y métricas obtenidas de ejecuciones reales de los modelos candidatos.
 
 \subsection{Selección del modelo final}
-Se mantiene el VAE-8 como modelo principal por tres razones: es el modelo que originó los 5.000 escenarios y los resultados financieros auditados; ofrece menor error de medias que los otros candidatos; y dispone de un mecanismo probabilístico explícito para muestrear $z\sim\mathcal{N}(0,I)$. La variante de cuatro dimensiones no aporta una mejora global que justifique sustituirlo.
-
-La ventaja reconstructiva del AE sugiere, no obstante, que futuras evaluaciones deberían construir también una cartera con sus escenarios y repetir ambos modelos con varias semillas. La selección del VAE es coherente con el objetivo y la trazabilidad del experimento, pero queda condicionada por la limitada búsqueda de hiperparámetros y no equivale a demostrar que sea la mejor arquitectura posible.
+% TODO: Justificar la selección final mediante las métricas reales y los criterios definidos previamente.
 
 \input{capitulos/08_resultados}

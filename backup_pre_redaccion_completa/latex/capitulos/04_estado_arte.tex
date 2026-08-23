@@ -32,7 +32,7 @@ Dentro de esta familia de modelos, las Redes Generativas Adversarias, propuestas
 
 Los Autoencoders Variacionales también resultan relevantes en este contexto, ya que permiten aprender una representación latente y probabilística de los datos. En el caso de los retornos financieros, el espacio latente puede interpretarse como una representación comprimida de factores no observables que influyen en el comportamiento conjunto de los activos. Esta característica justifica su uso como componente previo o complementario en arquitecturas híbridas de generación de escenarios.
 
-A partir de estas ideas, el planteamiento inicial se inspiró en una arquitectura VAE-GAN. Sin embargo, el desarrollo empírico alcanzado implementa el VAE y genera escenarios con su \textit{decoder}. La combinación adversaria se mantiene como referencia para interpretar el título y como ampliación futura, no como resultado experimental.
+A partir de estas ideas, el presente trabajo plantea una arquitectura híbrida VAE-GAN. El VAE se orienta a obtener una representación latente de los retornos financieros, mientras que la GAN se emplea para generar escenarios sintéticos a partir de dicha representación. Esta combinación busca aprovechar la capacidad del VAE para estructurar el espacio latente y la capacidad de la GAN para producir muestras realistas.
 
 \subsection{Modelos de difusión para selección dinámica de carteras}
 
@@ -42,11 +42,9 @@ En el ámbito financiero, los modelos de difusión han comenzado a explorarse co
 
 Según los resultados reportados por estos autores, los modelos de difusión pueden ofrecer resultados competitivos frente a índices de referencia como el S\&P 500 y frente a carteras construidas mediante enfoques tradicionales de Markowitz. Esta línea de investigación es todavía reciente, pero muestra el potencial del modelado generativo para superar algunas de las limitaciones de los modelos clásicos, especialmente cuando se trabaja con mercados dinámicos, dependencia temporal y cambios en la volatilidad.
 
-Aunque el presente trabajo no implementa modelos de difusión, su inclusión permite situar el VAE ejecutado y la inspiración híbrida dentro de una tendencia más amplia de generación de escenarios.
+Aunque el presente trabajo no se centra directamente en modelos de difusión, su inclusión en el estado del arte permite situar la propuesta VAE-GAN dentro de una tendencia más amplia: el uso de modelos generativos profundos para construir escenarios sintéticos y mejorar los procesos de optimización de carteras.
 
 \section{Conclusiones}
-
-La revisión local se complementa con trabajos sobre aprendizaje profundo aplicado a carteras \cite{jiang2017deep,huang2020deep,zhang2020deep}, representación latente y generación \cite{opitz2017latent,voronina2025genai}, y validación cuantitativa \cite{lopez2018advances,lopezdeprado2018chapter1,rasekhschaffe2026}. Estas referencias ayudan a situar decisiones del pipeline, pero no sustituyen la comparación empírica realizada sobre los datos del TFM.
 
 \subsection{Síntesis crítica y hueco de investigación}
 
@@ -56,4 +54,4 @@ En segundo lugar, las técnicas de aprendizaje automático y aprendizaje profund
 
 En tercer lugar, los modelos generativos ofrecen una alternativa especialmente adecuada para este contexto, ya que permiten aprender distribuciones de datos y generar escenarios sintéticos. Esta capacidad resulta útil para analizar la robustez de una cartera no solo bajo el escenario histórico observado, sino también bajo posibles escenarios generados que preserven propiedades estadísticas relevantes del mercado.
 
-El hueco abordado se sitúa en la conexión entre generación de escenarios y optimización de carteras. La contribución empírica estudia un VAE aplicado a retornos del S\&P 500 y compara la cartera resultante con Markowitz y equiponderación. La extensión adversaria permitiría investigar posteriormente si mejora la fidelidad de colas y dependencias.
+El hueco de investigación que aborda este trabajo se sitúa precisamente en la conexión entre generación de escenarios sintéticos y optimización de carteras. La propuesta consiste en estudiar una arquitectura híbrida VAE-GAN aplicada a retornos financieros del S\&P 500, con el objetivo de generar escenarios de mercado y comparar la cartera resultante con enfoques clásicos como Markowitz y carteras equiponderadas.

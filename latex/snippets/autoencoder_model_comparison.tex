@@ -1,0 +1,9 @@
+\begin{tabular}{llrrrrlllllll}
+\toprule
+model & configuration & latent\_dim & beta & epochs & seed & train\_mse & test\_mse & train\_mae & test\_mae & synthetic\_mean\_mae & synthetic\_volatility\_mae & synthetic\_correlation\_mae \\
+\midrule
+Autoencoder determinista & AE-8 & 8 & NaN & 120 & 42 & 0.003607 & 0.006308 & 0.041745 & 0.052878 & 0.006636 & 0.009668 & 0.220834 \\
+VAE base & VAE-8 & 8 & 0.001000 & 120 & 42 & 0.007815 & 0.010425 & 0.060368 & 0.068347 & 0.003852 & 0.048714 & 0.411596 \\
+VAE latente reducido & VAE-4 & 4 & 0.001000 & 120 & 42 & 0.007902 & 0.010561 & 0.060884 & 0.069296 & 0.004708 & 0.046912 & 0.418329 \\
+\bottomrule
+\end{tabular}

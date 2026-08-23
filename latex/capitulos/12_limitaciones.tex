@@ -3,4 +3,50 @@
 
 \section{Limitaciones}
 
+\subsection{Universo y periodo}
+
+El universo contiene 30 acciones y no las aproximadamente 500 del índice. Aunque ofrece variedad y viabilidad computacional, no reproduce su composición ni ponderación. La selección exige cobertura completa y puede introducir sesgo de supervivencia. El periodo 2014--2024 incluye distintos episodios, pero es una sola década de un solo mercado y moneda.
+
+\subsection{Fuente de datos}
+
+Yahoo Finance facilita precios ajustados y reproducibilidad práctica, pero es un proveedor externo que puede corregir históricos, cambiar su interfaz o aplicar ajustes distintos. Una descarga futura no está garantizada como idéntica. No se contrastó cada precio con una fuente institucional y no se incluyen volumen, liquidez ni fundamentales.
+
+\subsection{No estacionariedad y validación temporal}
+
+Los mercados cambian de régimen. Medias, volatilidades y correlaciones estimadas en entrenamiento pueden no persistir. El trabajo utiliza un único corte 80/20 y no realiza \textit{walk-forward}. Por ello las métricas pueden estar condicionadas por un tramo favorable y no describen estabilidad a lo largo de múltiples ventanas.
+
+\subsection{Modelos generativos}
+
+El VAE principal representa una configuración concreta. La comparación AE/VAE se ejecutó con una variante adicional y mejora la evidencia, pero sigue siendo limitada: una semilla, dos dimensiones latentes y un valor de $\beta$. El VAE suaviza volatilidades y altera correlaciones en las muestras. No se realizaron pruebas específicas de colas o cobertura de crisis.
+
+GAN, WGAN y la arquitectura híbrida del título no fueron implementadas. Se mantienen en teoría y prospectiva. Esta diferencia entre inspiración y ejecución debe conservarse explícita. Tampoco se evaluaron difusión, flujos normalizantes o modelos temporales condicionados.
+
+\subsection{Optimización y condiciones de mercado}
+
+Markowitz es sensible a pequeñas variaciones de medias y covarianzas. La restricción long-only y el máximo 20\,\% contienen algunas soluciones, pero son decisiones académicas y no representan todos los mandatos. Los pesos permanecen fijos: no hay rebalanceo, costes, horquillas, impuestos, impacto de mercado o restricciones de rotación.
+
+El tipo libre de riesgo se fija en cero. La evaluación incluye volatilidad, Sharpe y drawdown, pero no VaR, CVaR, Sortino ni análisis de concentración completo. La cartera VAE con mayor retorno también tiene mayor volatilidad; una función de utilidad diferente podría seleccionar otros pesos.
+
+\subsection{Alcance de las conclusiones}
+
+El resultado es académico y retrospectivo. No constituye recomendación financiera, asesoramiento personalizado ni garantía. La ausencia de datos personales no elimina obligaciones sobre propiedad intelectual, términos del proveedor, transparencia y comunicación responsable.
+
 \section{Trabajo futuro}
+
+\subsection{Comparación y robustez de modelos}
+
+La comparación AE/VAE debería repetirse con varias semillas, dimensiones y valores de $\beta$, incorporando intervalos de variabilidad. Conviene construir carteras desde los escenarios de cada candidato para analizar si la fidelidad estadística se traduce en estabilidad de pesos. También sería útil evaluar pérdidas que ponderen colas o correlación.
+
+Una implementación real de WGAN permitiría contrastar el diseño híbrido inicial. Su protocolo debería definir generador, crítico, regularización, estabilidad y criterios de parada antes de observar el test. Los modelos de difusión y flujos normalizantes constituyen alternativas para aproximar distribuciones complejas sin atribuirles ventajas a priori.
+
+\subsection{Validación temporal y operación}
+
+La prioridad empírica es una evaluación \textit{walk-forward}: entrenar en una ventana, seleccionar hiperparámetros en validación anterior, invertir en el tramo siguiente y avanzar el origen. Esto produciría varias observaciones de rendimiento fuera de muestra. Sobre ese marco podrían añadirse rebalanceo mensual o trimestral, costes, rotación y liquidez.
+
+\subsection{Ampliación financiera}
+
+El universo puede ampliarse a más componentes, índices internacionales, bonos o ETF, controlando divisas y sesgo de supervivencia. Métodos como HRP y Black--Litterman aportarían benchmarks que responden de otra forma al error de covarianza. Optimizar CVaR o incorporar límites de riesgo permitiría estudiar colas explícitamente.
+
+\subsection{Variables condicionantes y herramienta reproducible}
+
+Variables macroeconómicas, volatilidad de mercado o estados de régimen podrían condicionar la distribución generativa. Esta ampliación exige sincronizar frecuencias y evitar información futura. Finalmente, un panel reproducible podría mostrar escenarios, pesos, sensibilidad y trazabilidad, siempre acompañado de advertencias y sin presentar los resultados como recomendación.

@@ -1,0 +1,73 @@
+\section{Resultados experimentales}
+
+En este capítulo se presentan los resultados empíricos obtenidos a partir de la evaluación de las distintas estrategias de construcción de carteras implementadas en el trabajo. Todas las métricas han sido calculadas mediante el módulo de evaluación del sistema y almacenadas en el archivo \texttt{benchmark\_comparison.csv}, garantizando la reproducibilidad del análisis.
+
+El objetivo es comparar el rendimiento fuera de muestra de las estrategias clásicas basadas en media-varianza con la estrategia propuesta basada en escenarios sintéticos generados mediante un Autoencoder Variacional.
+
+\subsection{Métricas de evaluación}
+
+Las métricas utilizadas para la comparación de estrategias son las siguientes:
+
+\begin{itemize}
+\item Retorno acumulado.
+\item Retorno anualizado.
+\item Volatilidad anualizada.
+\item Ratio de Sharpe.
+\item Máximo drawdown.
+\end{itemize}
+
+Estas métricas permiten caracterizar simultáneamente el rendimiento y el riesgo asociado a cada estrategia de inversión.
+
+\subsection{Resultados empíricos}
+
+En la Tabla \ref{tab:resultados} se muestran los resultados obtenidos para cada una de las estrategias evaluadas.
+
+\begin{table}[h]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lccccc}
+\hline
+\textbf{Estrategia} & \textbf{Retorno acumulado} & \textbf{Retorno anual} & \textbf{Volatilidad anual} & \textbf{Sharpe} & \textbf{Max Drawdown} \\
+\hline
+Equal Weight & 64.93\% & -- & -- & 1.88 & -7.96\% \\
+Markowitz & 95.60\% & 35.69\% & -- & 1.89 & -12.78\% \\
+Markowitz restringido & 101.38\% & 37.50\% & -- & 2.20 & -11.26\% \\
+VAE (propuesto) & 242.32\% & 75.02\% & -- & 2.99 & -13.96\% \\
+\hline
+\end{tabular}
+}
+\caption{Comparación de estrategias de inversión fuera de muestra.}
+\label{tab:resultados}
+\par\small Fuente: elaboración propia a partir de los resultados del pipeline experimental.
+\end{table}
+
+\subsection{Resultados detallados (valores completos)}
+
+Los resultados completos obtenidos del sistema son los siguientes:
+
+\begin{itemize}
+\item \textbf{Equal Weight}: retorno acumulado = 64.93\%, Sharpe = 1.88, drawdown = -7.96\%
+\item \textbf{Markowitz}: retorno acumulado = 95.60\%, Sharpe = 1.89, drawdown = -12.78\%
+\item \textbf{Markowitz restringido}: retorno acumulado = 101.38\%, Sharpe = 2.20, drawdown = -11.26\%
+\item \textbf{VAE sintético}: retorno acumulado = 242.32\%, Sharpe = 2.99, drawdown = -13.96\%
+\end{itemize}
+
+\subsection{Análisis de resultados}
+
+Los resultados muestran diferencias claras entre las estrategias evaluadas.
+
+La cartera equiponderada presenta un comportamiento estable, con un ratio de Sharpe competitivo, lo que confirma su utilidad como estrategia base de referencia.
+
+La cartera de Markowitz clásica mejora el retorno acumulado respecto a la equiponderada, aunque presenta una mayor volatilidad y un incremento en el drawdown, reflejando su sensibilidad a la estimación de la matriz de covarianzas.
+
+La variante de Markowitz restringido introduce una limitación en la concentración de los pesos, lo que mejora el ratio de Sharpe y reduce el riesgo extremo, obteniendo un mejor equilibrio entre rentabilidad y estabilidad.
+
+La estrategia propuesta basada en escenarios sintéticos generados mediante el Autoencoder Variacional obtiene el mejor rendimiento en términos de retorno acumulado y ratio de Sharpe. Sin embargo, este incremento en rentabilidad viene acompañado de un aumento en la volatilidad y en el máximo drawdown, lo que sugiere un perfil de riesgo más agresivo.
+
+\subsection{Evaluación comparativa}
+
+En conjunto, los resultados indican que las estrategias basadas en optimización media-varianza son sensibles a la estimación de los parámetros de entrada, especialmente en lo relativo a la matriz de covarianzas.
+
+La introducción de restricciones mejora la estabilidad de las soluciones obtenidas, reduciendo la concentración de los pesos en activos individuales.
+
+Por último, el uso de escenarios sintéticos generados mediante modelos de aprendizaje profundo permite mejorar significativamente el rendimiento de la cartera, aunque con un aumento asociado del riesgo, lo que refuerza la necesidad de considerar cuidadosamente el trade-off rentabilidad-riesgo en este tipo de metodologías.

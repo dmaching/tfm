@@ -3,6 +3,8 @@
 
 \section{Contexto del problema}
 
+% TODO: Añadir figura teórica correctamente citada.
+
 En este capítulo se presentan los fundamentos conceptuales sobre los que se apoya el presente Trabajo de Fin de Máster. En primer lugar, se introducen los principios básicos de la teoría moderna de carteras y el modelo de media-varianza de Markowitz. A continuación, se analizan algunas de sus principales limitaciones, especialmente en lo relativo al uso de la varianza como medida de riesgo. Posteriormente, se presentan conceptos fundamentales de la teoría de la información, así como su utilidad para comparar distribuciones y medir incertidumbre. Finalmente, se introducen los modelos generativos profundos, con especial atención a los Autoencoders Variacionales, las Redes Generativas Adversarias y los modelos de difusión.
 
 \subsection{Teoría moderna de carteras}
@@ -34,22 +36,6 @@ El primer término, $w^\top \mu$, representa la rentabilidad esperada de la cart
 El segundo término, $\frac{\lambda}{2} w^\top \Sigma w$, introduce una penalización por riesgo. La expresión cuadrática $w^\top \Sigma w$ representa la varianza de la cartera, incorporando tanto la volatilidad individual de cada activo como las covarianzas entre activos. El parámetro $\lambda$ controla el equilibrio entre rentabilidad y riesgo: cuanto mayor es su valor, mayor es la penalización asociada al riesgo y, por tanto, más conservadora será la cartera resultante.
 
 La restricción $\mathbf{1}^\top w = 1$ garantiza que la suma de los pesos sea igual a uno, es decir, que se invierta la totalidad del capital disponible. En conjunto, este problema establece el compromiso fundamental de la teoría moderna de carteras: maximizar la rentabilidad esperada y, al mismo tiempo, controlar el riesgo asumido.
-
-La relación entre retorno y volatilidad puede representarse mediante la frontera eficiente de la Figura~\ref{fig:frontera_eficiente_propia}. Los puntos situados por debajo son dominados por combinaciones que ofrecen más retorno para igual riesgo. La figura es conceptual: no representa pesos ni resultados calculados para el dataset del trabajo.
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[x=1cm,y=1cm]
-\draw[-latex] (0,0)--(7,0) node[right]{Volatilidad};
-\draw[-latex] (0,0)--(0,4.5) node[above]{Retorno esperado};
-\draw[thick,blue] plot[smooth] coordinates{(.7,.45)(1.3,1.15)(2.1,1.95)(3.2,2.75)(4.5,3.4)(6,3.85)};
-\draw[dashed,gray] plot[smooth] coordinates{(.7,.45)(1.2,.7)(2.0,1.0)(3.0,1.35)(4.0,1.55)};
-\node[blue] at (4.9,3.05){Frontera eficiente};
-\node[gray] at (3.6,1.05){Carteras dominadas};
-\end{tikzpicture}
-\caption{Representación conceptual de la frontera eficiente de Markowitz. Fuente: elaboración propia.}
-\label{fig:frontera_eficiente_propia}
-\end{figure}
 
 \subsection{Riesgo financiero y hechos estilizados}
 
@@ -168,21 +154,6 @@ El primer término mide la capacidad del modelo para reconstruir los datos obser
 
 En conjunto, el VAE permite aprender una representación comprimida y probabilística de los datos financieros. Esta representación puede ser útil para filtrar parte del ruido presente en las series de retornos y conservar patrones latentes relevantes para la posterior generación de escenarios.
 
-La Figura~\ref{fig:vae_conceptual_propio} resume el flujo del VAE. El codificador no produce un código único, sino los parámetros de una distribución; la reparametrización permite entrenar mediante gradientes y el decodificador devuelve una reconstrucción o, cuando se muestrea el prior, un escenario nuevo. El término KL aproxima el posterior al prior y hace viable ese muestreo.
-
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[node distance=.65cm,every node/.style={draw,rounded corners,align=center,minimum width=2.15cm,minimum height=.85cm,font=\small}]
-\node (x) {Retornos\\$x$};
-\node[right=of x] (enc) {Encoder\\$\mu,\log\sigma^2$};
-\node[right=of enc] (z) {Muestreo\\$z=\mu+\sigma\odot\epsilon$};
-\node[right=of z] (dec) {Decoder\\$\hat{x}$};
-\draw[-latex] (x)--(enc); \draw[-latex] (enc)--(z); \draw[-latex] (z)--(dec);
-\end{tikzpicture}
-\caption{Esquema conceptual del Autoencoder Variacional implementado. Fuente: elaboración propia.}
-\label{fig:vae_conceptual_propio}
-\end{figure}
-
 \subsection{Redes Generativas Adversarias y Wasserstein GAN}
 
 Las Redes Generativas Adversarias, introducidas por \cite{goodfellow2014generative}, introducen un marco de aprendizaje generativo basado en la interacción entre dos redes neuronales: un generador y un discriminador. El generador transforma un vector de ruido en una muestra sintética, mientras que el discriminador intenta distinguir entre muestras reales y muestras generadas.
@@ -215,6 +186,6 @@ Los modelos de difusión constituyen una familia reciente de modelos generativos
 
 En términos generales, el proceso se divide en dos fases. En la fase directa, los datos se degradan progresivamente mediante la adición de ruido. En la fase inversa, una red neuronal aprende a revertir ese proceso, generando nuevas observaciones a partir de ruido inicial. Esta formulación permite obtener muestras diversas y estables, lo que ha hecho que los modelos de difusión se hayan convertido en una línea destacada dentro del modelado generativo.
 
-Aplicados al ámbito financiero, estos modelos pueden utilizarse para generar trayectorias sintéticas. En este trabajo se incluyen por su relevancia reciente, mientras la arquitectura experimental se limita al VAE. La referencia VAE-GAN corresponde a la inspiración conceptual y no a un modelo adversario entrenado.
+Aplicados al ámbito financiero, estos modelos pueden utilizarse para generar trayectorias sintéticas de retornos o precios que preserven ciertas propiedades estadísticas de los datos reales. Aunque en este trabajo la arquitectura principal se centra en modelos VAE-GAN, los modelos de difusión se incluyen en el marco teórico por su relevancia reciente en la generación de escenarios y en problemas dinámicos de selección de carteras.
 
 \input{capitulos/04_estado_arte}
