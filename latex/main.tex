@@ -1,7 +1,6 @@
 \documentclass[11pt,a4paper,spanish]{book}
 \usepackage{estilo_unir-1}
 \usepackage{apacite}
-\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{tikz}
@@ -10,12 +9,19 @@
 
 \setlength{\headheight}{26pt}
 
+% Enlaces sin marcos ni colores y terminología española para tablas.
+\hypersetup{hidelinks}
+\addto\captionsspanish{%
+  \renewcommand{\tablename}{Tabla}%
+  \renewcommand{\listtablename}{Índice de tablas}%
+}
+
 % --- METADATOS ---
-\title{Generación de Escenarios Sintéticos para Optimización de Carteras del S\&P 500 mediante Arquitecturas VAE-GAN}
+\title{Generación de Escenarios Sintéticos\\para \mbox{Optimización} de Carteras del S\&P 500\\mediante Arquitecturas VAE-GAN}
 \titulacion{Máster Universitario en Análisis y Visualización de Datos Masivos}
 \author{Daniel Machín González}
 \director{Jesús Cigales Canga}
-\date{\today}
+\date{\spanishdate{\year}{\month}{\day}}
 \nombreciudad{ San Bartolomé} % O tu ciudad
 
 \begin{document}
@@ -53,8 +59,6 @@ Your abstract in English...
 \bibliography{bibliografia}
 
 \end{document}
-
-
 
 
 

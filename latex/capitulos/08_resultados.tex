@@ -24,6 +24,7 @@ En la Tabla \ref{tab:resultados} se muestran los resultados obtenidos para cada 
 
 \begin{table}[h]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccc}
 \hline
 \textbf{Estrategia} & \textbf{Retorno acumulado} & \textbf{Retorno anual} & \textbf{Volatilidad anual} & \textbf{Sharpe} & \textbf{Max Drawdown} \\
@@ -34,6 +35,7 @@ Markowitz restringido & 101.38\% & 37.50\% & -- & 2.20 & -11.26\% \\
 VAE (propuesto) & 242.32\% & 75.02\% & -- & 2.99 & -13.96\% \\
 \hline
 \end{tabular}
+}
 \caption{Comparación de estrategias de inversión fuera de muestra.}
 \label{tab:resultados}
 \par\small Fuente: elaboración propia a partir de los resultados del pipeline experimental.
