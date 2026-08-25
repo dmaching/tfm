@@ -6,7 +6,7 @@ Desde los comienzos de la teoría económica moderna, el mercado financiero se h
 
 Además, el mercado financiero puede entenderse como un sistema de segundo orden, dado que las propias predicciones que se realizan sobre él pueden influir en los resultados que se obtienen. Esto es, en el propio intento de predecir el comportamiento del mercado, se puede alterar su dinámica, fenómeno habitualmente observado en virajes que se suelen producir en precios de determinados activos cuando personas o entidades relevantes hacen declaraciones acerca de su futuro comportamiento.
 
-En el presente trabajo se propone abordar el problema de confeccionar una cartera de inversión, esto es, un subconjunto de los activos financieros disponibles, de forma eficiente. \cite{markowitz1952} introduce el modelo de media-varianza como una de las aproximaciones clásicas para la gestión de carteras de inversión. Este modelo se fundamenta en el principio riesgo-rendimiento, buscando maximizar el rendimiento esperado para un determinado nivel de riesgo asumido por el inversor.
+En el presente trabajo se propone abordar el problema de confeccionar una cartera de inversión, esto es, elegir un subconjunto de los activos financieros disponibles de manera eficiente. \cite{markowitz1952} introduce el modelo de media-varianza como una de las aproximaciones clásicas para la gestión de carteras de inversión. Este modelo se fundamenta en el principio riesgo-rendimiento, buscando maximizar el rendimiento esperado para un determinado nivel de riesgo asumido por el inversor.
 
 Con el uso de tecnologías Big Data y, en particular, con el uso de modelos generativos como los \textbf{Autoencoders Variacionales (VAEs)} y las \textbf{Redes Generativas Adversarias (GANs)}, se propone una aproximación a la confección de carteras desde una perspectiva no lineal.
 
@@ -22,9 +22,7 @@ Frente a otras aproximaciones, como el uso de modelos de Machine Learning o sist
 
 La elección de esta arquitectura, como se exponía previamente, no busca predecir el precio futuro de los activos, sino generar diversos escenarios posibles para comprender el riesgo subyacente de los mismos.
 
-El presente Trabajo de Fin de Máster propone una metodología híbrida que integra el modelado generativo y la teoría de la información. El núcleo de la investigación se divide en cuatro fases:
-
-Conviene delimitar desde el inicio el alcance alcanzado. El desarrollo experimental validado se centra en el Autoencoder Variacional. La arquitectura híbrida VAE-GAN fue considerada en el diseño inicial, pero se descartó de la implementación final por alcance, estabilidad y necesidad de validación adicional. GAN y WGAN se revisan por su relevancia teórica y se mantienen como ampliación futura, pero no se presentan como modelos entrenados. Asimismo, la divergencia de Kullback--Leibler interviene en la regularización del espacio latente del VAE y no como función objetivo de la cartera. El trabajo no pretende predecir precios puntuales: genera vectores plausibles de retornos y evalúa los pesos resultantes sobre observaciones posteriores no utilizadas en el entrenamiento.
+El presente Trabajo de Fin de Máster propone una aproximación experimental que integra modelado generativo, teoría de la información y optimización clásica de carteras. El núcleo de la investigación se divide en cuatro fases:
 
 \begin{enumerate}
 \item Extracción de datos de series históricas del S\&P 500. Se propone la creación de un pipeline de datos que permita la implementación de la arquitectura propuesta.
@@ -32,6 +30,8 @@ Conviene delimitar desde el inicio el alcance alcanzado. El desarrollo experimen
 \item Generación de escenarios sintéticos mediante muestreo en el espacio latente y decodificación con el VAE entrenado.
 \item Estimación de medias y covarianzas sintéticas y optimización de máximo Sharpe, seguida de evaluación fuera de muestra.
 \end{enumerate}
+
+El desarrollo experimental se centra en el Autoencoder Variacional. La arquitectura híbrida VAE-GAN fue considerada en el diseño inicial, pero se descartó de la implementación final por alcance, estabilidad y necesidad de validación adicional. GAN y WGAN se revisan por su relevancia teórica y se mantienen como ampliación futura, pero no se presentan como modelos entrenados. Asimismo, la divergencia de Kullback--Leibler interviene en la regularización del espacio latente del VAE y no como función objetivo de la cartera. El trabajo no pretende predecir precios puntuales: genera vectores plausibles de retornos y evalúa los pesos resultantes sobre observaciones posteriores no utilizadas en el entrenamiento.
 
 La contribución posee carácter académico. Las cifras obtenidas permiten comparar métodos bajo un protocolo común, pero no constituyen recomendación financiera ni garantía de rendimiento. Esta cautela resulta particularmente importante porque el experimento utiliza un único universo, un único corte temporal y pesos estáticos sin costes de transacción.
 

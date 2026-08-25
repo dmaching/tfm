@@ -35,7 +35,7 @@ Archivo & Función \\
 
 La reproducción comienza con la descarga y continúa con \texttt{preprocess.py}. Después puede ejecutarse el EDA, que solo lee \texttt{returns.csv}. El VAE lee los ficheros escalados, guarda \texttt{models/vae.pt}, reconstrucciones, historial y métricas. El generador carga el modelo y el escalador, crea 5.000 filas y devuelve la escala financiera.
 
-Las estrategias históricas leen entrenamiento y test. La estrategia sintética lee los escenarios para optimizar y el test para evaluar. Por último, \texttt{compare\_benchmarks.py} reúne los CSV de métricas. El experimento multmodelo adicional es independiente del artefacto principal: conserva la ejecución base en \texttt{autoencoder\_model\_comparison.csv} y escribe las nueve ejecuciones y su resumen en \texttt{autoencoder\_model\_comparison\_multiseed.csv} y \texttt{autoencoder\_model\_comparison\_multiseed\_summary.csv}.
+Las estrategias históricas leen entrenamiento y test. La estrategia sintética lee los escenarios para optimizar y el test para evaluar. Por último, \texttt{compare\_benchmarks.py} reúne los CSV de métricas. El experimento multimodelo adicional es independiente del artefacto principal: conserva la ejecución base en \texttt{autoencoder\_model\_comparison.csv} y escribe las nueve ejecuciones y su resumen en \texttt{autoencoder\_model\_comparison\_multiseed.csv} y \texttt{autoencoder\_model\_comparison\_multiseed\_summary.csv}.
 
 \subsection{Dependencias y entorno}
 
@@ -57,7 +57,7 @@ Cada etapa materializa resultados: CSV brutos y procesados, escalador, checkpoin
 
 \texttt{vae\_synthetic\_returns\_scaled.csv} y \texttt{vae\_synthetic\_returns.csv} contienen 5.000 escenarios por 30 columnas antes y después de desnormalizar. No poseen fecha porque no representan una trayectoria cronológica específica: cada fila es una realización conjunta empleada para estimar una distribución transversal diaria.
 
-Las reconstrucciones permiten calcular MSE y MAE. El resumen sintético contrasta momentos por activo; el archivo de evaluación y las figuras comparan distribuciones, volatilidades y correlaciones. El CSV multmodelo registra siete métricas por configuración.
+Las reconstrucciones permiten calcular MSE y MAE. El resumen sintético contrasta momentos por activo; el archivo de evaluación y las figuras comparan distribuciones, volatilidades y correlaciones. El CSV multimodelo registra siete métricas por configuración.
 
 \subsection{Pesos, retornos y métricas}
 

@@ -54,7 +54,7 @@ La estrategia VAE alcanza los mayores retorno y Sharpe. Simultáneamente present
 
 Existen varias explicaciones compatibles. En primer lugar, el test cubre un periodo concreto y algunos activos seleccionados experimentaron fuertes revalorizaciones. Una cartera concentrada en ellos amplifica el retorno. En segundo lugar, el VAE suaviza volatilidades en parte de sus muestras, como muestra \texttt{vae\_synthetic\_summary.csv}; una covarianza sintética reducida puede hacer atractivos ciertos pesos. En tercer lugar, pequeños errores en medias diarias se amplifican al anualizar y optimizar Sharpe.
 
-También existe selección experimental: la memoria presenta una configuración principal, no una distribución de resultados sobre numerosas semillas y ventanas. Aunque el test no se usó para entrenar el VAE ni calcular pesos, haber analizado el mismo periodo durante el desarrollo puede generar decisiones indirectamente adaptadas a él. La comparación multmodelo mejora la transparencia, pero no reemplaza una validación anidada.
+También existe selección experimental: la memoria presenta una configuración principal, no una distribución de resultados sobre numerosas semillas y ventanas. Aunque el test no se usó para entrenar el VAE ni calcular pesos, haber analizado el mismo periodo durante el desarrollo puede generar decisiones indirectamente adaptadas a él. La comparación multimodelo mejora la transparencia, pero no reemplaza una validación anidada.
 
 \subsection{Relación con la calidad generativa}
 
@@ -64,7 +64,7 @@ Por esta razón se mantienen separados tres planos: reconstrucción, similitud e
 
 \subsection{Evaluación comparativa y validez}
 
-Bajo el periodo analizado, los resultados sugieren que modificar la estimación de parámetros mediante escenarios puede producir asignaciones con mejores métricas de rentabilidad y Sharpe. También confirman el valor práctico de restricciones de concentración. La evidencia no permite afirmar que el VAE supere en general a Markowitz o equiponderación, ni que prediga el mercado.
+Bajo el periodo analizado, los resultados sugieren que modificar la estimación de parámetros mediante escenarios puede producir asignaciones con mejores métricas de rentabilidad y Sharpe. También confirman el valor práctico de restricciones de concentración. La estrategia VAE fue superior en este experimento concreto, pero un único universo de activos y un único corte temporal no bastan para afirmar superioridad general frente a Markowitz o equiponderación, ni para sostener que el modelo prediga el mercado.
 
 No se modelan comisiones, horquillas, impuestos ni impacto de mercado. Tampoco hay rebalanceo, por lo que no se evalúa rotación. El tipo libre de riesgo se fija en cero y las métricas no incluyen VaR o CVaR. Finalmente, un solo test carece de la diversidad de una validación \textit{walk-forward}. Estas condiciones hacen que la tabla deba interpretarse como resultado académico reproducible, no como expectativa de inversión.
 

@@ -13,14 +13,9 @@ La variable original es el precio de cierre ajustado, que refleja los ajustes pr
 La fecha actúa como índice y preserva el orden temporal; no se introduce como característica numérica del VAE. Tampoco se incorporan sectores, capitalización, volumen ni variables macroeconómicas, porque no forman parte de los archivos utilizados. Esta delimitación evita atribuir al modelo información que no recibió.
 
 \subsection{Valores perdidos y calidad de los datos}
-El preprocesamiento descarta activos cuya proporción de ausencias supere el 5~\% y aplica propagación hacia delante antes de calcular retornos. Después de alinear las series y eliminar la primera fila indefinida, los 30 activos conservados presentan cero valores ausentes en las 2.766 observaciones. La Figura~\ref{fig:eda_missing_values} muestra este resultado para cada columna.
+El preprocesamiento descarta activos cuya proporción de ausencias supere el 5~\% y aplica propagación hacia delante antes de calcular retornos. Después de alinear las series y eliminar la primera fila indefinida, los 30 activos conservados presentan cero valores ausentes en las 2.766 observaciones.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.85\textwidth]{figuras/eda/missing_values_by_asset.png}
-\caption{Valores perdidos por activo en la matriz final de retornos. Fuente: elaboración propia a partir de los datos procesados.}
-\label{fig:eda_missing_values}
-\end{figure}
+Esta comprobación, realizada activo por activo tras construir la matriz final de retornos, permite verificar que el conjunto utilizado en las fases de escalado, entrenamiento y evaluación no contiene huecos que impidan el procesamiento conjunto de las series. Las observaciones no válidas derivadas de la descarga de precios, de los ajustes corporativos o del cálculo de log-retornos se trataron antes de alimentar los modelos, de modo que el análisis posterior se apoya en una matriz consistente. Esta decisión resulta especialmente importante en modelos generativos, ya que la presencia de ausencias artificiales podría introducir patrones espurios en el aprendizaje de la distribución de retornos.
 
 La ausencia de huecos simplifica el entrenamiento por lotes, pero no implica ausencia de errores de proveedor ni sesgo de selección. Exigir series homogéneas favorece activos con cobertura completa. La fecha se conserva ordenada y los CSV no muestran filas parciales; además, las dimensiones se contrastan mediante \texttt{eda\_dataset\_shape.csv}.
 
@@ -93,7 +88,7 @@ La matriz de la Figura~\ref{fig:eda_correlation_heatmap} muestra dependencia pos
 \label{fig:eda_correlation_heatmap}
 \end{figure}
 
-Preservar la correlación es esencial: si los escenarios rompen dependencias, la covarianza sintética puede exagerar la diversificación. Por ello la comparación multmodelo incorpora error medio absoluto de correlación y la evaluación VAE incluye matrices reales y sintéticas.
+Preservar la correlación es esencial: si los escenarios rompen dependencias, la covarianza sintética puede exagerar la diversificación. Por ello la comparación multimodelo incorpora error medio absoluto de correlación y la evaluación VAE incluye matrices reales y sintéticas.
 
 \subsection{Conclusiones del análisis exploratorio}
 El EDA confirma una matriz completa y suficientemente amplia para un experimento multivariante, pero también exhibe colas, extremos, volatilidad cambiante y correlaciones relevantes. Estas propiedades justifican explorar un VAE porque no impone directamente normalidad multivariante en el espacio observado. Sin embargo, no garantizan que las muestras latentes preserven todos los hechos estilizados.
@@ -149,7 +144,7 @@ Una vez calculados los retornos, el conjunto se divide temporalmente en datos de
 
 El conjunto de entrenamiento se emplea para estimar los parámetros de los modelos de referencia y para entrenar el Autoencoder Variacional. El conjunto de test se reserva exclusivamente para evaluar el rendimiento final de las carteras construidas. Esta separación resulta especialmente relevante en problemas financieros, ya que permite analizar si las estrategias obtenidas mantienen su comportamiento sobre datos no utilizados durante la fase de entrenamiento u optimización.
 
-Adicionalmente, para el entrenamiento del VAE se genera una versión escalada de los retornos mediante normalización Min-Max en el intervalo ([-1,1]). Este escalado se ajusta únicamente sobre el conjunto de entrenamiento y posteriormente se aplica al conjunto de test. De este modo, se evita introducir información del periodo de evaluación en la fase de entrenamiento. La versión escalada se utiliza como entrada del modelo generativo, mientras que las métricas financieras y la optimización de carteras se calculan sobre los retornos en su escala original.
+Adicionalmente, para el entrenamiento del VAE se genera una versión escalada de los retornos mediante normalización Min-Max en el intervalo \([-1,1]\). Este escalado se ajusta únicamente sobre el conjunto de entrenamiento y posteriormente se aplica al conjunto de test. De este modo, se evita introducir información del periodo de evaluación en la fase de entrenamiento. La versión escalada se utiliza como entrada del modelo generativo, mientras que las métricas financieras y la optimización de carteras se calculan sobre los retornos en su escala original.
 
 Como resultado de este proceso, se obtiene una matriz de retornos diarios formada por 2766 observaciones y 30 activos. La división temporal genera 2212 observaciones para entrenamiento y 554 observaciones para test. Los resultados se almacenan en los archivos \texttt{returns.csv}, \texttt{returns\_train.csv}, \texttt{returns\_test.csv}, \texttt{returns\_train\_scaled.csv} y \texttt{returns\_test\_scaled.csv}. Asimismo, los parámetros del escalado se conservan en el archivo \texttt{minmax\_scaler.pkl}, lo que permite aplicar posteriormente la transformación inversa a los escenarios sintéticos generados.
 
@@ -211,7 +206,7 @@ La solución obtenida presenta una concentración elevada en un número reducido
 
 \subsection{Cartera de Markowitz restringida}
 
-Con el objetivo de reducir la concentración observada en la solución anterior, se ha implementado una segunda variante de Markowitz que incorpora un límite máximo del (20~\%) por activo. En este caso, las restricciones sobre los pesos quedan definidas como:
+Con el objetivo de reducir la concentración observada en la solución anterior, se ha implementado una segunda variante de Markowitz que incorpora un límite máximo del 20~\% por activo. En este caso, las restricciones sobre los pesos quedan definidas como:
 
 \begin{equation}
 0 \leq w_i \leq 0.20 \quad \forall i,

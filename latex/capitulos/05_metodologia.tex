@@ -1,36 +1,36 @@
-Esta sección conserva y documenta el diseño metodológico amplio considerado al inicio del trabajo. Es importante distinguir ese diseño de la ejecución finalmente validada: la componente implementada es el VAE y los escenarios se obtienen muestreando su espacio latente y aplicando el \textit{decoder}. La integración GAN/WGAN descrita en algunos apartados siguientes representa la arquitectura inicialmente estudiada y una extensión futura; no se entrenó un generador ni un discriminador en los resultados de esta memoria. La divergencia KL se utiliza en la pérdida del VAE, no como objetivo del optimizador de cartera.
+Esta sección conserva y documenta el diseño metodológico amplio considerado al inicio del trabajo. Es importante distinguir ese diseño de la ejecución finalmente realizada: la componente implementada es el VAE y los escenarios se obtienen muestreando su espacio latente y aplicando el \textit{decoder}. La integración GAN/WGAN descrita en algunos apartados siguientes representa la arquitectura inicialmente estudiada y una extensión futura; no se entrenó un generador ni un discriminador en los resultados de esta memoria. La divergencia KL se utiliza en la pérdida del VAE, no como objetivo del optimizador de cartera.
 
 \subsection{Diseño general del experimento}
 
-Se pretende construir un flujo completo, desde la adquisición de datos hasta la validación de los resultados de los modelos, pasando por la generación de escenarios sintéticos.
+Se construyó un flujo completo, desde la adquisición de datos hasta la validación de los resultados de los modelos, pasando por la generación de escenarios sintéticos.
 
-En primer lugar, se realizará la adquisición de datos históricos de retornos de activos del S\&P 500 mediante la herramienta \textit{yfinance}. Empleando Python, se llevará a cabo el preprocesamiento de los datos para alimentar el entrenamiento del modelo VAE, con el objetivo de extraer una representación latente subyacente a la distribución de los retornos observados.
+En primer lugar, se adquirieron datos históricos de activos del S\&P 500 mediante la herramienta \textit{yfinance}. Con Python se preprocesaron los datos para alimentar el entrenamiento del modelo VAE, con el objetivo de extraer una representación latente subyacente a la distribución de los retornos observados.
 
 A continuación, el diseño original contemplaba entrenar una GAN/WGAN. Esa fase quedó fuera de la ejecución: el pipeline real muestrea $z\sim\mathcal{N}(0,I)$ y decodifica 5.000 observaciones con el VAE. Con esos escenarios se asignan los pesos y se comparan con Markowitz, Markowitz restringido y equiponderación sobre un test real común.
 
 \subsection{Adquisición de datos}
 
-Una parte fundamental del experimento propuesto es la adquisición de datos reales que permitan llevar a cabo un estudio relevante.
+Una parte fundamental del experimento fue la adquisición de los datos reales empleados en el estudio.
 
-Empleando la herramienta \textit{yfinance}, se creará un pipeline de datos para adquirir series históricas de los últimos 10 años de los principales activos del S\&P 500.
+Mediante la herramienta \textit{yfinance}, se creó un pipeline para adquirir series históricas de diez años de una selección de activos del S\&P 500.
 
-Se emplearán estos datos por su relevancia. El mercado estadounidense es uno de los más importantes en cuanto a capitalización de mercado. Este índice agrupa a las 500 mayores empresas de Estados Unidos por capitalización bursátil y constituye una referencia ampliamente utilizada en el análisis financiero. Por su diversificación y representatividad, se ha considerado como el mejor escenario para poner en práctica la metodología planteada para la optimización de carteras.
+Estos datos se emplearon por su relevancia. El mercado estadounidense es uno de los más importantes en cuanto a capitalización. El índice reúne grandes empresas de Estados Unidos y constituye una referencia habitual en el análisis financiero. Por su diversificación y representatividad, se consideró un escenario adecuado para poner en práctica la metodología planteada para la optimización de carteras.
 
-Asimismo, se procurará establecer la trazabilidad de los datos, con el fin de asegurar que proceden de fuentes confiables y que el proceso de adquisición sea reproducible.
+Asimismo, se mantuvo la trazabilidad de los datos para documentar su procedencia y hacer reproducible el proceso de adquisición.
 
 \subsection{Preprocesamiento de los datos}
 
-Tras la adquisición de los datos, se llevarán a cabo las transformaciones necesarias para poder desarrollar los objetivos del trabajo. Este preprocesamiento permitirá adaptar las series históricas al formato requerido por los modelos generativos y por el proceso posterior de optimización.
+Tras la adquisición de los datos, se realizaron las transformaciones necesarias para desarrollar los objetivos del trabajo. Este preprocesamiento adaptó las series históricas al formato requerido por el modelo generativo y por el proceso posterior de optimización.
 
-En primer lugar, se trabajará con precios ajustados, de forma que se tengan en cuenta eventos corporativos como dividendos o desdoblamientos de acciones. A partir de estas series se calcularán los retornos financieros, que constituirán la entrada principal del modelo. Se llevará a cabo un tratamiento de valores ausentes, eliminando activos que presenten demasiados nulos, alineando fechas comunes y realizando interpolación únicamente cuando esté justificado.
+En primer lugar, se trabajó con precios ajustados para tener en cuenta eventos corporativos como dividendos o desdoblamientos de acciones. A partir de estas series se calcularon los retornos financieros, que constituyeron la entrada principal del modelo. Los valores ausentes se trataron eliminando activos con demasiados nulos, alineando fechas comunes y aplicando interpolación únicamente cuando estaba justificado.
 
 Para el preprocesado se aplicó normalización Min--Max al rango $[-1,1]$, ajustada únicamente con entrenamiento. No se aplicó un recorte general de valores extremos, porque estos contienen información financiera relevante. Los parámetros se guardaron para desnormalizar los escenarios generados por el VAE.
 
-Asimismo, se realizarán las transformaciones adicionales que sean necesarias para garantizar que los datos puedan ser utilizados de forma adecuada dentro del pipeline experimental. A priori, se pretende realizar una división temporal de los datos, separando los conjuntos de entrenamiento y validación.
+Además, se aplicaron las transformaciones necesarias para utilizar los datos dentro del pipeline experimental. La división fue temporal y separó los conjuntos de entrenamiento y test.
 
 \subsection{Arquitectura VAE-GAN considerada en el diseño inicial y descartada de la implementación final}
 
-Una vez extraídos y preprocesados los datos, se elaborará una estructura en línea con lo expuesto en los apartados previos.
+Una vez extraídos y preprocesados los datos, se definió una estructura en línea con lo expuesto en los apartados previos.
 
 La arquitectura propuesta para el modelo se articula en tres módulos principales:
 
@@ -39,7 +39,7 @@ La arquitectura propuesta para el modelo se articula en tres módulos principale
 
 \item Generación adversaria considerada como extensión. Una GAN podría entrenarse sobre el espacio latente, pero esta etapa no forma parte del experimento ejecutado.
 
-\item Optimización de la cartera mediante el uso de medidas informacionales, como la Divergencia de Kullback-Leibler, como criterio complementario al análisis clásico del riesgo. De este modo, se plantea evaluar la robustez de la cartera frente a escenarios generados por el modelo.
+\item Análisis complementario de la calidad distribucional mediante medidas informacionales, como la divergencia de Kullback-Leibler, sin utilizarla como función objetivo directa de la cartera.
 \end{itemize}
 
 De manera intuitiva, el diseño híbrido buscaba usar el VAE para estructurar el latente y una GAN para refinar muestras. En la implementación disponible, el primer componente se conserva y la generación se realiza directamente con el \textit{decoder}; la utilidad de añadir una GAN permanece como hipótesis futura.
@@ -95,10 +95,9 @@ arrow/.style={->, >=Stealth, thick}
 \shorthandon{>}
 \caption{Arquitectura híbrida VAE-GAN considerada inicialmente y no implementada de forma completa. Fuente: elaboración propia.}
 \label{fig:arquitectura_vae_gan}
-\par\small Fuente: elaboración propia.
 \end{figure}
 
-La Figura~\ref{fig:arquitectura_vae_gan} representa el diseño conceptual original: VAE, generador y discriminador. Se incluye para mostrar la evolución del planteamiento, no como diagrama del software ejecutado. El pipeline validado termina en el \textit{decoder} del VAE antes de pasar a la estimación estadística y la optimización.
+La Figura~\ref{fig:arquitectura_vae_gan} representa el diseño conceptual original: VAE, generador y discriminador. Se incluye para mostrar la evolución del planteamiento, no como diagrama del software ejecutado. El pipeline implementado termina en el \textit{decoder} del VAE antes de pasar a la estimación estadística y la optimización.
 
 \subsection{Generación de escenarios sintéticos}
 
@@ -106,7 +105,7 @@ Una vez entrenado el VAE se obtiene un espacio latente $Z$. En la ejecución rea
 
 Cada una de estas muestras sintéticas representa un escenario plausible de mercado. Estos escenarios no deben interpretarse como predicciones exactas del futuro, sino como simulaciones generadas a partir de la distribución aprendida por el modelo. De este modo, se amplía el conjunto de situaciones bajo las cuales puede evaluarse la cartera construida.
 
-La utilidad de estos escenarios depende de su capacidad para preservar propiedades estadísticas relevantes de los datos reales. Por ello, se evaluará si los escenarios generados conservan, de forma aproximada, características como la media de los retornos, la volatilidad, la estructura de correlaciones, la presencia de colas pesadas, posibles asimetrías y dependencias no lineales entre activos.
+La utilidad de estos escenarios depende de su capacidad para preservar propiedades estadísticas relevantes de los datos reales. Por ello, se evaluó si los escenarios generados conservaban, de forma aproximada, características como la media de los retornos, la volatilidad, la estructura de correlaciones, la presencia de colas pesadas, posibles asimetrías y dependencias no lineales entre activos.
 
 Esta evaluación resulta necesaria para evitar que la optimización posterior se base en escenarios artificiales que no representen adecuadamente el comportamiento observado en los mercados financieros. En consecuencia, la generación de escenarios sintéticos no constituye un fin en sí mismo, sino una etapa intermedia orientada a mejorar la evaluación y selección de carteras bajo incertidumbre.
 
@@ -278,23 +277,23 @@ De este modo, la asignación de pesos obtenida no depende exclusivamente de la m
 
 \subsection{Benchmarks de comparación}
 
-Para evaluar la metodología propuesta, los resultados obtenidos se compararán con estrategias de referencia ampliamente utilizadas en optimización de carteras.
+Para evaluar la metodología propuesta, los resultados obtenidos se compararon con estrategias de referencia habituales en optimización de carteras.
 
 En primer lugar, se comparan los resultados con el modelo de Markowitz. La diferencia radica en el origen de los parámetros: el modelo clásico usa entrenamiento histórico y la propuesta usa escenarios generados por el VAE implementado.
 
-En segundo lugar, se considerará una cartera equiponderada, en la que todos los activos reciben el mismo peso. Esta estrategia simplifica el problema de selección de pesos y no requiere estimar retornos esperados ni matrices de covarianzas. Frente a ella, se evaluará si el empleo de una metodología más compleja aporta valor adicional en términos de rentabilidad y riesgo.
+En segundo lugar, se consideró una cartera equiponderada, en la que todos los activos reciben el mismo peso. Esta estrategia simplifica el problema de selección de pesos y no requiere estimar retornos esperados ni matrices de covarianzas. Frente a ella, se evaluó si el empleo de una metodología más compleja aportaba valor adicional en términos de rentabilidad y riesgo.
 
-Finalmente, se utilizará el índice S\&P 500 como referencia de mercado. Esto permitirá evaluar si la cartera construida mediante la metodología propuesta mejora o complementa el comportamiento agregado del mercado durante el periodo de evaluación.
+Finalmente, se utilizó el índice S\&P 500 como referencia de mercado. Esto permitió evaluar si la cartera construida mediante la metodología propuesta mejoraba o complementaba el comportamiento agregado del mercado durante el periodo de evaluación.
 
-En cuanto a las métricas de evaluación, se considerarán las siguientes:
+En cuanto a las métricas de evaluación, se consideraron las siguientes:
 
 \begin{itemize}
-\item Retorno acumulado: se utilizará para evaluar el rendimiento total durante el periodo de evaluación.
-\item Retorno anualizado: permitirá comparar rentabilidades en términos homogéneos.
-\item Volatilidad anualizada: servirá como medida de riesgo, evaluando la variabilidad de los retornos.
-\item Ratio de Sharpe: medirá la rentabilidad ajustada por riesgo.
-\item Máximo drawdown: medirsá la mayor caída desde un máximo hasta un mínimo posterior, evaluando el riesgo extremo.
-\item Divergencia de Kullback-Leibler: se empleará para evaluar la distancia entre la distribución de retornos generada por el modelo y la distribución de retornos observada en los datos históricos.
+\item Retorno acumulado: se utilizó para evaluar el rendimiento total durante el periodo de evaluación.
+\item Retorno anualizado: permitió comparar rentabilidades en términos homogéneos.
+\item Volatilidad anualizada: sirvió como medida de riesgo, evaluando la variabilidad de los retornos.
+\item Ratio de Sharpe: midió la rentabilidad ajustada por riesgo.
+\item Máximo drawdown: midió la mayor caída desde un máximo hasta un mínimo posterior, evaluando el riesgo extremo.
+\item Divergencia de Kullback-Leibler: se empleó como medida complementaria para evaluar la distancia entre la distribución de retornos generada por el modelo y la distribución observada, no como función objetivo financiera.
 \end{itemize}
 
-La comparación permitirá evaluar dos aspectos principales: por un lado, si los escenarios generados son razonables a nivel estadístico; por otro, si la cartera resultante es capaz de mejorar o complementar los enfoques clásicos de optimización de carteras.
+La comparación permitió evaluar dos aspectos principales: por un lado, si los escenarios generados eran razonables a nivel estadístico; por otro, si la cartera resultante mejoraba o complementaba los enfoques clásicos de optimización de carteras.
