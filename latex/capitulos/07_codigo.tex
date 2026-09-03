@@ -24,7 +24,7 @@ Archivo & Función \\
 \texttt{generate\_vae\_scenarios.py} & Muestrea, decodifica y desnormaliza escenarios. \\
 \texttt{compare\_autoencoders.py} & Compara AE, VAE-8 y VAE-4. \\
 \texttt{optimization/} & Contiene las cuatro estrategias. \\
-\texttt{evaluation/} & Calcula métricas y figuras comparativas. \\
+\texttt{evaluation/} & Calcula métricas, walk-forward, análisis de colas y figuras comparativas. \\
 \bottomrule
 \end{tabular}
 \caption{Principales archivos de código fuente. Fuente: elaboración propia.}
@@ -36,6 +36,8 @@ Archivo & Función \\
 La reproducción comienza con la descarga y continúa con \texttt{preprocess.py}. Después puede ejecutarse el EDA, que solo lee \texttt{returns.csv}. El VAE lee los ficheros escalados, guarda \texttt{models/vae.pt}, reconstrucciones, historial y métricas. El generador carga el modelo y el escalador, crea 5.000 filas y devuelve la escala financiera.
 
 Las estrategias históricas leen entrenamiento y test. La estrategia sintética lee los escenarios para optimizar y el test para evaluar. Por último, \texttt{compare\_benchmarks.py} reúne los CSV de métricas. El experimento multimodelo adicional es independiente del artefacto principal: conserva la ejecución base en \texttt{autoencoder\_model\_comparison.csv} y escribe las nueve ejecuciones y su resumen en \texttt{autoencoder\_model\_comparison\_multiseed.csv} y \texttt{autoencoder\_model\_comparison\_multiseed\_summary.csv}.
+
+Las extensiones se ejecutan con \texttt{walk\_forward\_validation.py} y \texttt{tail\_risk\_analysis.py}, ubicados en \texttt{evaluation/}. La primera guarda resultados por \textit{fold}, resumen, retornos diarios y la figura de Sharpe; la segunda guarda métricas de cola, cobertura de episodios de estrés, párrafo interpretativo y la figura de distribuciones. Estos artefactos se mantienen separados de los CSV del experimento 80/20.
 
 \subsection{Dependencias y entorno}
 

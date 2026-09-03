@@ -13,11 +13,11 @@ Yahoo Finance facilita precios ajustados y reproducibilidad práctica, pero es u
 
 \subsection{No estacionariedad y validación temporal}
 
-Los mercados cambian de régimen. Medias, volatilidades y correlaciones estimadas en entrenamiento pueden no persistir. El trabajo utiliza un único corte 80/20 y no realiza \textit{walk-forward}. Por ello las métricas pueden estar condicionadas por un tramo favorable y no describen estabilidad a lo largo de múltiples ventanas.
+Los mercados cambian de régimen. Medias, volatilidades y correlaciones estimadas en entrenamiento pueden no persistir. El experimento original utiliza un único corte 80/20; la extensión \textit{walk-forward} aporta nueve ventanas, pero sus resultados siguen siendo limitados por el universo, el periodo y las decisiones fijas del diseño. Por ello las métricas no describen estabilidad general a lo largo de múltiples mercados y configuraciones.
 
 \subsection{Modelos generativos}
 
-El VAE principal representa una configuración concreta. La comparación AE/VAE se repitió con tres semillas y una variante adicional, lo que mejora la evidencia, pero sigue siendo limitada: dos dimensiones latentes, un valor de $\beta$ y un único corte temporal. El VAE suaviza volatilidades y altera correlaciones en las muestras. No se realizaron pruebas específicas de colas o cobertura de crisis.
+El VAE principal representa una configuración concreta. La comparación AE/VAE se repitió con tres semillas y una variante adicional, y la extensión temporal reentrenó el VAE en nueve ventanas, pero la evidencia sigue siendo limitada: dos dimensiones latentes, un valor de $\beta$ y un único universo. El VAE suaviza volatilidades y altera correlaciones en las muestras. El análisis adicional de colas tampoco cubrió los peores retornos diarios observados en 2018 y COVID-19.
 
 GAN, WGAN y la arquitectura híbrida considerada inicialmente no fueron implementadas. Se mantienen en teoría y prospectiva. Esta diferencia entre diseño inicial y ejecución debe conservarse explícita. Tampoco se evaluaron difusión, flujos normalizantes o modelos temporales condicionados.
 
@@ -25,7 +25,7 @@ GAN, WGAN y la arquitectura híbrida considerada inicialmente no fueron implemen
 
 Markowitz es sensible a pequeñas variaciones de medias y covarianzas. La restricción long-only y el máximo 20~\% contienen algunas soluciones, pero son decisiones académicas y no representan todos los mandatos. Los pesos permanecen fijos: no hay rebalanceo, costes, horquillas, impuestos, impacto de mercado o restricciones de rotación.
 
-El tipo libre de riesgo se fija en cero. La evaluación incluye volatilidad, Sharpe y drawdown, pero no VaR, CVaR, Sortino ni análisis de concentración completo. La cartera VAE con mayor retorno también tiene mayor volatilidad; una función de utilidad diferente podría seleccionar otros pesos.
+El tipo libre de riesgo se fija en cero. La evaluación incorpora CVaR 95~\% como extensión, pero no VaR completo por estrategia, Sortino ni análisis de concentración completo. La cartera VAE con mayor retorno también tiene mayor volatilidad; una función de utilidad diferente podría seleccionar otros pesos.
 
 \subsection{Alcance de las conclusiones}
 

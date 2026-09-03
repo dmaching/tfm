@@ -54,6 +54,7 @@ def create_formatted_comparison(comparison: pd.DataFrame) -> pd.DataFrame:
         "annualized_return",
         "annualized_volatility",
         "max_drawdown",
+        "cvar_95",
     ]
 
     for column in percentage_columns:
@@ -69,6 +70,7 @@ def create_formatted_comparison(comparison: pd.DataFrame) -> pd.DataFrame:
             "annualized_volatility": "Volatilidad anualizada",
             "sharpe_ratio": "Ratio de Sharpe",
             "max_drawdown": "Máximo drawdown",
+            "cvar_95": "CVaR histórico 95 %",
         }
     )
 

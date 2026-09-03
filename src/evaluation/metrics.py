@@ -58,6 +58,18 @@ def max_drawdown(returns: pd.Series) -> float:
     return float(drawdowns.min())
 
 
+def historical_var(returns: pd.Series, confidence_level: float = 0.95) -> float:
+    """Calcula el VaR histórico como el cuantil inferior de los retornos."""
+    return float(returns.quantile(1 - confidence_level))
+
+
+def historical_cvar(returns: pd.Series, confidence_level: float = 0.95) -> float:
+    """Calcula el CVaR histórico como la media de los retornos bajo el VaR."""
+    var = historical_var(returns, confidence_level)
+    tail_returns = returns[returns <= var]
+    return float(tail_returns.mean()) if not tail_returns.empty else np.nan
+
+
 def compute_metrics(returns: pd.Series) -> pd.DataFrame:
     """
     Calcula las métricas principales de una estrategia de cartera.
@@ -68,6 +80,7 @@ def compute_metrics(returns: pd.Series) -> pd.DataFrame:
         "annualized_volatility": annualized_volatility(returns),
         "sharpe_ratio": sharpe_ratio(returns),
         "max_drawdown": max_drawdown(returns),
+        "cvar_95": historical_cvar(returns, 0.95),
     }
 
     return pd.DataFrame([metrics])

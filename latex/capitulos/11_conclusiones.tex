@@ -19,6 +19,8 @@ En la comparación de 120 épocas, el AE logró test MSE 0,006308 frente a 0,010
 
 La cartera VAE alcanzó retorno acumulado 242,32~\%, retorno anualizado 75,02~\%, volatilidad 25,08~\%, Sharpe 2,99 y máximo \textit{drawdown} -13,96~\%. En ese mismo test, Markowitz restringido obtuvo 101,38~\%, 17,01~\% de volatilidad y Sharpe 2,20; la equiponderada presentó la menor volatilidad y caída. El VAE ofrece, por tanto, la mayor rentabilidad ajustada por volatilidad de la tabla, pero también el mayor riesgo absoluto.
 
+Las extensiones temporales y de riesgo matizan esta lectura. En la validación \textit{walk-forward}, el VAE logró el mejor Sharpe en 5 de 9 ventanas, con media 1,34, frente a 1,49 de Markowitz clásico. El análisis de colas no encontró escenarios tan severos como los peores retornos diarios equiponderados de 2018 y COVID-19. El análisis adicional refuerza la evaluación empírica, pero no demuestra superioridad general.
+
 \section{Valoración final de la metodología}
 
 CRISP-DM resultó útil para conectar decisiones que podrían haberse presentado de manera fragmentada. La comprensión del problema fijó benchmarks y cautelas; la comprensión de datos produjo EDA verificable; la preparación evitó mezclar futuro y pasado; el modelado conservó configuraciones; y la evaluación empleó un test común. La reproducibilidad se apoya en scripts, semillas y artefactos intermedios.

@@ -68,6 +68,49 @@ Bajo el periodo analizado, los resultados sugieren que modificar la estimación 
 
 No se modelan comisiones, horquillas, impuestos ni impacto de mercado. Tampoco hay rebalanceo, por lo que no se evalúa rotación. El tipo libre de riesgo se fija en cero y las métricas no incluyen VaR o CVaR. Finalmente, un solo test carece de la diversidad de una validación \textit{walk-forward}. Estas condiciones hacen que la tabla deba interpretarse como resultado académico reproducible, no como expectativa de inversión.
 
+\subsection{Extensiones: validación temporal y colas}
+
+Como análisis adicional, se aplicó una validación \textit{walk-forward} con ventana \textit{expanding}: entrenamiento inicial del 70~\% y nueve \textit{folds} consecutivos de 84 sesiones. En cada \textit{fold} se reajustó el escalador exclusivamente con el entrenamiento y se reentrenó el VAE desde cero, manteniendo la arquitectura y 5.000 escenarios. Las semillas utilizadas fueron 43--51. El VAE obtuvo el mejor Sharpe en 5 de los 9 \textit{folds}, con Sharpe medio de 1,34, frente a 1,49 de Markowitz clásico. El resultado indica una ventaja parcial en estas ventanas, pero no una superioridad uniforme.
+
+La Tabla~\ref{tab:walk_forward_sharpe} resume la media y la desviación típica del Sharpe por estrategia; la Figura~\ref{fig:walk_forward_sharpe} muestra su evolución entre \textit{folds}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lrr}
+\toprule
+Estrategia & Sharpe medio & Desv. típica \\
+\midrule
+Equiponderada & 0,88 & 1,41 \\
+Markowitz & 1,49 & 1,99 \\
+Markowitz restringido & 1,42 & 1,97 \\
+VAE sintético & 1,34 & 2,03 \\
+\bottomrule
+\end{tabular}
+\caption{Resumen agregado del ratio de Sharpe en la validación \textit{walk-forward}. Fuente: elaboración propia a partir de \texttt{walk\_forward\_results\_by\_fold.csv}.}
+\label{tab:walk_forward_sharpe}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{../figures/walk_forward_sharpe_by_fold.png}
+\caption{Evolución del ratio de Sharpe por \textit{fold} y estrategia en la validación \textit{walk-forward}. Fuente: elaboración propia a partir de los resultados generados por el pipeline.}
+\label{fig:walk_forward_sharpe}
+\end{figure}
+
+También se compararon asimetría, curtosis, VaR, CVaR y percentiles entre los retornos reales de test y los escenarios sintéticos. El CVaR al 95~\% de la cartera VAE fue -3,06~\% en test y -3,37~\% en los escenarios. Al reentrenar con datos anteriores a la corrección de 2018 y a la crisis de COVID-19, ningún escenario alcanzó el peor retorno diario equiponderado observado en esos episodios. Esta evidencia sugiere suavización de extremos y una cobertura limitada de la cola.
+
+La Figura~\ref{fig:tail_risk_real_vs_synthetic} presenta la comparación gráfica entre los retornos reales y sintéticos, incluidos los cuantiles de cola.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\textwidth]{../figures/tail_risk_real_vs_synthetic.png}
+\caption{Comparación de distribuciones y cuantiles entre retornos reales de test y escenarios sintéticos del VAE. Fuente: elaboración propia a partir de los resultados generados por el pipeline.}
+\label{fig:tail_risk_real_vs_synthetic}
+\end{figure}
+
+El análisis adicional refuerza la evaluación empírica, pero no demuestra superioridad general.
+
 \subsection{Síntesis de resultados}
 
 El resultado de la cartera VAE no debe interpretarse como una predicción de rentabilidad futura, sino como una evidencia experimental de que la estimación de parámetros mediante escenarios sintéticos puede alterar de forma sustancial la solución óptima bajo el periodo analizado.

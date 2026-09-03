@@ -243,6 +243,10 @@ De forma operativa, el modelo no genera directamente una variable latente determ
 q_\phi(z|x) = \mathcal{N}(\mu(x), \sigma^2(x) I)
 \]
 
+La covarianza diagonal implica que cada dimensión latente posee su propia varianza, aunque no se modelan covarianzas explícitas entre dimensiones latentes. Esta simplificación reduce el número de parámetros y facilita el entrenamiento.
+
+En este trabajo, cada entrada del modelo es un vector de 30 componentes, correspondiente a los retornos diarios de los activos seleccionados. El espacio latente tiene dimensión 8, por lo que cada muestra latente \(z\) resume esa información en ocho componentes. El decoder transforma posteriormente ese vector latente de dimensión 8 de nuevo al espacio original de dimensión 30.
+
 A partir de esta distribución no se selecciona directamente un valor determinista, sino que se realiza un muestreo estocástico del espacio latente. Este muestreo se implementa mediante el truco de reparametrización, que permite mantener la diferenciabilidad del modelo:
 
 \[
@@ -250,7 +254,7 @@ z = \mu(x) + \sigma(x) \odot \epsilon,
 \qquad \epsilon \sim \mathcal{N}(0,I)
 \]
 
-El decoder toma como entrada este vector latente \(z\) y genera una reconstrucción \(\hat{x}\) del vector original de retornos. En este caso, la salida del modelo tiene la misma dimensionalidad que la entrada (30 activos), por lo que el decoder actúa como una transformación inversa del espacio latente hacia el espacio original de observaciones financieras.
+El decoder toma como entrada este vector latente \(z\) y genera una reconstrucción \(\hat{x}\) del vector original de retornos.
 
 El objetivo del entrenamiento es que la reconstrucción sea lo más fiel posible a la entrada original, al mismo tiempo que el espacio latente mantiene una estructura regular. Para ello, el modelo se entrena maximizando la Evidence Lower Bound (ELBO), que en la práctica se implementa como la minimización de una función de pérdida compuesta por dos términos:
 
@@ -286,7 +290,9 @@ z \sim \mathcal{N}(0, I)
 
 A partir de estas muestras aleatorias del espacio latente, el decoder del modelo genera observaciones sintéticas en el espacio original de los datos. En este caso, cada muestra generada corresponde a un vector de retornos de dimensión 30, asociado al conjunto de activos considerados en el estudio.
 
-Este procedimiento permite obtener múltiples trayectorias sintéticas de retornos que preservan, en cierta medida, las dependencias aprendidas durante el entrenamiento del modelo. De este modo, no se generan simples perturbaciones de los datos históricos, sino nuevas realizaciones coherentes con la estructura estadística capturada por el VAE.
+Cada escenario generado debe interpretarse como un vector plausible de retornos diarios conjuntos para los 30 activos. No representa una fecha concreta, una trayectoria temporal completa ni una predicción directa del periodo de test; es una muestra de la distribución aprendida a partir del conjunto de entrenamiento.
+
+Este procedimiento permite obtener múltiples realizaciones sintéticas de retornos que preservan, en cierta medida, las dependencias aprendidas durante el entrenamiento del modelo. De este modo, no se generan simples perturbaciones de los datos históricos, sino nuevas realizaciones coherentes con la estructura estadística capturada por el VAE.
 
 Los escenarios sintéticos generados se almacenan en forma de matriz, donde cada fila representa un escenario de retornos diarios y cada columna corresponde a uno de los activos del universo de inversión.
 
@@ -328,15 +334,17 @@ Este enfoque permite comparar de manera directa la utilidad de los escenarios si
 
 \section{Síntesis del pipeline experimental}
 
-El pipeline completo propuesto en este trabajo integra tres etapas principales: la preparación de datos, la generación de escenarios sintéticos y la optimización de carteras.
+El pipeline completo construido en este trabajo puede resumirse en tres etapas: preparación de datos, generación de escenarios sintéticos y optimización de carteras.
 
-En primer lugar, se parte de precios ajustados diarios de activos financieros, a partir de los cuales se calculan retornos logarítmicos. Estos retornos se dividen en conjuntos de entrenamiento y test respetando el orden temporal de los datos.
+Partiendo de precios ajustados diarios de los activos financieros seleccionados, se calculan los retornos logarítmicos. Estos retornos se dividen en dos conjuntos, entrenamiento y test, respetando el orden temporal de los datos.
 
-En segundo lugar, se entrena un Autoencoder Variacional sobre los retornos escalados del conjunto de entrenamiento. Este modelo aprende una representación latente de la distribución de retornos y permite generar nuevos escenarios mediante muestreo en el espacio latente.
+A continuación, se entrena un Autoencoder Variacional sobre los retornos escalados del conjunto de entrenamiento. El modelo aprende una representación latente de la distribución de retornos y permite generar nuevos escenarios mediante muestreo en el espacio latente. En términos prácticos, se muestrean vectores latentes de dimensión 8 y el decoder los transforma en vectores de dimensión 30, equivalentes a posibles realizaciones conjuntas de retornos diarios para los activos analizados.
 
-Finalmente, estos escenarios sintéticos se utilizan para estimar parámetros estadísticos que alimentan un proceso de optimización de carteras basado en teoría media-varianza. La cartera resultante se evalúa sobre datos reales no observados durante el entrenamiento.
+Finalmente, estos escenarios se utilizan para estimar los parámetros estadísticos que alimentan un proceso de optimización de carteras basado en la teoría de media-varianza. La cartera resultante se evalúa frente a datos reales no observados durante el entrenamiento.
 
-Este diseño experimental permite analizar si la incorporación de modelos generativos mejora la calidad de las decisiones de inversión frente a enfoques clásicos basados exclusivamente en datos históricos.
+Por tanto, la diferencia principal entre la estrategia clásica y la estrategia sintética no reside en la forma final de optimizar los pesos, sino en la procedencia de los parámetros utilizados para estimar rentabilidad esperada y riesgo. Markowitz clásico utiliza medias y covarianzas históricas, mientras que la estrategia VAE las estima sobre escenarios sintéticos; la red neuronal no decide directamente los pesos.
+
+El análisis de este diseño experimental permite valorar si la incorporación de escenarios sintéticos modifica la construcción de carteras frente a enfoques basados exclusivamente en la estimación histórica de medias y covarianzas.
 
 \section{Entrenamiento y comparación de modelos}
 
