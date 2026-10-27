@@ -1,0 +1,63 @@
+\section{Estado del arte}
+
+En este capítulo se revisan los principales trabajos y líneas de investigación relacionados con la optimización de carteras y el uso de modelos de aprendizaje automático y modelado generativo en finanzas. A diferencia del marco teórico, cuyo objetivo es presentar los conceptos fundamentales, el estado del arte se centra en identificar qué enfoques han sido propuestos previamente, qué limitaciones presentan y en qué punto se sitúa la contribución planteada en este trabajo.
+
+\subsection{Optimización clásica de carteras}
+
+La optimización clásica de carteras tiene como punto de partida el trabajo de Markowitz, quien introduce el modelo de media-varianza como una formulación matemática para la selección de carteras de inversión \citeyear{markowitz1952}. La aportación fundamental de este enfoque consiste en establecer que la elección de activos no debe basarse únicamente en la maximización del retorno esperado, sino también en el control del riesgo asociado a la cartera.
+
+El modelo de Markowitz permite obtener combinaciones eficientes de activos a partir de la relación entre rentabilidad esperada y varianza. En este marco, una cartera será preferible si, para un determinado nivel de riesgo, ofrece una mayor rentabilidad esperada, o si, para una rentabilidad esperada dada, presenta una menor varianza. Esta idea da lugar al concepto de frontera eficiente, que constituye uno de los fundamentos de la teoría moderna de carteras.
+
+No obstante, aunque el modelo de media-varianza continúa siendo una referencia esencial en la literatura financiera, presenta limitaciones relevantes. En particular, resume el comportamiento de los activos mediante momentos de primer y segundo orden, es decir, medias, varianzas y covarianzas. Esta simplificación puede resultar insuficiente cuando los retornos financieros presentan colas pesadas, asimetrías, volatilidad cambiante o dependencias no lineales.
+
+Estas limitaciones han motivado el desarrollo de enfoques alternativos, tanto desde la estadística financiera tradicional como desde el aprendizaje automático. En este trabajo, el modelo de Markowitz se considera como referencia clásica frente a la cual comparar la metodología basada en escenarios sintéticos generados mediante modelos profundos.
+
+\subsection{Aprendizaje automático y deep learning en gestión de carteras}
+
+El aprendizaje automático ha introducido nuevas aproximaciones para el análisis de datos financieros, especialmente en contextos donde las relaciones entre variables son complejas, no lineales y difíciles de modelar mediante técnicas paramétricas tradicionales. En el ámbito de la gestión de carteras, estas técnicas se han aplicado principalmente a la predicción de precios, la estimación de retornos, la clasificación de activos y la construcción de señales de inversión.
+
+Sin embargo, una parte importante de estos enfoques se centra en predecir directamente la evolución futura de los precios o retornos. Esta estrategia presenta dificultades importantes, ya que los mercados financieros son sistemas altamente ruidosos y sensibles a cambios de régimen. Además, una predicción puntual de precios no equivale directamente a una decisión de inversión, sino que requiere una capa adicional de lógica para convertir dicha predicción en pesos de cartera.
+
+En este contexto, el aprendizaje profundo aporta la capacidad de modelar relaciones no lineales y trabajar con datos de alta dimensionalidad. Las redes neuronales profundas permiten aprender representaciones complejas de los datos, lo que resulta especialmente relevante en finanzas, donde los activos pueden presentar relaciones dinámicas, dependencias no lineales y comportamientos distintos en función del régimen de mercado.
+
+A pesar de ello, el enfoque de este trabajo no consiste en utilizar aprendizaje profundo para predecir directamente precios futuros, sino en emplearlo para modelar distribuciones de retornos y generar escenarios sintéticos. Esta distinción es relevante, ya que desplaza el problema desde la predicción puntual hacia la generación de posibles trayectorias o escenarios de mercado sobre los que evaluar la robustez de una cartera.
+
+\subsection{Modelos generativos para series financieras}
+
+Los modelos generativos han ganado relevancia en el análisis de series financieras debido a su capacidad para aprender distribuciones complejas directamente a partir de los datos. A diferencia de los modelos clásicos, que requieren especificar de forma explícita una distribución o una estructura paramétrica, los modelos generativos permiten aproximar la distribución subyacente y producir nuevas muestras con propiedades similares a las observadas.
+
+En el caso de las series financieras, esta capacidad resulta especialmente útil porque los retornos de los activos presentan propiedades que no siempre quedan recogidas por modelos gaussianos o lineales. Entre estas propiedades se encuentran las colas pesadas, la asimetría, la dependencia temporal, el agrupamiento de volatilidad y los cambios en las correlaciones entre activos. Por este motivo, el modelado generativo constituye una línea de investigación relevante para la generación de escenarios financieros sintéticos.
+
+Dentro de esta familia de modelos, las Redes Generativas Adversarias, propuestas originalmente por \cite{goodfellow2014generative}, han sido utilizadas para sintetizar series temporales financieras y reproducir propiedades estadísticas observadas en los mercados. En este enfoque, el generador aprende a producir muestras sintéticas, mientras que el discriminador evalúa si dichas muestras proceden de la distribución real o de la distribución generada. Este procedimiento permite construir escenarios que no aparecen de forma idéntica en el conjunto histórico, pero que pueden resultar estadísticamente plausibles.
+
+Frente al planteamiento general de Goodfellow y colaboradores, Wiese, Knobloch, Korn y Kretschmer \citeyear{wiese2020quantgans} aplican una GAN específicamente a la generación de series temporales financieras.
+
+Los Autoencoders Variacionales también resultan relevantes en este contexto, ya que permiten aprender una representación latente y probabilística de los datos. En el caso de los retornos financieros, el espacio latente puede interpretarse como una representación comprimida de factores no observables que influyen en el comportamiento conjunto de los activos. Esta característica justifica su uso como componente previo o complementario en arquitecturas híbridas de generación de escenarios.
+
+A partir de estas ideas, el planteamiento inicial consideró una arquitectura VAE-GAN. Sin embargo, el desarrollo empírico alcanzado implementa el VAE y genera escenarios con su \textit{decoder}. La combinación adversaria se mantiene como ampliación futura, no como resultado experimental.
+
+\subsection{Modelos de difusión para selección dinámica de carteras}
+
+En los últimos años, los modelos de difusión han adquirido una relevancia creciente dentro del modelado generativo. Estos modelos se basan en aprender un proceso inverso de eliminación de ruido, permitiendo generar nuevas observaciones a partir de una distribución inicial simple, normalmente ruido gaussiano. Su principal atractivo reside en la estabilidad del proceso generativo y en su capacidad para producir muestras diversas.
+
+En el ámbito financiero, los modelos de difusión han comenzado a explorarse como herramientas para la generación de escenarios y la selección dinámica de carteras. En particular, Aghapour, Bayraktar y Yuan proponen el uso de modelos de difusión para abordar problemas de selección dinámica de carteras \citeyear{aghapour2025solving}. Este enfoque resulta relevante para el presente trabajo porque comparte la idea de utilizar modelos generativos para simular posibles escenarios de mercado y tomar decisiones de asignación de activos.
+
+Según los resultados reportados por estos autores, los modelos de difusión pueden ofrecer resultados competitivos frente a índices de referencia como el S\&P 500 y frente a carteras construidas mediante enfoques tradicionales de Markowitz. Esta línea de investigación es todavía reciente, pero muestra el potencial del modelado generativo para superar algunas de las limitaciones de los modelos clásicos, especialmente cuando se trabaja con mercados dinámicos, dependencia temporal y cambios en la volatilidad.
+
+Aunque el presente trabajo no implementa modelos de difusión, su inclusión permite situar el VAE ejecutado y la inspiración híbrida dentro de una tendencia más amplia de generación de escenarios.
+
+\section{Conclusiones}
+
+La revisión local se complementa con trabajos sobre aprendizaje profundo aplicado a carteras \cite{jiang2017deep,huang2020deep,zhang2020deep}, representación latente y generación \cite{opitz2017latent,voronina2025genai}, y validación cuantitativa \cite{lopez2018advances,rasekhschaffe2026}. Estas referencias ayudan a situar decisiones del pipeline, pero no sustituyen la comparación empírica realizada sobre los datos del TFM.
+
+\subsection{Síntesis crítica y hueco de investigación}
+
+La revisión anterior permite identificar una evolución clara en las técnicas aplicadas a la optimización de carteras. En primer lugar, la teoría clásica de Markowitz establece una formulación matemática sólida basada en el equilibrio entre rentabilidad esperada y riesgo. Sin embargo, su dependencia de la media, la varianza y la matriz de covarianzas limita su capacidad para capturar distribuciones no gaussianas, colas pesadas y relaciones no lineales entre activos.
+
+En segundo lugar, las técnicas de aprendizaje automático y aprendizaje profundo han ampliado las posibilidades de análisis financiero, permitiendo modelar relaciones más complejas a partir de datos históricos. No obstante, muchos de estos enfoques se han centrado en la predicción puntual de precios o retornos, lo que no resuelve directamente el problema de la construcción de carteras robustas bajo incertidumbre.
+
+En tercer lugar, los modelos generativos ofrecen una alternativa especialmente adecuada para este contexto, ya que permiten aprender distribuciones de datos y generar escenarios sintéticos. Esta capacidad resulta útil para analizar la robustez de una cartera no solo bajo el escenario histórico observado, sino también bajo posibles escenarios generados que preserven propiedades estadísticas relevantes del mercado.
+
+El hueco abordado se sitúa en la conexión entre generación de escenarios y optimización de carteras. La contribución empírica estudia un VAE aplicado a retornos del S\&P 500 y compara la cartera resultante con Markowitz y equiponderación. La extensión adversaria permitiría investigar posteriormente si mejora la fidelidad de colas y dependencias.
+
+En síntesis, Markowitz conserva valor por su formulación interpretable, mientras su dificultad práctica reside en estimar medias y covarianzas estables. Las colas, la volatilidad cambiante y las dependencias observadas motivan aproximar una distribución más rica. El hueco específico de este trabajo consiste, por tanto, en evaluar si escenarios obtenidos con un VAE pueden alimentar una optimización clásica dentro de un pipeline reproducible y sometido a evaluación fuera de muestra.

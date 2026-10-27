@@ -1,0 +1,34 @@
+\clearpage
+\chapter{Marco normativo}
+
+El proyecto utiliza datos financieros públicos y modelos de inteligencia artificial con finalidad académica. Por ello, se revisan la protección de datos, las condiciones de uso de la fuente, la propiedad intelectual, la transparencia y la comunicación responsable. Aunque no existe una aplicación comercial, se documentan la procedencia y las limitaciones.
+
+\section{Identificación del tratamiento de datos}
+
+Los archivos contienen fechas, símbolos bursátiles, precios y retornos. No se tratan nombres, identificadores, perfiles ni decisiones de personas físicas identificadas o identificables. En consecuencia, el núcleo empírico no constituye un tratamiento de datos personales en el sentido habitual del RGPD. Esta afirmación se limita a los datasets del repositorio y no debe extenderse a credenciales, logs o datos de colaboradores que pudieran incorporarse en un despliegue futuro.
+
+\section{RGPD y Ley Orgánica 3/2018}
+
+El Reglamento General de Protección de Datos y la LOPDGDD establecen principios como minimización, limitación de finalidad y seguridad. Los retornos corporativos utilizados no son datos personales; aun así, el proyecto sigue esas pautas como buenas prácticas: solo almacena las variables necesarias, separa las credenciales del código y limita el uso a investigación y docencia.
+
+El riesgo para derechos de personas es bajo porque no se procesan datos personales identificables. Se evita calificarlo como absolutamente nulo: repositorios, servicios externos o metadatos operativos pueden introducir información diferente si el sistema se amplía. Cualquier futura incorporación de perfiles de inversores exigiría una evaluación jurídica específica.
+
+\section{Fuente financiera y propiedad intelectual}
+
+Los precios se obtienen mediante \texttt{yfinance} desde Yahoo Finance. La reproducibilidad técnica de la consulta no equivale a otorgar derechos de redistribución ilimitada. El autor debe revisar los términos vigentes del proveedor antes de publicar datasets brutos y distinguir los datos de terceros de los retornos y análisis derivados.
+
+El código desarrollado puede identificarse como creación propia salvo librerías y fragmentos con licencias respectivas. El repositorio debe incluir licencia, atribuciones y referencias. Las figuras generadas a partir de datos propios se indican como elaboración propia; esta fórmula no elimina la obligación de reconocer la fuente de los precios.
+
+\section{Uso responsable de inteligencia artificial}
+
+Los modelos pueden producir resultados numéricamente precisos con una apariencia de objetividad que excede su validez. Por ello se documentan arquitectura, hiperparámetros, corte temporal y métricas, y se distingue el VAE entrenado de las arquitecturas adversarias revisadas únicamente como teoría y prospectiva. La transparencia sobre resultados negativos o limitaciones forma parte del uso responsable.
+
+La selección de pesos procede de una función matemática y de parámetros estimados, no de una explicación causal de las empresas. La interpretabilidad es parcial: se pueden auditar escenarios y restricciones, pero no atribuir cada peso a una razón económica fundamental. Cualquier uso en decisión real requeriría supervisión experta y controles adicionales.
+
+\section{Carácter académico y no recomendación financiera}
+
+Las carteras se muestran para comparar métodos bajo datos históricos. No consideran la situación, objetivos o tolerancia al riesgo de una persona, ni costes y condiciones completas de negociación. En consecuencia, no constituyen asesoramiento, oferta o recomendación financiera. La memoria debe comunicar esta limitación junto a las cifras de rentabilidad, evitando que un resultado retrospectivo se interprete como expectativa garantizada.
+
+\section{Reproducibilidad y transparencia}
+
+El repositorio conserva scripts y artefactos que permiten auditar la cadena de cálculos realizados. Se registran semillas y dependencias, así como la procedencia de las tablas generadas. Esta trazabilidad contribuye al rigor científico del trabajo y reduce el riesgo de seleccionar únicamente resultados favorables a la hipótesis planteada. Aun así, reproducibilidad no equivale a validez externa: otra fuente, periodo o mercado puede producir conclusiones distintas.

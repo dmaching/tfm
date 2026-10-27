@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[codz]
+*$py.class
+.Python
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Entornos y configuración local
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+.conda/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Datos y resultados reproducibles
+/data/raw/*
+/data/processed/*
+/data/generated/*
+!/data/raw/.gitkeep
+!/data/processed/.gitkeep
+!/data/generated/.gitkeep
+
+# Modelos entrenados (solo el directorio raíz; no src/models)
+/models/
+*.pt
+*.pth
+*.pkl
+*.joblib
+*.h5
+*.keras
+
+# Resultados gráficos temporales
+/figures/generated/
+/figures/*.tmp.png
+
+# Archivos auxiliares de LaTeX
+*.aux
+*.log
+*.lof
+*.lot
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.run.xml
+*.bcf
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.dvi
+*.ps
+texput.log
+
+# Material local de redacción y revisión
+/TODO_TFM.md
+/reports/
+/papers/
+/backup_pre_*/
+/bibliografiaextra.txt
+/project_structure.txt
+/version*.pdf
+/MACHIN_GONZALEZ_DANIEL_*.pdf
+/MACHIN_GONZALEZ_DANIEL-*.pdf
+/.miktex-config/
+/.miktex-data/
+/tmp/

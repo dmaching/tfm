@@ -1,0 +1,40 @@
+\chapter{Introducción}
+
+El mercado financiero, que se define como el espacio en el cual se compran y venden activos financieros (acciones, bonos, divisas, materias primas y criptomonedas principalmente), demanda el procesamiento de flujos masivos de datos que superan las capacidades de las herramientas analíticas tradicionales. La enorme cantidad de relaciones e interdependencias que se suceden entre los diferentes activos lo convierte en un sistema caótico, donde el empleo de nuevos enfoques modernos puede suponer un avance significativo en la comprensión de su comportamiento y en la toma de decisiones de inversión.
+
+Desde los comienzos de la teoría económica moderna, el mercado financiero se ha estudiado como un sistema complejo. A diferencia de un sistema puramente aleatorio, puede presentar regularidades estadísticas, aunque estas no eliminan la incertidumbre inherente ni permiten asegurar predicciones sobre su comportamiento. El caos se caracteriza por la complejidad. En un sistema caótico, las variables presentan relaciones no lineales, a menudo difíciles de detectar a simple vista. Esto deriva en la impredecibilidad del sistema, puesto que pequeñas variaciones en las condiciones iniciales pueden llevar a resultados completamente diferentes.
+
+Además, el mercado financiero puede entenderse como un sistema de segundo orden, dado que las propias predicciones que se realizan sobre él pueden influir en los resultados que se obtienen. Esto es, en el propio intento de predecir el comportamiento del mercado, se puede alterar su dinámica, fenómeno habitualmente observado en virajes que se suelen producir en precios de determinados activos cuando personas o entidades relevantes hacen declaraciones acerca de su futuro comportamiento.
+
+En el presente trabajo se propone abordar el problema de confeccionar una cartera de inversión, esto es, elegir un subconjunto de los activos financieros disponibles de manera eficiente. \cite{markowitz1952} introduce el modelo de media-varianza como una de las aproximaciones clásicas para la gestión de carteras de inversión. Este modelo se fundamenta en el principio riesgo-rendimiento, buscando maximizar el rendimiento esperado para un determinado nivel de riesgo asumido por el inversor.
+
+Con el uso de tecnologías Big Data y, en particular, con el uso de modelos generativos como los \textbf{Autoencoders Variacionales (VAEs)} y las \textbf{Redes Generativas Adversarias (GANs)}, se propone una aproximación a la confección de carteras desde una perspectiva no lineal.
+
+\section{Motivación}
+
+La gestión cuantitativa de carteras utiliza desde hace décadas la Teoría de Cartera Moderna (MPT), introducida por \cite{markowitz1952}. Este marco se fundamenta en la optimización media-varianza y resume la distribución mediante sus dos primeros momentos; las interpretaciones basadas únicamente en ellos resultan especialmente restrictivas ante retornos no normales. Sin embargo, la evidencia empírica en el análisis de datos masivos financieros demuestra que los mercados reales presentan características que este modelo no logra capturar: la curtosis excesiva (colas pesadas), la asimetría y la volatilidad estocástica.
+
+En el contexto actual de Big Data, la incapacidad de los modelos lineales para gestionar la complejidad representa una limitación relevante. Los eventos extremos ocurren con una frecuencia mayor en la realidad de la que predeciría un modelo normal, lo que hace que la varianza sea una métrica de riesgo insuficiente. El uso de modelos generativos como las GANs \cite{NIPS2016_8a3363ab} y los VAEs \cite{kingma2013auto} ofrece un nuevo paradigma para aprender la distribución subyacente de los datos sin imponer una forma paramétrica rígida.
+
+Frente a otras aproximaciones, como el uso de modelos de Machine Learning o sistemas de ecuaciones diferenciales, los modelos generativos permiten trabajar desde una perspectiva probabilística. Estos modelos se adaptan a los datos y ofrecen flexibilidad frente a cambios drásticos.
+
+\section{Planteamiento del trabajo}
+
+La elección de esta arquitectura, como se exponía previamente, no busca predecir el precio futuro de los activos, sino generar diversos escenarios posibles para comprender el riesgo subyacente de los mismos.
+
+El presente Trabajo de Fin de Máster propone una aproximación experimental que integra modelado generativo, teoría de la información y optimización clásica de carteras. El núcleo de la investigación se divide en cuatro fases:
+
+\begin{enumerate}
+\item Extracción de datos de series históricas del S\&P 500. Se propone la creación de un pipeline de datos que permita la implementación de la arquitectura propuesta.
+\item Uso de \textbf{Autoencoders Variacionales (VAEs)} para la reducción de dimensionalidad no lineal.
+\item Generación de escenarios sintéticos mediante muestreo en el espacio latente y decodificación con el VAE entrenado.
+\item Estimación de medias y covarianzas sintéticas y optimización de máximo Sharpe, seguida de evaluación fuera de muestra.
+\end{enumerate}
+
+El desarrollo experimental se centra en el Autoencoder Variacional. La arquitectura híbrida VAE-GAN fue considerada en el diseño inicial, pero se descartó de la implementación final por alcance, estabilidad y necesidad de validación adicional. GAN y WGAN se revisan por su relevancia teórica y se mantienen como ampliación futura, pero no se presentan como modelos entrenados. Asimismo, la divergencia de Kullback--Leibler interviene en la regularización del espacio latente del VAE y no como función objetivo de la cartera. El trabajo no pretende predecir precios puntuales: genera vectores plausibles de retornos y evalúa los pesos resultantes sobre observaciones posteriores no utilizadas en el entrenamiento.
+
+La contribución posee carácter académico. Las cifras obtenidas permiten comparar métodos bajo un protocolo común, pero no constituyen recomendación financiera ni garantía de rendimiento. Esta cautela resulta particularmente importante porque el experimento utiliza un único universo, un único corte temporal y pesos estáticos sin costes de transacción.
+
+\section{Estructura del trabajo}
+
+La memoria se organiza de la siguiente manera: el Capítulo 2 reúne el contexto del problema, los fundamentos teóricos y el estado del arte. El Capítulo 3 presenta los objetivos general y específicos, el alcance y la metodología del trabajo. El Capítulo 4 expone el marco normativo. El Capítulo 5 desarrolla la contribución específica e integra los resultados experimentales. El Capítulo 6 describe el código fuente, las herramientas empleadas y los datos analizados. El Capítulo 7 recoge las conclusiones. Finalmente, el Capítulo 8 presenta las principales limitaciones y posibles líneas de trabajo futuro.

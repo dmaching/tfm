@@ -1,0 +1,299 @@
+Esta sección conserva y documenta el diseño metodológico amplio considerado al inicio del trabajo. Es importante distinguir ese diseño de la ejecución finalmente realizada: la componente implementada es el VAE y los escenarios se obtienen muestreando su espacio latente y aplicando el \textit{decoder}. La integración GAN/WGAN descrita en algunos apartados siguientes representa la arquitectura inicialmente estudiada y una extensión futura; no se entrenó un generador ni un discriminador en los resultados de esta memoria. La divergencia KL se utiliza en la pérdida del VAE, no como objetivo del optimizador de cartera.
+
+\subsection{Diseño general del experimento}
+
+Se construyó un flujo completo, desde la adquisición de datos hasta la validación de los resultados de los modelos, pasando por la generación de escenarios sintéticos.
+
+En primer lugar, se adquirieron datos históricos de activos del S\&P 500 mediante la herramienta \textit{yfinance}. Con Python se preprocesaron los datos para alimentar el entrenamiento del modelo VAE, con el objetivo de extraer una representación latente subyacente a la distribución de los retornos observados.
+
+A continuación, el diseño original contemplaba entrenar una GAN/WGAN. Esa fase quedó fuera de la ejecución: el pipeline real muestrea $z\sim\mathcal{N}(0,I)$ y decodifica 5.000 observaciones con el VAE. Con esos escenarios se asignan los pesos y se comparan con Markowitz, Markowitz restringido y equiponderación sobre un test real común.
+
+\subsection{Adquisición de datos}
+
+Una parte fundamental del experimento fue la adquisición de los datos reales empleados en el estudio.
+
+Mediante la herramienta \textit{yfinance}, se creó un pipeline para adquirir series históricas de diez años de una selección de activos del S\&P 500.
+
+Estos datos se emplearon por su relevancia. El mercado estadounidense es uno de los más importantes en cuanto a capitalización. El índice reúne grandes empresas de Estados Unidos y constituye una referencia habitual en el análisis financiero. Por su diversificación y representatividad, se consideró un escenario adecuado para poner en práctica la metodología planteada para la optimización de carteras.
+
+Asimismo, se mantuvo la trazabilidad de los datos para documentar su procedencia y hacer reproducible el proceso de adquisición.
+
+\subsection{Preprocesamiento de los datos}
+
+Tras la adquisición de los datos, se realizaron las transformaciones necesarias para desarrollar los objetivos del trabajo. Este preprocesamiento adaptó las series históricas al formato requerido por el modelo generativo y por el proceso posterior de optimización.
+
+En primer lugar, se trabajó con precios ajustados para tener en cuenta eventos corporativos como dividendos o desdoblamientos de acciones. A partir de estas series se calcularon los retornos financieros, que constituyeron la entrada principal del modelo. Los valores ausentes se trataron eliminando activos con demasiados nulos, alineando fechas comunes y aplicando interpolación únicamente cuando estaba justificado.
+
+Para el preprocesado se aplicó normalización Min--Max al rango $[-1,1]$, ajustada únicamente con entrenamiento. No se aplicó un recorte general de valores extremos, porque estos contienen información financiera relevante. Los parámetros se guardaron para desnormalizar los escenarios generados por el VAE.
+
+Además, se aplicaron las transformaciones necesarias para utilizar los datos dentro del pipeline experimental. La división fue temporal y separó los conjuntos de entrenamiento y test.
+
+\subsection{Arquitectura VAE-GAN considerada en el diseño inicial y descartada de la implementación final}
+
+Una vez extraídos y preprocesados los datos, se definió una estructura en línea con lo expuesto en los apartados previos.
+
+La arquitectura propuesta para el modelo se articula en tres módulos principales:
+
+\begin{itemize}
+\item Extracción de características con Autoencoders Variacionales (VAEs) para la reducción de la dimensionalidad de forma no lineal. El VAE proyecta los datos históricos hacia un espacio latente de menor dimensión. Este proceso permite reducir parte del ruido, reteniendo las características persistentes de los datos.
+
+\item Generación adversaria considerada como extensión. Una GAN podría entrenarse sobre el espacio latente, pero esta etapa no forma parte del experimento ejecutado.
+
+\item Análisis complementario de la calidad distribucional mediante medidas informacionales, como la divergencia de Kullback-Leibler, sin utilizarla como función objetivo directa de la cartera.
+\end{itemize}
+
+De manera intuitiva, el diseño híbrido buscaba usar el VAE para estructurar el latente y una GAN para refinar muestras. En la implementación disponible, el primer componente se conserva y la generación se realiza directamente con el \textit{decoder}; la utilidad de añadir una GAN permanece como hipótesis futura.
+
+El mercado financiero presenta una gran cantidad de variables interconectadas de formas que van más allá de la linealidad. Por ello, el VAE se utiliza para aproximar un espacio latente en el que se representen relaciones subyacentes entre los activos. Este planteamiento resulta adecuado frente a métodos estrictamente lineales como el PCA, dado que los mercados financieros no presentan necesariamente una estructura lineal.
+
+El espacio latente $Z$ representa, por tanto, una codificación comprimida de la información relevante contenida en los datos de entrada.
+
+\begin{figure}[H]
+\centering
+\shorthandoff{>}
+\resizebox{0.85\textwidth}{!}{%
+\begin{tikzpicture}[
+node distance=1.2cm and 1cm,
+every node/.style={draw, rectangle, rounded corners, align=center, minimum width=2.2cm, minimum height=0.9cm, font=\footnotesize},
+arrow/.style={->, >=Stealth, thick}
+]
+
+% --- NIVEL 1: PROCESO VAE (Superior) ---
+\node (data) {Datos\ históricos $x$};
+\node (enc) [right=of data] {Encoder\ $q_{\phi}(z|x)$};
+\node (latent) [right=of enc] {Espacio\ Latente $Z$};
+\node (dec) [right=of latent] {Decoder\ $p_{\theta}(x|z)$};
+
+% --- NIVEL 2: MOTOR GENERATIVO (Centro) ---
+\node (gen) [below=of latent, yshift=-0.5cm] {Generador\ $G(z, \epsilon)$};
+\node (noise) [left=of gen] {Ruido $\epsilon$};
+\node (disc) [below=of gen, yshift=0.3cm] {Discriminador\ $D(x)$};
+
+% --- NIVEL 3: RESULTADOS (Derecha) ---
+\node (scenarios) [right=of gen, xshift=0.5cm] {Escenarios\ Sintéticos};
+\node (kld) [right=of scenarios] {Cálculo\ KLD};
+\node (opt) [below=of kld, yshift=0.3cm] {Optimización\ Pesos $w$};
+
+% --- CONEXIONES ---
+\draw[arrow] (data) -- (enc);
+\draw[arrow] (enc) -- (latent);
+\draw[arrow] (latent) -- (dec);
+
+% Conexiones Generación
+\draw[arrow] (latent) -- (gen);
+\draw[arrow] (noise) -- (gen);
+\draw[arrow] (gen) -- (disc);
+\draw[arrow] (disc.west) -- ++(-0.5,0) |- node[pos=0.25, left] {feedback} (gen.west);
+
+% Salida a Optimización
+\draw[arrow] (gen) -- (scenarios);
+\draw[arrow] (scenarios) -- (kld);
+\draw[arrow] (kld) -- (opt);
+
+\end{tikzpicture}
+}
+\shorthandon{>}
+\caption{Arquitectura híbrida VAE-GAN considerada inicialmente y no implementada de forma completa. Fuente: elaboración propia.}
+\label{fig:arquitectura_vae_gan}
+\end{figure}
+
+La Figura~\ref{fig:arquitectura_vae_gan} representa el diseño conceptual original: VAE, generador y discriminador. Se incluye para mostrar la evolución del planteamiento, no como diagrama del software ejecutado. El pipeline implementado termina en el \textit{decoder} del VAE antes de pasar a la estimación estadística y la optimización.
+
+\subsection{Generación de escenarios sintéticos}
+
+Una vez entrenado el VAE se obtiene un espacio latente $Z$. En la ejecución real se muestrea directamente la normal estándar y se decodifica. El uso posterior de GAN/WGAN sobre dicho espacio es una posible ampliación y no se le atribuyen métricas en esta memoria.
+
+Cada una de estas muestras sintéticas representa un escenario plausible de mercado. Estos escenarios no deben interpretarse como predicciones exactas del futuro, sino como simulaciones generadas a partir de la distribución aprendida por el modelo. De este modo, se amplía el conjunto de situaciones bajo las cuales puede evaluarse la cartera construida.
+
+La utilidad de estos escenarios depende de su capacidad para preservar propiedades estadísticas relevantes de los datos reales. Por ello, se evaluó si los escenarios generados conservaban, de forma aproximada, características como la media de los retornos, la volatilidad, la estructura de correlaciones, la presencia de colas pesadas, posibles asimetrías y dependencias no lineales entre activos.
+
+Esta evaluación resulta necesaria para evitar que la optimización posterior se base en escenarios artificiales que no representen adecuadamente el comportamiento observado en los mercados financieros. En consecuencia, la generación de escenarios sintéticos no constituye un fin en sí mismo, sino una etapa intermedia orientada a mejorar la evaluación y selección de carteras bajo incertidumbre.
+
+\subsection{Función de pérdida y criterios de optimización}
+
+La metodología ejecutada combina dos niveles: entrenamiento variacional del VAE y optimización financiera sobre parámetros sintéticos. Un tercer nivel adversario estaba previsto en el diseño, pero no fue implementado. Esta separación evita confundir la pérdida de la red con la función de máximo Sharpe empleada para los pesos.
+
+Siguiendo el enfoque propuesto por \cite{kingma2013auto}, el objetivo del modelo VAE es maximizar la verosimilitud marginal de los datos observados. Dado un conjunto de datos $\{x^{(i)}\}_{i=1}^{N}$, la verosimilitud marginal se descompone como la suma sobre las observaciones individuales:
+
+\begin{equation}
+\log p_{\theta}(x^{(1)}, \ldots, x^{(N)})
+=
+\sum_{i=1}^{N} \log p_{\theta}(x^{(i)})
+\end{equation}
+
+Sin embargo, el cálculo directo de $\log p_{\theta}(x^{(i)})$ resulta intratable debido a la integración sobre las variables latentes. Para abordar este problema, se introduce una distribución aproximada $q_{\phi}(z|x)$, lo que permite descomponer la log-verosimilitud como:
+
+\begin{equation}
+\log p_{\theta}(x^{(i)})
+=
+D_{KL}
+\left(
+q_{\phi}(z|x^{(i)})
+\parallel
+p_{\theta}(z|x^{(i)})
+\right)
++
+\mathcal{L}(\theta,\phi;x^{(i)})
+\end{equation}
+
+Dado que la divergencia de Kullback--Leibler es siempre no negativa, la función variacional constituye una cota inferior, conocida como ELBO (\textit{Evidence Lower Bound}):
+
+\begin{equation}
+\log p_{\theta}(x^{(i)})
+\geq
+\mathcal{L}(\theta,\phi;x^{(i)})
+\end{equation}
+
+Esta cota puede expresarse como:
+
+\begin{equation}
+\mathcal{L}(\theta,\phi;x^{(i)})
+=
+\mathbb{E}_{q_{\phi}(z|x^{(i)})}
+\left[
+\log p_{\theta}(x^{(i)},z)
+-
+\log q_{\phi}(z|x^{(i)})
+\right]
+\end{equation}
+
+o, de forma equivalente, separando sus componentes principales:
+
+\begin{equation}
+\mathcal{L}(\theta,\phi;x^{(i)})
+=
+-D_{KL}
+\left(
+q_{\phi}(z|x^{(i)})
+\parallel
+p(z)
+\right)
++
+\mathbb{E}_{q_{\phi}(z|x^{(i)})}
+\left[
+\log p_{\theta}(x^{(i)}|z)
+\right]
+\end{equation}
+
+Esta formulación revela dos términos fundamentales:
+
+\begin{itemize}
+\item Un término de regularización, que fuerza la distribución latente aproximada $q_{\phi}(z|x)$ a mantenerse cercana a la probabilidad a priori $p(z)$.
+\item Un término de reconstrucción, que mide la capacidad del modelo generativo para reproducir los datos observados a partir de las variables latentes.
+\end{itemize}
+
+El proceso de entrenamiento consiste en maximizar esta cota inferior respecto a los parámetros del modelo generativo $\theta$ y los parámetros variacionales $\phi$.
+
+No obstante, la optimización presenta dificultades prácticas. En particular, el cálculo del gradiente respecto a $\phi$ mediante estimadores Monte Carlo directos presenta alta varianza, lo que dificulta la convergencia. Para superar esta limitación, se introduce el truco de reparametrización, que permite expresar la variable latente como una transformación determinista de una variable aleatoria auxiliar:
+
+\begin{equation}
+z
+=
+\mu_{\phi}(x)
++
+\sigma_{\phi}(x)\epsilon,
+\quad
+\epsilon \sim \mathcal{N}(0,I)
+\end{equation}
+
+Esta reformulación permite trasladar la fuente de aleatoriedad fuera de la red neuronal, haciendo posible aplicar técnicas estándar de optimización basadas en gradiente (\textit{backpropagation}) con estimadores de baja varianza.
+
+Como fundamento de la ampliación futura, una componente GAN/WGAN se entrenaría mediante un criterio adversarial. En una GAN estándar se entrenarían simultáneamente un generador $G$ y un discriminador $D$. Esta formulación se conserva como marco metodológico teórico y no describe una ejecución realizada:
+
+\begin{equation}
+\min_{G}\max_{D} V(D,G)
+=
+\mathbb{E}_{x \sim p_{data}}
+\left[
+\log D(x)
+\right]
++
+\mathbb{E}_{z \sim p_z}
+\left[
+\log \left(1-D(G(z))\right)
+\right]
+\end{equation}
+
+En el caso de utilizar una WGAN, el criterio adversarial se reformula en términos de distancia de Wasserstein entre la distribución real y la distribución generada. Esta modificación permite obtener una señal de entrenamiento más estable, especialmente cuando ambas distribuciones se encuentran inicialmente alejadas. Por este motivo, la variante WGAN resulta especialmente relevante en contextos financieros, donde la distribución de retornos puede presentar colas pesadas, asimetrías y elevada variabilidad.
+
+Finalmente, los escenarios sintéticos generados se emplean como entrada para el proceso de optimización de carteras. A partir de dichos escenarios se estimarán magnitudes como el retorno esperado generado $\hat{\mu}_{gen}$ y la matriz de covarianzas generada $\hat{\Sigma}_{gen}$. Una posible formulación del problema de optimización es:
+
+\begin{equation}
+\max_{w}
+\left\{
+w^{\top}\hat{\mu}_{gen}
+-
+\frac{\lambda}{2}
+w^{\top}\hat{\Sigma}_{gen}w
+\right\}
+\quad
+\text{s.a.}
+\quad
+\mathbf{1}^{\top}w = 1
+\end{equation}
+
+donde $w$ representa el vector de pesos de la cartera, $\hat{\mu}_{gen}$ el vector de retornos esperados estimado a partir de los escenarios generados, $\hat{\Sigma}_{gen}$ la matriz de varianzas-covarianzas estimada a partir de dichos escenarios y $\lambda$ el parámetro de aversión al riesgo.
+
+Esta formulación permite conectar la generación de escenarios sintéticos con la optimización de carteras. En lugar de estimar los parámetros únicamente a partir de la muestra histórica observada, se plantea utilizar la distribución generada por el modelo como base adicional para evaluar la robustez de distintas asignaciones de pesos.
+
+\subsection{Optimización y selección de pesos}
+
+En este apartado se describe cómo se obtiene la cartera resultante a partir de los escenarios sintéticos generados. Tras la generación de dichos escenarios, se procede a la fase de optimización y selección de pesos de la cartera.
+
+A partir de los escenarios sintéticos se obtiene una matriz de retornos simulados. Empleando esta matriz, se podrán estimar magnitudes relevantes para la construcción de la cartera, como el retorno esperado, la matriz de covarianzas, la volatilidad y la distribución de pérdidas y ganancias.
+
+La variable principal a optimizar es el vector de pesos:
+
+\begin{equation}
+w = (w_1, w_2, \ldots, w_n)
+\end{equation}
+
+donde $w_i$ representa la proporción de la cartera asignada al activo $i$. Para simplificar la selección de pesos y mantener una interpretación conservadora del problema, se impondrán las siguientes condiciones:
+
+\begin{itemize}
+\item No se permiten posiciones cortas, por lo que $w_i \geq 0$ para todo $i$.
+\item La suma de los pesos debe ser igual a 1, es decir, $\sum_{i=1}^{n} w_i = 1$. Esto garantiza que la cartera esté completamente invertida y no se utilice apalancamiento.
+\end{itemize}
+
+El criterio empleado parte de la formulación de Markowitz, pero estimada sobre los escenarios generados:
+
+\begin{equation}
+\max_{w}
+\; w^{\top}\hat{\mu}_{gen}
+-
+\frac{\lambda}{2}
+w^{\top}\hat{\Sigma}_{gen}w
+\quad
+\text{s.a.}
+\quad
+\sum_{i=1}^{n} w_i = 1,
+\quad
+w_i \geq 0
+\end{equation}
+
+La principal diferencia con el método clásico radica en la fuente de los parámetros, no en la estructura general del criterio de selección de pesos. En el modelo clásico, la media y la matriz de covarianzas se estiman directamente a partir de los datos históricos observados. En la metodología propuesta, en cambio, dichas magnitudes se estiman a partir de los escenarios sintéticos generados por el modelo.
+
+De este modo, la asignación de pesos obtenida no depende exclusivamente de la muestra histórica original, sino también de una distribución generada que busca preservar ciertas propiedades estadísticas relevantes del mercado. La cartera resultante debe interpretarse, por tanto, como la asignación obtenida bajo el criterio de optimización definido y no como una cartera óptima en términos absolutos.
+
+\subsection{Benchmarks de comparación}
+
+Para evaluar la metodología propuesta, los resultados obtenidos se compararon con estrategias de referencia habituales en optimización de carteras.
+
+En primer lugar, se comparan los resultados con el modelo de Markowitz. La diferencia radica en el origen de los parámetros: el modelo clásico usa entrenamiento histórico y la propuesta usa escenarios generados por el VAE implementado.
+
+En segundo lugar, se consideró una cartera equiponderada, en la que todos los activos reciben el mismo peso. Esta estrategia simplifica el problema de selección de pesos y no requiere estimar retornos esperados ni matrices de covarianzas. Frente a ella, se evaluó si el empleo de una metodología más compleja aportaba valor adicional en términos de rentabilidad y riesgo.
+
+Finalmente, se utilizó el índice S\&P 500 como referencia de mercado. Esto permitió evaluar si la cartera construida mediante la metodología propuesta mejoraba o complementaba el comportamiento agregado del mercado durante el periodo de evaluación.
+
+En cuanto a las métricas de evaluación, se consideraron las siguientes:
+
+\begin{itemize}
+\item Retorno acumulado: se utilizó para evaluar el rendimiento total durante el periodo de evaluación.
+\item Retorno anualizado: permitió comparar rentabilidades en términos homogéneos.
+\item Volatilidad anualizada: sirvió como medida de riesgo, evaluando la variabilidad de los retornos.
+\item Ratio de Sharpe: midió la rentabilidad ajustada por riesgo.
+\item Máximo drawdown: midió la mayor caída desde un máximo hasta un mínimo posterior, evaluando el riesgo extremo.
+\item Divergencia de Kullback-Leibler: se empleó como medida complementaria para evaluar la distancia entre la distribución de retornos generada por el modelo y la distribución observada, no como función objetivo financiera.
+\end{itemize}
+
+La comparación permitió evaluar dos aspectos principales: por un lado, si los escenarios generados eran razonables a nivel estadístico; por otro, si la cartera resultante mejoraba o complementaba los enfoques clásicos de optimización de carteras.
